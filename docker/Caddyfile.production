@@ -1,0 +1,39 @@
+{
+    email {$TLS_EMAIL}
+}
+(api) {
+    handle_path /storage/* {
+        root * /srv/uploads
+        file_server
+    }
+    @backend path /api/* /sanctum/* /up
+    handle @backend {
+        root * /var/www/html/public
+        php_fastcgi backend:9000
+        file_server
+    }
+}
+{$FASHION_HOST} {
+    import api
+    handle {
+        reverse_proxy fashion:80
+    }
+}
+{$ELECTRONICS_HOST} {
+    import api
+    handle {
+        reverse_proxy electronics:80
+    }
+}
+{$ADMIN_HOST} {
+    import api
+    handle {
+        reverse_proxy admin:80
+    }
+}
+{$API_HOST} {
+    import api
+    handle {
+        respond "Commerce API"
+    }
+}

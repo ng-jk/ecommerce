@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Commerce Studio",
+    "slug": "portfolio-admin",
+    "scheme": "portfolio-admin",
+    "version": "1.0.0",
+    "orientation": "default",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ngjk.portfolio.admin"
+    },
+    "android": {
+      "package": "com.ngjk.portfolio.admin"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store"
+    ]
+  }
+}

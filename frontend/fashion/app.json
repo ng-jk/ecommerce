@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Maison",
+    "slug": "portfolio-fashion",
+    "scheme": "portfolio-fashion",
+    "version": "1.0.0",
+    "orientation": "default",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ngjk.portfolio.fashion"
+    },
+    "android": {
+      "package": "com.ngjk.portfolio.fashion"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store"
+    ]
+  }
+}

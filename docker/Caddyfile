@@ -1,0 +1,39 @@
+{
+    auto_https off
+}
+(api) {
+    handle_path /storage/* {
+        root * /srv/uploads
+        file_server
+    }
+    @backend path /api/* /sanctum/* /up
+    handle @backend {
+        root * /var/www/html/public
+        php_fastcgi backend:9000
+        file_server
+    }
+}
+http://fashion.localhost:8080 {
+    import api
+    handle {
+        reverse_proxy fashion:80
+    }
+}
+http://electronics.localhost:8080 {
+    import api
+    handle {
+        reverse_proxy electronics:80
+    }
+}
+http://admin.localhost:8080 {
+    import api
+    handle {
+        reverse_proxy admin:80
+    }
+}
+http://:8080 {
+    import api
+    handle {
+        respond "Commerce API: /api/v1/shops/fashion/products"
+    }
+}

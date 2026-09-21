@@ -1,0 +1,11 @@
+FROM node:24-alpine
+WORKDIR /app
+COPY package*.json ./
+COPY frontend/fashion/package.json ./frontend/fashion/package.json
+COPY frontend/electronics/package.json ./frontend/electronics/package.json
+COPY frontend/admin/package.json ./frontend/admin/package.json
+COPY packages/api-client/package.json ./packages/api-client/package.json
+COPY packages/storefront/package.json ./packages/storefront/package.json
+RUN npm ci
+COPY frontend/ ./frontend/
+COPY packages/ ./packages/

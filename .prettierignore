@@ -1,0 +1,6 @@
+node_modules
+**/dist
+**/.expo
+backend
+package-lock.json
+packages/api-client/schema.d.ts

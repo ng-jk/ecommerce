@@ -1,0 +1,24 @@
+services:
+  backend:
+    build: {target: production}
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: https://${API_HOST}
+      SESSION_SECURE_COOKIE: "true"
+      SANCTUM_STATEFUL_DOMAINS: ${FASHION_HOST},${ELECTRONICS_HOST},${ADMIN_HOST}
+  gateway:
+    ports: !override ["80:80", "443:443", "443:443/udp"]
+    environment:
+      FASHION_HOST: ${FASHION_HOST:?Set FASHION_HOST}
+      ELECTRONICS_HOST: ${ELECTRONICS_HOST:?Set ELECTRONICS_HOST}
+      ADMIN_HOST: ${ADMIN_HOST:?Set ADMIN_HOST}
+      API_HOST: ${API_HOST:?Set API_HOST}
+      TLS_EMAIL: ${TLS_EMAIL:?Set TLS_EMAIL}
+    volumes:
+      - ./docker/Caddyfile.production:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+volumes:
+  caddy_data:
+  caddy_config:

@@ -1,0 +1,74 @@
+name: ecommerce-portfolio
+x-backend-environment: &backend-environment
+  APP_NAME: CommercePortfolio
+  APP_ENV: local
+  APP_KEY: ${APP_KEY:?Run the setup instructions to generate APP_KEY}
+  APP_DEBUG: "true"
+  APP_URL: http://localhost:8080
+  DB_CONNECTION: pgsql
+  DB_HOST: db
+  DB_PORT: 5432
+  DB_DATABASE: commerce
+  DB_USERNAME: commerce
+  DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+  SESSION_DRIVER: database
+  SESSION_SECURE_COOKIE: "false"
+  SESSION_COOKIE: commerce_session
+  SANCTUM_STATEFUL_DOMAINS: fashion.localhost:8080,electronics.localhost:8080,admin.localhost:8080
+  LOG_CHANNEL: stderr
+  CACHE_STORE: database
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: commerce
+      POSTGRES_USER: commerce
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+    volumes: [database:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U commerce"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+      target: development
+    environment: *backend-environment
+    volumes:
+      - uploads:/var/www/html/storage/app/public
+    depends_on:
+      db: {condition: service_healthy}
+    restart: unless-stopped
+  fashion:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+      args: {APP: fashion}
+    restart: unless-stopped
+  electronics:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+      args: {APP: electronics}
+    restart: unless-stopped
+  admin:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+      args: {APP: admin}
+    restart: unless-stopped
+  gateway:
+    image: caddy:2-alpine
+    ports: ["8080:8080"]
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./backend/public:/var/www/html/public:ro
+      - uploads:/srv/uploads:ro
+    depends_on: [backend, fashion, electronics, admin]
+    restart: unless-stopped
+volumes:
+  database:
+  uploads:
