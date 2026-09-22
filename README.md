@@ -12,6 +12,8 @@ The storefronts target **web, Android, and iOS**. Docker hosts their web exports
 
 Requirements: Docker Desktop with Linux containers, Docker Compose 2.24.4+, and Node.js 24 for the setup script/frontend development. PHP and Composer run in Docker.
 
+The example environment limits Compose to one build at a time, and web builds use two Metro workers to keep memory use manageable on a development computer.
+
 ```sh
 node scripts/setup.mjs
 docker compose up -d --build
