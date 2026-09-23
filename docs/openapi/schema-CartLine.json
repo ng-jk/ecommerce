@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "properties": {
+    "product_id": {
+      "type": "integer"
+    },
+    "quantity": {
+      "type": "integer"
+    },
+    "product": {
+      "$ref": "../openapi.json#/components/schemas/Product",
+      "nullable": true
+    }
+  },
+  "required": [
+    "product_id",
+    "quantity",
+    "product"
+  ]
+}

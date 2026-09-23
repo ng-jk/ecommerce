@@ -1,0 +1,17 @@
+{
+  "purchase_preserves_shop": "3eb0c3bbed4c86c52f84a538ce87c2dfa8135063d286df9cb558c7f562e1dbe7",
+  "unauthorized_unchanged": "acfb7bda65b6a46d235ab0d321ab7370fa310a14e4984960d0c932b38a5bc6f2",
+  "foreign_shop_unchanged": "462c1e4342585367a89cdb0886e4b04fee5086f89e6d49a9c7b9f206cd6521a5",
+  "replay_unchanged": "33d1ff465194b27af30e847b1c00ceea638a88629715551ca15f53b94d598f78",
+  "purchase_conserves_stock": "12f5c2310c3b1676e92b92630c6ec73c7d7e58cec0d84399728303de82830738",
+  "purchase_idempotent": "8052ba3036f2b32d7d2e0222af58c8748e04fa1b4168590c611b62a4f08132bc",
+  "all_sequences_conserve_stock": "a6cd501f6e33f95f5e16957bd950912f29a9ae303a3b51ac647638d6108a0936",
+  "all_sequences_preserve_shop": "98cab9c44fedaa1ae4b68126076bd1b127ca0d0d999d50129b66899ede9a502e",
+  "stock_nonnegative": "cf507f06726b167121a45f3d2fbaee1257f269a1b6f2ddbe712d31da482ca60d",
+  "money_total_correct": "ab4794e3b49ecb0b1f6f5b2b1b9782e5158fb03c391b61d28e0538b271c98a41",
+  "back_never_temp": "d55e3d2d091b40e9181819d5a335c98db78b14ffed691b5bef94eceeb6350616",
+  "order_advance_valid": "d129c5769fa5292c1538d3bc319799a37e1ff5d5cf7ce3cee456bc2db6b14b54",
+  "assistant_unauthorized_no_execution": "1e16904477eaea76f74fc9d93dd4cf27d28df8a61e2cd79b6a3657d35d298f8f",
+  "assistant_incomplete_no_execution": "af0b0c3f61b93cac8f0f9797811ecc12b6b3dc5284ea38f56228e7e101ec5126",
+  "assistant_write_requires_confirmation": "9e1a24a0780336d3a9e14d8726d9170338802ac318fc226ae1cb9721764bc02b"
+}

@@ -1,28 +1,93 @@
-name: Verify
-on: [push, pull_request]
+name: Verify and deploy
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: Deploy the verified commit to the configured production host
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: commerce-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
-  api:
+  verify:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.5'
-          extensions: pdo_sqlite, intl, mbstring
-      - run: composer install --no-interaction --prefer-dist
-        working-directory: backend
-      - run: cp .env.example .env && php artisan key:generate && php artisan test
-        working-directory: backend
-  frontend:
-    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      DB_PASSWORD: commerce-isolated-ci-password
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: tools/pipeline/requirements.lock.txt
+      - run: pip install -r tools/pipeline/requirements.lock.txt
       - run: npm ci
-      - run: npm run typecheck
-      - run: npm run lint
-      - run: npm run api:types && git diff --exit-code packages/api-client/schema.d.ts
-      - run: npm run export:web
+      - uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: formal
+          auto-config: 'false'
+          build: 'false'
+          test: 'false'
+          lint: 'false'
+      - run: python -m tools.pipeline verify
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verification-${{ github.sha }}
+          path: |
+            test-results/
+            coverage/
+            reports/
+      - if: always()
+        run: docker compose -p commerce-tests -f compose.yaml -f compose.test.yaml down
+  deploy:
+    # User-requested hold: re-enable only after local availability review.
+    if: ${{ false }}
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: production
+    concurrency: commerce-production
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: verification-${{ github.sha }}
+          path: verification-artifacts
+      - run: python -c "from pathlib import Path; import shutil; Path('test-results').mkdir(exist_ok=True); shutil.copyfile('verification-artifacts/test-results/verified.json','test-results/verified.json')"
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ vars.REGISTRY_HOST }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+      - name: Write verified host key
+        env:
+          HOST_KEYS: ${{ secrets.DEPLOY_HOST_KEYS }}
+        run: python -c "import os; from pathlib import Path; Path('test-results/known_hosts').write_text(os.environ['HOST_KEYS'])"
+      - run: python -m tools.pipeline deploy
+        env:
+          IMAGE_REGISTRY: ${{ vars.IMAGE_REGISTRY }}
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+          DEPLOY_KNOWN_HOSTS: test-results/known_hosts

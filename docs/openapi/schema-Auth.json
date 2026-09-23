@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "properties": {
+    "user": {
+      "$ref": "../openapi.json#/components/schemas/User"
+    },
+    "token": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user"
+  ]
+}

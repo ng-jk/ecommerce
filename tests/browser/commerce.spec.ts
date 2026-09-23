@@ -9,20 +9,24 @@ for (const [shop, product] of [
   }) => {
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
-    await page.goto(`http://${shop}.localhost:8080/account`);
+    await page.goto(
+      `http://${shop}.localhost:${process.env.COMMERCE_TEST_PORT ?? "8088"}/account`,
+    );
     await page
       .getByRole("button", { name: "New here? Create account" })
       .click();
     await page.getByLabel("Your name", { exact: true }).fill("Browser Tester");
     await page
-      .getByLabel("Email", { exact: true })
+      .getByRole("textbox", { name: "Email", exact: true })
       .fill(`browser-${Date.now()}@${shop}.test`);
-    await page.getByLabel("Password", { exact: true }).fill("BrowserTest2026!");
+    await page
+      .locator('input[aria-label="Password"]:visible')
+      .fill("BrowserTest2026!");
     await page
       .getByRole("button", { name: "Create account", exact: true })
       .click();
     await expect(
-      page.getByRole("link", { name: "Account", exact: true }),
+      page.getByRole("button", { name: "Menu", exact: true }),
     ).toBeVisible();
     await page.getByLabel("Search products").fill(product);
     await page
@@ -58,7 +62,9 @@ for (const [shop, product] of [
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto(`http://${shop}.localhost:8080/`);
+    await page.goto(
+      `http://${shop}.localhost:${process.env.COMMERCE_TEST_PORT ?? "8088"}/`,
+    );
     await expect(
       page.getByRole("link", { name: `View ${product}` }),
     ).toBeVisible();
@@ -84,7 +90,9 @@ for (const [shop, product] of [
     await expect(
       page.getByText("No products match your search."),
     ).toBeVisible();
-    await page.goto(`http://${shop}.localhost:8080/product/999999`);
+    await page.goto(
+      `http://${shop}.localhost:${process.env.COMMERCE_TEST_PORT ?? "8088"}/product/999999`,
+    );
     await expect(
       page.getByRole("heading", { name: "Piece not found." }),
     ).toBeVisible();
@@ -94,33 +102,53 @@ for (const [shop, product] of [
 test("admin: edit stock and advance an order in its own shop", async ({
   page,
 }) => {
-  await page.goto("http://admin.localhost:8080/");
-  await page.getByLabel("Email", { exact: true }).fill("admin@fashion.demo");
-  await page.getByLabel("Password", { exact: true }).fill("Portfolio2026!");
+  await page.goto(
+    `http://admin.localhost:${process.env.COMMERCE_TEST_PORT ?? "8088"}/`,
+  );
+  await page
+    .getByRole("textbox", { name: "Email", exact: true })
+    .fill("admin@fashion.demo");
+  await page
+    .locator('input[aria-label="Password"]:visible')
+    .fill("Portfolio2026!");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  await page.getByRole("button", { name: "Products", exact: true }).click();
   await page
     .getByRole("button", { name: "Edit The everyday overshirt", exact: true })
     .click();
+  await page
+    .getByRole("button", { name: "Next: price and inventory", exact: true })
+    .click();
   await page.getByLabel("Stock", { exact: true }).fill("30");
   await page.getByRole("button", { name: "Save product" }).click();
-  await expect(page.getByText("Product saved.", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("button", {
+      name: "Edit The everyday overshirt",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Dashboard", exact: true }).click();
   await page.getByRole("button", { name: "Orders", exact: true }).click();
   await page
-    .getByRole("button", { name: "Mark processing", exact: true })
+    .getByRole("button", { name: "Mark Processing", exact: true })
     .first()
     .click();
   await expect(
-    page.getByRole("button", { name: "Mark shipped", exact: true }).first(),
+    page.getByRole("button", { name: "Mark Shipped", exact: true }).first(),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Volt", exact: true }).click();
+  await page.getByRole("button", { name: "Dashboard", exact: true }).click();
+  await page.getByRole("button", { name: "Switch shop", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: "Admin sign in" }),
+    page.getByRole("button", { name: "Sign in", exact: true }),
   ).toBeVisible();
   await page
-    .getByLabel("Email", { exact: true })
+    .getByRole("textbox", { name: "Email", exact: true })
     .fill("admin@electronics.demo");
-  await page.getByLabel("Password", { exact: true }).fill("Portfolio2026!");
+  await page
+    .locator('input[aria-label="Password"]:visible')
+    .fill("Portfolio2026!");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  await page.getByRole("button", { name: "Products", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Edit Studio headphones", exact: true }),
   ).toBeVisible();

@@ -1,0 +1,38 @@
+{
+  "type": "object",
+  "properties": {
+    "shop": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "slug",
+        "name"
+      ]
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "products": {
+      "$ref": "../openapi.json#/components/schemas/ProductPage"
+    }
+  },
+  "required": [
+    "shop",
+    "categories",
+    "products"
+  ]
+}

@@ -5,8 +5,13 @@ namespace Tests\Feature;
 use App\Models\Product;
 use App\Models\Shop;
 use App\Models\User;
+use App\Support\FileUploader;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -138,5 +143,56 @@ class CommerceTest extends TestCase
         $token = $this->postJson($this->url('auth/login'), $data)->assertOk()->json('token');
         $this->withToken($token)->getJson($this->url('auth/me'))->assertOk();
         $this->withToken($token)->getJson($this->url('auth/me', 'electronics'))->assertForbidden();
+    }
+
+    public function test_admin_crud_is_paginated_filtered_versioned_and_soft_deleted(): void
+    {
+        $this->customer->update(['role' => 'admin']);
+        Sanctum::actingAs($this->customer);
+        $data = ['name' => 'Test coat', 'category' => 'Coats', 'description' => 'A coat', 'image_url' => 'https://example.com/coat.png', 'price' => 12345, 'stock' => 2, 'active' => true];
+        $created = $this->postJson($this->url('admin/products'), $data)->assertOk()->json('product');
+        $this->assertNotEmpty($created['code']);
+        $this->getJson($this->url('admin/products?category=Coats'))->assertOk()->assertJsonCount(1, 'products.data')->assertJsonPath('products.meta.total', 1)->assertJsonPath('options.1', 'Published');
+        $this->getJson($this->url('admin/products/'.$created['id']))->assertOk()->assertJsonPath('product.version', 0)->assertJsonMissingPath('product.deleted_at');
+        $this->patchJson($this->url('admin/products/'.$created['id']), ['stock' => 4])->assertOk()->assertJsonPath('product.version', 1);
+        $this->deleteJson($this->url('admin/products/'.$created['id']))->assertOk()->assertJsonPath('deleted', true);
+        $this->assertSoftDeleted('products', ['id' => $created['id']]);
+        $this->getJson($this->url('admin/products/'.$created['id']))->assertNotFound();
+        $this->getJson($this->url('admin/orders?status=placed'))->assertOk()->assertJsonPath('orders.meta.total', 0);
+        $this->postJson($this->url('admin/products'), [...$data, 'price' => true])->assertUnprocessable()->assertJsonStructure(['validation_error' => ['price']]);
+    }
+
+    public function test_strict_cart_payloads_cannot_change_state(): void
+    {
+        Sanctum::actingAs($this->customer);
+        foreach ([true, '1', 1.5, -1, 0, 100, null] as $quantity) {
+            $this->putJson($this->url('cart'), ['items' => [['product_id' => $this->product->id, 'quantity' => $quantity]]])->assertUnprocessable();
+        }
+        $this->assertSame(0, $this->customer->fresh()->version);
+        $this->putJson($this->url('cart'), ['items' => [], 'expected_version' => '0'])->assertUnprocessable();
+    }
+
+    public function test_upload_whitelist_transaction_and_filename_contract(): void
+    {
+        Storage::fake('public');
+        $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j3ioAAAAASUVORK5CYII=');
+        $file = UploadedFile::fake()->createWithContent('photo.png', $png);
+        $model = FileUploader::createWithUpload(function () {
+            $copy = $this->product->replicate();
+            $copy->code = (string) Str::uuid();
+            $copy->save();
+
+            return $copy;
+        }, $file, 'image_url');
+        $this->assertMatchesRegularExpression('~^images/'.$model->id.'_[a-f0-9]+\.png$~', $model->image_url);
+        Storage::disk('public')->assertExists($model->image_url);
+        try {
+            DB::transaction(fn () => FileUploader::store($this->product, UploadedFile::fake()->createWithContent('bad.php', '<?php echo 1;')));
+            $this->fail('Executable upload should be rejected');
+        } catch (ValidationException $error) {
+            $this->assertArrayHasKey('file', $error->errors());
+        }
+        $this->expectException(\LogicException::class);
+        FileUploader::store(new Product, $file);
     }
 }

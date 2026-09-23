@@ -1,5 +1,9 @@
-import React from "react";
 import { Stack } from "expo-router";
+import { AdminProvider } from "../composition/AdminProvider";
 export default function Layout() {
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <AdminProvider>
+      <Stack screenOptions={{ headerShown: false }} />
+    </AdminProvider>
+  );
 }

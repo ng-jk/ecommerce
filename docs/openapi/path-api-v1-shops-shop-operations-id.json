@@ -1,0 +1,43 @@
+{
+  "get": {
+    "parameters": [
+      {
+        "in": "path",
+        "name": "shop",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "in": "header",
+        "name": "X-Operation-Token",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Current operation state; HTTP 200 does not imply business success.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Operation"
+            }
+          }
+        }
+      }
+    }
+  }
+}

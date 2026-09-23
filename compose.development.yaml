@@ -6,6 +6,10 @@ services:
     volumes:
       - ./backend:/var/www/html
       - backend_vendor:/var/www/html/vendor
+  worker:
+    volumes:
+      - ./backend:/var/www/html
+      - backend_vendor:/var/www/html/vendor
   fashion:
     build:
       dockerfile: docker/web/Dockerfile.development

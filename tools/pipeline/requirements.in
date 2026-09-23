@@ -1,0 +1,12 @@
+# Direct tools; requirements.lock.txt pins the complete resolved environment.
+pytest
+pytest-cov
+hypothesis
+httpx
+psycopg[binary]
+pydantic
+ruff
+mypy
+pip-audit
+bandit
+cosmic-ray

@@ -1,0 +1,6 @@
+name = "commerce"
+version = "0.1.0"
+defaultTargets = ["Commerce"]
+[[lean_lib]]
+name = "Commerce"
+

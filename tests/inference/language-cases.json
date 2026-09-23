@@ -1,0 +1,87 @@
+[
+  {
+    "expected": "catalog",
+    "role": "public",
+    "message": "List all products"
+  },
+  {
+    "expected": "product",
+    "role": "public",
+    "message": "Show product 1"
+  },
+  {
+    "expected": "login",
+    "role": "public",
+    "message": "Log in with email buyer@example.com"
+  },
+  {
+    "expected": "register",
+    "role": "public",
+    "message": "Create a customer account named Alex with email alex@example.com"
+  },
+  {
+    "expected": "me",
+    "role": "user",
+    "message": "Show my current account"
+  },
+  {
+    "expected": "logout",
+    "role": "user",
+    "message": "Sign me out"
+  },
+  {
+    "expected": "cart",
+    "role": "user",
+    "message": "Show my shopping cart"
+  },
+  {
+    "expected": "updateCart",
+    "role": "user",
+    "message": "Replace my cart with product 1 quantity 2"
+  },
+  {
+    "expected": "checkout",
+    "role": "user",
+    "message": "Place an order from my cart"
+  },
+  {
+    "expected": "orders",
+    "role": "user",
+    "message": "List my orders"
+  },
+  {
+    "expected": "adminProducts",
+    "role": "admin",
+    "message": "As an administrator list inventory products"
+  },
+  {
+    "expected": "adminProduct",
+    "role": "admin",
+    "message": "As an administrator view product 1"
+  },
+  {
+    "expected": "createProduct",
+    "role": "admin",
+    "message": "As an administrator create a product named Test with price 1000 and stock 5"
+  },
+  {
+    "expected": "updateProduct",
+    "role": "admin",
+    "message": "As an administrator change product 1 stock to 5"
+  },
+  {
+    "expected": "deleteProduct",
+    "role": "admin",
+    "message": "As an administrator delete product 1"
+  },
+  {
+    "expected": "adminOrders",
+    "role": "admin",
+    "message": "As an administrator list shop orders"
+  },
+  {
+    "expected": "updateOrder",
+    "role": "admin",
+    "message": "As an administrator move order 1 to processing"
+  }
+]

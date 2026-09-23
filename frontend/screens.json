@@ -1,0 +1,267 @@
+{
+  "frontend/fashion/src/app/index.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "menu",
+      "explore",
+      "search",
+      "category",
+      "products",
+      "previous",
+      "next"
+    ]
+  },
+  "frontend/fashion/src/app/menu.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "menu",
+      "shop",
+      "bag",
+      "account",
+      "orders"
+    ]
+  },
+  "frontend/fashion/src/app/account.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "menu",
+      "name",
+      "email",
+      "password",
+      "submit",
+      "mode"
+    ]
+  },
+  "frontend/fashion/src/app/cart.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "menu",
+      "decrease",
+      "increase",
+      "remove",
+      "checkout"
+    ]
+  },
+  "frontend/fashion/src/app/checkout.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "menu",
+      "name",
+      "line1",
+      "city",
+      "postcode",
+      "submit"
+    ]
+  },
+  "frontend/fashion/src/app/orders.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "menu",
+      "refresh",
+      "previous",
+      "next"
+    ]
+  },
+  "frontend/fashion/src/app/product/[id].tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "menu",
+      "decrease",
+      "increase",
+      "add",
+      "bag"
+    ]
+  },
+  "frontend/fashion/src/app/+not-found.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "menu",
+      "home"
+    ]
+  },
+  "frontend/electronics/src/app/index.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "menu",
+      "explore",
+      "search",
+      "category",
+      "products",
+      "previous",
+      "next"
+    ]
+  },
+  "frontend/electronics/src/app/menu.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "menu",
+      "shop",
+      "bag",
+      "account",
+      "orders"
+    ]
+  },
+  "frontend/electronics/src/app/account.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "menu",
+      "name",
+      "email",
+      "password",
+      "submit",
+      "mode"
+    ]
+  },
+  "frontend/electronics/src/app/cart.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "menu",
+      "decrease",
+      "increase",
+      "remove",
+      "checkout"
+    ]
+  },
+  "frontend/electronics/src/app/checkout.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "menu",
+      "name",
+      "line1",
+      "city",
+      "postcode",
+      "submit"
+    ]
+  },
+  "frontend/electronics/src/app/orders.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "menu",
+      "refresh",
+      "previous",
+      "next"
+    ]
+  },
+  "frontend/electronics/src/app/product/[id].tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "menu",
+      "decrease",
+      "increase",
+      "add",
+      "bag"
+    ]
+  },
+  "frontend/electronics/src/app/+not-found.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "menu",
+      "home"
+    ]
+  },
+  "frontend/admin/src/app/index.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "email",
+      "password",
+      "sign-in",
+      "products",
+      "orders",
+      "sign-out",
+      "switch-shop"
+    ]
+  },
+  "frontend/admin/src/app/products/index.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "dashboard",
+      "create",
+      "edit",
+      "previous",
+      "next",
+      "Indexed category filter"
+    ]
+  },
+  "frontend/admin/src/app/products/create.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "name",
+      "category",
+      "description",
+      "image",
+      "next",
+      "cancel"
+    ],
+    "variants": {
+      "inventory": {
+        "kind": "main",
+        "controls": [
+          "price",
+          "stock",
+          "specifications",
+          "published",
+          "hidden",
+          "save",
+          "previous"
+        ]
+      }
+    }
+  },
+  "frontend/admin/src/app/products/[id]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "name",
+      "category",
+      "description",
+      "image",
+      "next",
+      "cancel",
+      "delete"
+    ],
+    "variants": {
+      "inventory": {
+        "kind": "main",
+        "controls": [
+          "price",
+          "stock",
+          "specifications",
+          "published",
+          "hidden",
+          "save",
+          "previous"
+        ]
+      }
+    }
+  },
+  "frontend/admin/src/app/orders.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "dashboard",
+      "advance",
+      "previous",
+      "next",
+      "Indexed status filter"
+    ]
+  }
+}

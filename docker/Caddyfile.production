@@ -9,7 +9,9 @@
     @backend path /api/* /sanctum/* /up
     handle @backend {
         root * /var/www/html/public
-        php_fastcgi backend:9000
+        php_fastcgi backend:9000 {
+            try_files /index.php
+        }
         file_server
     }
 }

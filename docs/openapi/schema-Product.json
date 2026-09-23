@@ -1,0 +1,56 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "shop_id": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "price": {
+      "type": "integer"
+    },
+    "stock": {
+      "type": "integer"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "specifications": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "nullable": true
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "id",
+    "shop_id",
+    "name",
+    "category",
+    "description",
+    "image_url",
+    "price",
+    "stock",
+    "active",
+    "specifications",
+    "version"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.eslint.json",
+  "include": [
+    "tests/unit/**/*.ts",
+    "packages/**/*.ts",
+    "packages/**/*.tsx",
+    "frontend/*/src/**/*.ts",
+    "frontend/*/src/**/*.tsx"
+  ]
+}

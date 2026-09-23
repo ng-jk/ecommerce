@@ -17,3 +17,16 @@ backend/storage/framework/views/*
 backend/bootstrap/cache/*.php
 test-results
 playwright-report
+.venv
+.tools
+**/__pycache__
+formal/.lake
+
+coverage
+**/coverage.xml
+reports
+.stryker-tmp
+verification-artifacts
+.pytest_cache
+.ruff_cache
+.hypothesis

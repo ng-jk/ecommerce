@@ -1,0 +1,1750 @@
+[
+  {
+    "name": "catalog",
+    "action": "catalog",
+    "description": "Search or list products in the shop",
+    "method": "GET",
+    "path": "/api/v1/shops/{shop}/products",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "search": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "page": {
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "role": "public",
+    "callable": true,
+    "confirmation": false,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "product",
+    "action": "product",
+    "description": "View one product by ID",
+    "method": "GET",
+    "path": "/api/v1/shops/{shop}/products/{id}",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "role": "public",
+    "callable": true,
+    "confirmation": false,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "login",
+    "action": "auth.login",
+    "description": "Sign in using credentials supplied securely as data",
+    "method": "POST",
+    "path": "/api/v1/shops/{shop}/auth/login",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "device_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "email",
+        "password"
+      ],
+      "additionalProperties": false
+    },
+    "role": "public",
+    "callable": true,
+    "confirmation": true,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "register",
+    "action": "auth.register",
+    "description": "Register a customer account",
+    "method": "POST",
+    "path": "/api/v1/shops/{shop}/auth/register",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "password_confirmation": {
+          "type": "string"
+        },
+        "device_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "email",
+        "password",
+        "password_confirmation"
+      ],
+      "additionalProperties": false
+    },
+    "role": "public",
+    "callable": true,
+    "confirmation": true,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "me",
+    "action": "auth.me",
+    "description": "Show my current account",
+    "method": "GET",
+    "path": "/api/v1/shops/{shop}/auth/me",
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "role": "user",
+    "callable": true,
+    "confirmation": false,
+    "responses": {
+      "200": {
+        "description": "Success",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "shop_id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "role": {
+                      "type": "string",
+                      "enum": [
+                        "customer",
+                        "admin"
+                      ]
+                    },
+                    "version": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "account_status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "shop_id",
+                    "name",
+                    "email",
+                    "role",
+                    "version"
+                  ]
+                }
+              },
+              "required": [
+                "user"
+              ]
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "logout",
+    "action": "auth.logout",
+    "description": "Sign out and revoke access",
+    "method": "POST",
+    "path": "/api/v1/shops/{shop}/auth/logout",
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "role": "user",
+    "callable": true,
+    "confirmation": true,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "cart",
+    "action": "cart.read",
+    "description": "Show my shopping cart",
+    "method": "GET",
+    "path": "/api/v1/shops/{shop}/cart",
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "role": "user",
+    "callable": true,
+    "confirmation": false,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "updateCart",
+    "action": "cart.update",
+    "description": "Replace my cart with the complete items list; not an incremental addition",
+    "method": "PUT",
+    "path": "/api/v1/shops/{shop}/cart",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "product_id": {
+                "type": "integer"
+              },
+              "quantity": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "product_id",
+              "quantity"
+            ]
+          }
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "items",
+        "expected_version"
+      ],
+      "additionalProperties": false
+    },
+    "role": "user",
+    "callable": true,
+    "confirmation": true,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "checkout",
+    "action": "checkout",
+    "description": "Place an order from my current cart with simulated payment",
+    "method": "POST",
+    "path": "/api/v1/shops/{shop}/checkout",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "checkout_key": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "shipping_address": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "line1": {
+              "type": "string"
+            },
+            "city": {
+              "type": "string"
+            },
+            "postcode": {
+              "type": "string"
+            },
+            "country": {
+              "type": "string",
+              "enum": [
+                "MY"
+              ]
+            }
+          },
+          "required": [
+            "name",
+            "line1",
+            "city",
+            "postcode",
+            "country"
+          ]
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "checkout_key",
+        "shipping_address",
+        "expected_version"
+      ],
+      "additionalProperties": false
+    },
+    "role": "user",
+    "callable": true,
+    "confirmation": true,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "orders",
+    "action": "orders",
+    "description": "List my orders",
+    "method": "GET",
+    "path": "/api/v1/shops/{shop}/orders",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "role": "user",
+    "callable": true,
+    "confirmation": false,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "adminProducts",
+    "action": "admin.products",
+    "description": "Administrator: list inventory products",
+    "method": "GET",
+    "path": "/api/v1/shops/{shop}/admin/products",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer"
+        },
+        "category": {
+          "type": "string"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "role": "admin",
+    "callable": true,
+    "confirmation": false,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "createProduct",
+    "action": "admin.create",
+    "description": "Administrator: create a product; price is integer MYR sen",
+    "method": "POST",
+    "path": "/api/v1/shops/{shop}/admin/products",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "price": {
+          "type": "integer"
+        },
+        "stock": {
+          "type": "integer"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "specifications": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "nullable": true
+        }
+      },
+      "required": [
+        "name",
+        "category",
+        "description",
+        "image_url",
+        "price",
+        "stock"
+      ],
+      "additionalProperties": false
+    },
+    "role": "admin",
+    "callable": true,
+    "confirmation": true,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "updateProduct",
+    "action": "admin.update",
+    "description": "Administrator: edit a product by ID",
+    "method": "PATCH",
+    "path": "/api/v1/shops/{shop}/admin/products/{id}",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "price": {
+          "type": "integer"
+        },
+        "stock": {
+          "type": "integer"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "specifications": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "nullable": true
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "expected_version",
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "role": "admin",
+    "callable": true,
+    "confirmation": true,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "adminProduct",
+    "action": "admin.product",
+    "description": "Administrator: view a product including inactive inventory",
+    "method": "GET",
+    "path": "/api/v1/shops/{shop}/admin/products/{id}",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "role": "admin",
+    "callable": true,
+    "confirmation": false,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "deleteProduct",
+    "action": "admin.delete",
+    "description": "Administrator: soft delete a product by ID",
+    "method": "DELETE",
+    "path": "/api/v1/shops/{shop}/admin/products/{id}",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "expected_version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "expected_version",
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "role": "admin",
+    "callable": true,
+    "confirmation": true,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "adminOrders",
+    "action": "admin.orders",
+    "description": "Administrator: list shop orders",
+    "method": "GET",
+    "path": "/api/v1/shops/{shop}/admin/orders",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "role": "admin",
+    "callable": true,
+    "confirmation": false,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "updateOrder",
+    "action": "admin.advance",
+    "description": "Administrator: advance an order one status at a time",
+    "method": "PATCH",
+    "path": "/api/v1/shops/{shop}/admin/orders/{id}",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "processing",
+            "shipped",
+            "completed"
+          ]
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "status",
+        "expected_version",
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "role": "admin",
+    "callable": true,
+    "confirmation": true,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "operationStatus",
+    "action": "operations.show",
+    "description": "Retrieve an operation using its private receipt",
+    "method": "GET",
+    "path": "/api/v1/shops/{shop}/operations/{id}",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "role": "public",
+    "callable": false,
+    "confirmation": false,
+    "responses": {
+      "200": {
+        "description": "Current operation state; HTTP 200 does not imply business success.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "queued",
+                    "processing",
+                    "succeeded",
+                    "rejected",
+                    "failed"
+                  ]
+                },
+                "http_status": {
+                  "type": "integer",
+                  "nullable": true
+                },
+                "result": {
+                  "description": "The validated action-specific result or validation_error map."
+                },
+                "state": {
+                  "type": "object",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "http_status",
+                "result",
+                "state"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "assistant",
+    "action": "assistant",
+    "description": "Conversational API; cannot be called recursively",
+    "method": "POST",
+    "path": "/api/v1/shops/{shop}/assistant",
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "message": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "action": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "conversation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "conversation_version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "confirm": {
+          "type": "boolean"
+        },
+        "discover": {
+          "type": "boolean"
+        }
+      },
+      "required": []
+    },
+    "role": "public",
+    "callable": false,
+    "confirmation": true,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+]

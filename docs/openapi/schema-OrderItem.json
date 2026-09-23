@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "properties": {
+    "product_id": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "price": {
+      "type": "integer"
+    },
+    "quantity": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "product_id",
+    "name",
+    "price",
+    "quantity"
+  ]
+}

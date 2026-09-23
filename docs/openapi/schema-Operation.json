@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "properties": {
+    "operation_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "processing",
+        "succeeded",
+        "rejected",
+        "failed"
+      ]
+    },
+    "http_status": {
+      "type": "integer",
+      "nullable": true
+    },
+    "result": {
+      "description": "The validated action-specific result or validation_error map."
+    },
+    "state": {
+      "type": "object",
+      "nullable": true
+    }
+  },
+  "required": [
+    "operation_id",
+    "status",
+    "http_status",
+    "result",
+    "state"
+  ]
+}

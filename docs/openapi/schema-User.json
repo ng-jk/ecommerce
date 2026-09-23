@@ -1,0 +1,39 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "shop_id": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "customer",
+        "admin"
+      ]
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "account_status": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "shop_id",
+    "name",
+    "email",
+    "role",
+    "version"
+  ]
+}

@@ -1,6 +1,5 @@
-import React from "react";
+import { Button,Heading,Page } from "@portfolio/storefront";
 import { router } from "expo-router";
-import { Page, Heading, Button } from "@portfolio/storefront";
 export default function NotFound() {
   return (
     <Page>

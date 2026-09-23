@@ -11,6 +11,12 @@ RUN composer install --no-interaction --prefer-dist \
     && touch .env \
     && chown -R www-data:www-data storage bootstrap/cache
 CMD ["php-fpm"]
+FROM development AS testing
+RUN apk add --no-cache --virtual .coverage-build-deps $PHPIZE_DEPS linux-headers \
+    && pecl install xdebug-3.5.3 \
+    && docker-php-ext-enable xdebug \
+    && apk del .coverage-build-deps
+ENV XDEBUG_MODE=coverage
 FROM base AS production
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader \
     && chown -R www-data:www-data storage bootstrap/cache

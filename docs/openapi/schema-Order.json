@@ -1,0 +1,77 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "shop_id": {
+      "type": "integer"
+    },
+    "user_id": {
+      "type": "integer"
+    },
+    "checkout_key": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "placed",
+        "processing",
+        "shipped",
+        "completed"
+      ]
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "simulated"
+      ]
+    },
+    "currency": {
+      "type": "string"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "../openapi.json#/components/schemas/OrderItem"
+      }
+    },
+    "shipping_address": {
+      "$ref": "../openapi.json#/components/schemas/Address"
+    },
+    "subtotal": {
+      "type": "integer"
+    },
+    "shipping": {
+      "type": "integer"
+    },
+    "total": {
+      "type": "integer"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "id",
+    "shop_id",
+    "user_id",
+    "checkout_key",
+    "status",
+    "payment_method",
+    "currency",
+    "items",
+    "shipping_address",
+    "subtotal",
+    "shipping",
+    "total",
+    "created_at",
+    "version"
+  ]
+}

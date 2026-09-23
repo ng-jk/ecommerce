@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "properties": {
+    "product_id": {
+      "type": "integer"
+    },
+    "quantity": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "product_id",
+    "quantity"
+  ]
+}

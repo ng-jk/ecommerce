@@ -12,11 +12,22 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 #[Fillable(['shop_id', 'name', 'email', 'password', 'role', 'cart'])]
-#[Hidden(['password', 'remember_token', 'cart'])]
+#[Hidden(['password', 'remember_token', 'cart', 'auth_version', 'deleted_at'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, \Illuminate\Database\Eloquent\SoftDeletes, Notifiable;
+
+    protected $attributes = ['account_status' => 'active', 'version' => 0, 'auth_version' => 0];
+
+    public const Customer = 'customer';
+
+    public const Admin = 'admin';
+
+    public static function options(): array
+    {
+        return [self::Customer => 'Customer', self::Admin => 'Administrator'];
+    }
 
     /**
      * Get the attributes that should be cast.
@@ -27,6 +38,8 @@ class User extends Authenticatable
     {
         return [
             'cart' => 'array',
+            'version' => 'integer',
+            'auth_version' => 'integer',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];

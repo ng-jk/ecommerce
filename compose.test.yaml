@@ -1,0 +1,36 @@
+services:
+  unit-tests:
+    extends:
+      file: compose.yaml
+      service: backend
+    image: commerce-testing
+    build:
+      target: testing
+    profiles: [unit]
+    environment:
+      DB_DATABASE: commerce_unit
+      ISOLATED_TEST_DB: "1"
+    volumes:
+      - ./test-results/php:/reports
+  db:
+    environment:
+      POSTGRES_DB: commerce_test
+  backend:
+    image: ecommerce-portfolio-backend
+    environment:
+      APP_ENV: testing
+      DB_DATABASE: commerce_test
+      SANCTUM_STATEFUL_DOMAINS: fashion.localhost:8088,electronics.localhost:8088,admin.localhost:8088
+  worker:
+    image: ecommerce-portfolio-backend
+    environment:
+      APP_ENV: testing
+      DB_DATABASE: commerce_test
+  fashion:
+    image: ecommerce-portfolio-fashion
+  electronics:
+    image: ecommerce-portfolio-electronics
+  admin:
+    image: ecommerce-portfolio-admin
+  gateway:
+    ports: !override ["8088:8080"]

@@ -32,7 +32,7 @@ services:
       retries: 20
     restart: unless-stopped
   backend:
-    build:
+    build: &backend-build
       context: .
       dockerfile: docker/backend/Dockerfile
       target: development
@@ -42,6 +42,16 @@ services:
     depends_on:
       db: {condition: service_healthy}
     restart: unless-stopped
+  worker:
+    build: *backend-build
+    environment: *backend-environment
+    command: [php, artisan, 'commerce:work']
+    volumes:
+      - uploads:/var/www/html/storage/app/public
+    depends_on:
+      db: {condition: service_healthy}
+    restart: unless-stopped
+    stop_grace_period: 40s
   fashion:
     build:
       context: .

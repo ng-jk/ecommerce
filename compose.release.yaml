@@ -1,0 +1,75 @@
+name: commerce
+x-environment: &environment
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_KEY: ${APP_KEY:?Set APP_KEY}
+  APP_URL: https://${API_HOST:?Set API_HOST}
+  DB_CONNECTION: pgsql
+  DB_HOST: db
+  DB_DATABASE: commerce
+  DB_USERNAME: commerce
+  DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD}
+  CACHE_STORE: database
+  SESSION_DRIVER: database
+  SESSION_SECURE_COOKIE: "true"
+  SANCTUM_STATEFUL_DOMAINS: ${FASHION_HOST},${ELECTRONICS_HOST},${ADMIN_HOST}
+  LOG_CHANNEL: stderr
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: commerce
+      POSTGRES_USER: commerce
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes: [database:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U commerce"]
+      interval: 5s
+      retries: 20
+    restart: unless-stopped
+  backend:
+    image: ${BACKEND_IMAGE:?Verified image digest required}
+    environment: *environment
+    volumes: [uploads:/var/www/html/storage/app/public]
+    depends_on:
+      db: {condition: service_healthy}
+    restart: unless-stopped
+  worker:
+    image: ${BACKEND_IMAGE}
+    environment: *environment
+    command: [php, artisan, 'commerce:work']
+    volumes: [uploads:/var/www/html/storage/app/public]
+    depends_on:
+      db: {condition: service_healthy}
+    stop_grace_period: 40s
+    restart: unless-stopped
+  fashion:
+    image: ${FASHION_IMAGE:?Verified image digest required}
+    restart: unless-stopped
+  electronics:
+    image: ${ELECTRONICS_IMAGE:?Verified image digest required}
+    restart: unless-stopped
+  admin:
+    image: ${ADMIN_IMAGE:?Verified image digest required}
+    restart: unless-stopped
+  gateway:
+    image: caddy:2-alpine
+    ports: ["80:80", "443:443", "443:443/udp"]
+    environment:
+      FASHION_HOST: ${FASHION_HOST}
+      ELECTRONICS_HOST: ${ELECTRONICS_HOST}
+      ADMIN_HOST: ${ADMIN_HOST}
+      API_HOST: ${API_HOST}
+      TLS_EMAIL: ${TLS_EMAIL}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - uploads:/srv/uploads:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [backend, fashion, electronics, admin]
+    restart: unless-stopped
+volumes:
+  database:
+  uploads:
+  caddy_data:
+  caddy_config:

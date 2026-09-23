@@ -1,0 +1,38 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "$ref": "../openapi.json#/components/schemas/Order"
+      }
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "current_page": {
+          "type": "integer"
+        },
+        "last_page": {
+          "type": "integer"
+        },
+        "total": {
+          "type": "integer"
+        },
+        "per_page": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "current_page",
+        "last_page",
+        "total",
+        "per_page"
+      ]
+    }
+  },
+  "required": [
+    "data",
+    "meta"
+  ]
+}

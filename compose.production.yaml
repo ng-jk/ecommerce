@@ -7,6 +7,13 @@ services:
       APP_URL: https://${API_HOST}
       SESSION_SECURE_COOKIE: "true"
       SANCTUM_STATEFUL_DOMAINS: ${FASHION_HOST},${ELECTRONICS_HOST},${ADMIN_HOST}
+  worker:
+    build: {target: production}
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: https://${API_HOST}
+      SESSION_SECURE_COOKIE: "true"
   gateway:
     ports: !override ["80:80", "443:443", "443:443/udp"]
     environment:

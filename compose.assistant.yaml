@@ -1,0 +1,19 @@
+services:
+  functiongemma:
+    build:
+      context: .
+      dockerfile: docker/functiongemma/Dockerfile
+    environment:
+      HF_TOKEN: ${HF_TOKEN:-}
+      FUNCTIONGEMMA_MODEL: ${FUNCTIONGEMMA_MODEL:-google/functiongemma-270m-it}
+    volumes:
+      - functiongemma_models:/models
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      start_period: 120s
+      interval: 30s
+      timeout: 5s
+      retries: 3
+volumes:
+  functiongemma_models:
