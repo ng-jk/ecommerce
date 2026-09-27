@@ -217,21 +217,22 @@ exec 9>{q(directory + "/.deploy.lock")}
 flock -n 9
 previous="$(readlink {q(directory + "/current")} || true)"
 mkdir -p {q(release)}
-tar -xf {q(directory + "/upload-" + commit + ".tar")} -C {q(release)}
+(umask 022; tar -xf {q(directory + "/upload-" + commit + ".tar")} -C {q(release)})
 cd {q(release)}
 export RELEASE_ID={q(commit)}
 export COMPOSE_PARALLEL_LIMIT=1
 {compose} config --quiet
 {compose} config --format json | python3 tools/release_guard.py {q(config["database"])} {q(config["database_user"])} {q(config["worker_readiness_url"])} {" ".join(q(url) for url in config["readiness_urls"])}
 {compose} build
+{compose} run --rm --no-deps -T --interactive=false backend php artisan --version </dev/null
 mkdir -p {q(backup_directory)}
 backup={q(backup_directory + "/" + commit)}-$(date +%Y%m%dT%H%M%S).dump
 {docker} exec {q(config.get("database_container", "supabase-db"))} pg_dump -U supabase_admin -d {q(config["database"])} -Fc > "$backup"
 test -s "$backup"
 {docker} exec -i {q(config.get("database_container", "supabase-db"))} pg_restore --list < "$backup" > /dev/null
 if ! ( {compose} stop -t 40 worker &&
-{compose} run --rm --no-deps backend php artisan migrate --force &&
-{compose} run --rm --no-deps backend php artisan db:seed --class=ShopSeeder --force &&
+{compose} run --rm --no-deps -T --interactive=false backend php artisan migrate --force </dev/null &&
+{compose} run --rm --no-deps -T --interactive=false backend php artisan db:seed --class=ShopSeeder --force </dev/null &&
 {compose} up -d --no-build --wait &&
 {probes} &&
 python3 tools/release_probe.py {q(config["worker_readiness_url"])}

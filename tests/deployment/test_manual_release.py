@@ -388,3 +388,17 @@ def test_runner_sends_utf8_bytes_without_text_translation(monkeypatch):
     assert release.run(["ssh", "host", "sh -s"], input="echo ok\n") == "prêt"
     assert calls[0]["input"] == b"echo ok\n"
     assert calls[0]["text"] is False
+
+
+def test_source_permissions_are_scoped_and_artisan_never_reads_ssh_script(setup):
+    _, config, _, _ = setup
+    script = release.remote_script(config["production"], SHA)
+    assert "umask 077" in script
+    assert "(umask 022; tar -xf " in script
+    assert script.index("artisan --version") < script.index("pg_dump")
+    artisan = [line for line in script.splitlines() if " backend php artisan " in line]
+    assert len(artisan) == 3
+    assert all(
+        "--no-deps -T --interactive=false" in line and "</dev/null" in line
+        for line in artisan
+    )
