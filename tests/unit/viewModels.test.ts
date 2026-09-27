@@ -63,12 +63,10 @@ const store = {
       .fn()
       .mockResolvedValue({ products: page, categories: ["Tests"] }),
     product: vi.fn().mockResolvedValue({ product }),
-    orders: vi
-      .fn()
-      .mockResolvedValue({
-        orders: { data: [], meta: { last_page: 2 } },
-        options: { placed: "Placed" },
-      }),
+    orders: vi.fn().mockResolvedValue({
+      orders: { data: [], meta: { last_page: 2 } },
+      options: { placed: "Placed" },
+    }),
     adminProducts: vi
       .fn()
       .mockResolvedValue({ products: page, options: { active: "Published" } }),
@@ -90,11 +88,14 @@ const store = {
   setCart: vi.fn().mockResolvedValue(undefined),
   refreshCart: vi.fn().mockResolvedValue(undefined),
   checkout: vi.fn().mockResolvedValue(undefined),
+  defaultPaymentMethod: "",
+  paymentMethods: {} as Record<string, string>,
 };
 beforeEach(() => {
   vi.clearAllMocks();
   store.user = user;
   store.cart = [];
+  store.defaultPaymentMethod = "";
 });
 afterEach(() => {
   vi.useRealTimers();
@@ -237,6 +238,26 @@ it("only navigates after checkout and cart refresh succeed", async () => {
   store.checkout.mockRejectedValueOnce(new Error("stock changed"));
   await expect(hook.value.submit()).rejects.toThrow("stock changed");
   expect(navigation.replace).not.toHaveBeenCalled();
+  await hook.unmount();
+});
+
+it("uses the server default payment method and submits an explicitly chosen method", async () => {
+  store.defaultPaymentMethod = "card";
+  const hook = await mountHook(useCheckout);
+  await act(async () => {
+    await hook.value.submit();
+  });
+  expect(store.checkout).toHaveBeenLastCalledWith(hook.value.address, "card");
+  await act(async () => {
+    hook.value.setPaymentMethod("merchant-invoice");
+  });
+  await act(async () => {
+    await hook.value.submit();
+  });
+  expect(store.checkout).toHaveBeenLastCalledWith(
+    hook.value.address,
+    "merchant-invoice",
+  );
   await hook.unmount();
 });
 

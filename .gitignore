@@ -34,3 +34,4 @@ formal/.lake/
 reports/
 .stryker-tmp/
 verification-artifacts/
+.deploy/

@@ -3,7 +3,7 @@
 Two independent shops. One Laravel API. Three Expo applications.
 
 The next architecture is recorded in the [engineering and code review specification](docs/engineering-spec.md)
-and [implementation plan](docs/implementation-plan.md): Python CI/CD, layered frontends,
+and [implementation plan](docs/implementation-plan.md): manually invoked Python release gates, layered frontends,
 worker-driven stateful APIs, comprehensive logic tests, and Lean proof obligations.
 These are target requirements; the current demo has not yet completed this migration.
 Every CRUD must follow the [mandatory CRUD rules](docs/crud-rules.md).
@@ -101,10 +101,12 @@ See [OpenAPI specification](docs/openapi.json). Regenerate its TypeScript defini
 
 ## Verification
 
-The Python entry point orchestrates repository review, strict TypeScript lint,
-unit tests, Lean logic proof audits, isolated PostgreSQL/worker API functional
-tests, 100% coverage, Docker builds, and gated deployment. Browser and mutation
-suites remain optional commands under the latest testing specification.
+The manually invoked Python entry point orchestrates repository review, strict
+TypeScript lint, unit tests, Lean logic proof audits, isolated PostgreSQL/worker
+API functional tests, 100% coverage, Docker builds, and deployment. GitHub Actions
+workflows are removed, so pushes and pull requests start no gates or deployment.
+Browser and mutation suites remain optional commands under the latest testing
+specification.
 
 ```sh
 python -m pip install -r tools/pipeline/requirements.lock.txt
@@ -137,7 +139,7 @@ and distribution require separately configured credentials and destinations.
 
 See [self-hosting, backups, and upgrades](docs/deployment.md).
 
-This is a portfolio demo: checkout never charges a card; shipping is a flat RM 8 within Malaysia. Tax calculation, carrier integrations, variants/sizes, refunds, transactional email, password reset, email verification, and payment gateways are outside this version. Web apps use client-side routing with server fallback; server-rendered product SEO is not included. Product images use external Unsplash URLs; administrators can use their own HTTPS image URLs. The uploads volume is reserved for future file uploads, while the current admin accepts image URLs.
+Checkout defaults to Stripe; configure merchant credentials before accepting payments. Billplz and server-configured custom methods are optional; simulation requires an explicit demo/test override. Shipping remains a flat RM 8 within Malaysia. Tax calculation, carrier integrations, variants/sizes, refunds, transactional email, password reset, and email verification remain planned in the Shopify-style expansion. Web apps use client-side routing with server fallback; server-rendered product SEO is not included. Product images use external HTTPS URLs; file-upload UI remains planned.
 
 Dependency notes: React 19.2.3, Reanimated 4.5.1, and Worklets 0.10.1 are pinned to the Expo SDK 57 compatibility matrix. An override upgrades Xcode tooling’s UUID library to 11.1.1. The remaining npm audit findings concern Expo Router’s older `query-string` / `decode-uri-component` chain; an incompatible ESM major override is deliberately avoided. Review upstream fixes before a public launch. Static production web containers do not ship Node tooling or `node_modules`.
 
@@ -155,6 +157,12 @@ claims with bounded retries. Start the `worker` service alongside the API.
 PostgreSQL database caching is durable storage, not a separate RAM-only engine.
 
 ## Conversational API (FunctionGemma 270M)
+
+Laravel AI SDK v1 now mediates model requests. The admin and both storefronts have
+an `/assistant` screen. See [SDK and payments implementation](docs/ai-sdk-and-payments.md)
+for Stripe/custom-method configuration and the explicitly remaining scope.
+The current [capability inventory](docs/commerce-capability-inventory.md) tracks the
+Shopify-style expansion; the entire clone is not yet complete.
 
 `POST /api/v1/shops/{shop}/assistant` accepts natural language or structured
 follow-up data. Like existing operations it first returns 202; use the returned
@@ -228,3 +236,84 @@ schemas rather than runtime cart extensions and measures selection only, not
 argument correctness. The model has not been domain fine-tuned; broader language
 reliability remains unfinished. Use discovery and structured action/data when a
 proposal is wrong. Do not treat passing code coverage as language accuracy.
+
+
+### Configurable access and API audit
+
+`backend/config/commerce.php` is the permission source for all 17 current business
+actions. Each action declares `enabled` and explicit `guest`, `customer`, `admin`
+roles. A signed-in ordinary user is a `customer`; there is no separate `user` role.
+Rules restrict both REST ingress and worker execution. They cannot override admin,
+tenant, ownership, account-state or version checks. Disabled/missing rules deny
+access. Assistant discovery (`{"discover":true}`) returns the caller's role and
+only available tools, including effective `allowed_roles` and input schemas.
+
+To run with the config file mounted instead of rebuilding for permission changes:
+
+```sh
+docker compose -f compose.yaml -f compose.assistant.yaml -f compose.permissions.yaml up -d --build
+```
+
+After editing the config, clear any cached Laravel configuration in the backend
+and worker (`php artisan config:clear`), then restart both services. Keep the same
+configuration on both. Restricting an action also invalidates pending execution
+and confirmation; discovery is guidance, never the authorization boundary.
+Normal limits are 300 commerce requests/minute and 30 assistant turns/minute.
+The isolated test override increases limits for the larger HTTP audit only.
+
+`python -m pytest tests/api -q` exercises every business tool through the assistant
+for both shops as well as the original REST suite. `tests/live/test_assistant_language.py`
+is an opt-in real-FunctionGemma evaluation requiring the isolated API on 8088 and
+a reachable inference service. It records routing accuracy separately from
+successful structured tool dispatch. All recorded wire exchanges redact secrets.
+
+## DuitNow QR through Billplz
+
+The integration uses Billplz hosted bills, not direct PayNet connectivity. Public
+contract: https://www.billplz.com/api/ and https://support.billplz.com/api.
+Configure a verified merchant account with DuitNow QR enabled on each collection.
+The requested `BP-RHBQR` bank code can fall back to the provider's payment chooser;
+configure the collection's allowed methods if QR-only checkout is required.
+
+For an explicitly simulated demo only, set `PAYMENT_DRIVER=simulated`.
+Set `PAYMENT_DRIVER=billplz`, `BILLPLZ_SANDBOX=true`, the API key, X Signature key,
+and each shop's collection ID in the root `.env` (names in `.env.example`).
+Set `PAYMENT_WEBHOOK_BASE_URL=https://api.your-domain.example` and each shop's
+HTTPS return URL to its `/orders` page. Both local Compose and the future release Compose forward these to backend and worker.
+Rebuild images, run migrations, and restart both services when enabling payments.
+Sandbox and production accounts/keys are separate; never switch credentials while
+unsettled bills remain without reconciling them first.
+
+The worker creates a bill after checkout commits. Customer and admin order APIs
+include `payment`, `payment_label`, and `can_fulfill`; the existing AI order tools
+return those same authorized values. Storefront orders offer the provider payment
+link. The callback URL is generated as
+`{PAYMENT_WEBHOOK_BASE_URL}/api/v1/payments/billplz/{payment-public-uuid}`.
+The public callback accepts signed form/JSON data, stores an encrypted deduplicated
+inbox record, and responds 200. The worker retrieves the bill from Billplz and checks
+its collection, payment reference, amount, and paid amount before settlement.
+The browser return URL never marks an order paid.
+
+Stock is reserved at checkout. Only verified provider deletion releases it, once;
+failed attempts keep the bill payable. Known unpaid bills are reconciled every five
+minutes. Transport failures stop after 12 attempts (callback retries after 5).
+Ambiguous bill creation becomes `review` with stock held: there is no blind second
+POST. A signed callback can recover its bill by the payment reference. Merchant
+review is required when creation is uncertain and no callback arrives. For known pending bills, provider reconciliation observes a later deletion.
+For a `review` record, a new signed callback can trigger recovery; otherwise
+operator-assisted investigation is required before changing any stored state. Refunds and an in-app manual recovery console are not implemented.
+
+Deployment/release remain on hold. Local tests use HTTP fakes, not real money or
+an acquirer sandbox account. Before live activation, test actual QR success/failure,
+duplicate/delayed callbacks, public TLS routing, and return URLs with merchant keys.
+
+
+Historical payment verification (2026-09-26; superseded by the expansion evidence): 65 PHP tests / 567 assertions passed on SQLite
+and PostgreSQL, with combined 712/712 executable application lines covered. The
+109 frontend unit tests passed the 100% statement/branch/function/line gate; strict
+TypeScript and ESLint passed. All 17 Lean theorem checks passed. The 13 real HTTP
+API tests recorded 649 sanitized exchanges and successful coverage of all 20
+contract operations, including the payment flow through the AI interface.
+Evidence is under `test-results/php/duitnow-coverage.json`,
+`test-results/api/coverage.json`, and `test-results/api/exchanges.json` (ignored).
+These results use an isolated provider fixture, not Billplz merchant sandbox/UAT.

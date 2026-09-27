@@ -20,7 +20,7 @@ def test_registry_matches_current_contract_and_rejects_unregistered_api(tmp_path
     module.generate()
     actual = (root / "backend/resources/assistant-tools.json").read_text()
     assert (tmp_path / "backend/resources/assistant-tools.json").read_text() == actual
-    assert len(json.loads(actual)) == 19
+    assert len(json.loads(actual)) == 23
     import pytest
 
     document = json.loads((tmp_path / "docs/openapi.json").read_text())

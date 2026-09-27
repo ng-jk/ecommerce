@@ -43,6 +43,7 @@ def integration() -> None:
     run([*COMPOSE, "up", "-d", "--no-build", "--wait", "db", "backend"], timeout=180)
     run([*COMPOSE, "exec", "-T", "backend", "php", "artisan", "migrate", "--force"])
     run([*COMPOSE, "exec", "-T", "backend", "php", "artisan", "db:seed", "--force"])
+    run([*COMPOSE, "exec", "-T", "backend", "php", "artisan", "payments:test-seed"])
     run([*COMPOSE, "up", "-d", "--no-build", "--wait"], timeout=180)
     run([sys.executable, "-m", "pytest", "tests/api", "-q"])
 
@@ -75,7 +76,17 @@ def backend_test(*arguments: str) -> None:
 
 
 def test() -> None:
-    run([sys.executable, "-m", "pytest", "tests/pipeline", "tests/inference", "-q"])
+    run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "tests/pipeline",
+            "tests/inference",
+            "tests/deployment",
+            "-q",
+        ]
+    )
     run(npm("exec", "--", "vitest", "run"))
     run(
         [
@@ -95,6 +106,21 @@ def test() -> None:
 
 
 def coverage() -> None:
+    run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "tests/deployment",
+            "-q",
+            "--cov=tools.manual_release",
+            "--cov=tools.release_probe",
+            "--cov=tools.release_guard",
+            "--cov-branch",
+            "--cov-fail-under=100",
+            "--cov-report=json:test-results/manual-release-coverage.json",
+        ]
+    )
     run(
         npm(
             "exec",
@@ -218,6 +244,10 @@ def lint() -> None:
             "ruff",
             "check",
             "tools/pipeline",
+            "tools/manual_release.py",
+            "tools/release_probe.py",
+            "tools/release_guard.py",
+            "tests/deployment",
             "tests/pipeline",
             "tests/api",
             "tests/inference",

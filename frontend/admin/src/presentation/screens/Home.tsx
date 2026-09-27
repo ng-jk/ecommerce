@@ -64,6 +64,7 @@ export default function Home() {
           void changeShop();
         }}
       />
+      <Button title="Assistant" onPress={() => router.push("/assistant")} />
     </AdminPage>
   );
 }

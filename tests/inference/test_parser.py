@@ -53,3 +53,10 @@ def test_model_response_stop_token_is_accepted_but_response_content_is_not():
     assert parse_call(output, {"catalog"}) == {"name": "catalog", "arguments": {}}
     with pytest.raises(ValueError):
         parse_call(output + "invented result", {"catalog"})
+
+
+def test_object_fields_allow_spaces_after_commas():
+    assert parse_call(
+        "<start_function_call>call:update{stock:2, active:true}<end_function_call>",
+        {"update"},
+    ) == {"name": "update", "arguments": {"stock": 2, "active": True}}

@@ -36,6 +36,7 @@ class CallParser:
             result = {}
             self.whitespace()
             while not self.source.startswith("}", self.index):
+                self.whitespace()
                 match = re.match(r"[A-Za-z_][A-Za-z_0-9]*", self.source[self.index :])
                 if not match:
                     raise ValueError("Invalid field name")

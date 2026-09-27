@@ -1,0 +1,34 @@
+{
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "../openapi.json#/components/schemas/CartLine"
+      }
+    },
+    "payment_methods": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Enabled payment method identifiers mapped to customer-facing labels. Empty object means no configured method is currently available."
+    },
+    "default_payment_method": {
+      "type": "string",
+      "nullable": true,
+      "description": "Configured default when available in payment_methods; null when no configured default is usable."
+    }
+  },
+  "required": [
+    "version",
+    "items",
+    "payment_methods",
+    "default_payment_method"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,127 @@
+# Standalone EC2 deployment. Use a distinct --project-name and --env-file for
+# production/testing. Supabase is managed independently; no database is published.
+x-environment: &environment
+  APP_NAME: CommercePortfolio
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_KEY: ${APP_KEY:?Set an environment-specific APP_KEY}
+  APP_URL: https://${API_HOST:?Set API_HOST}
+  DB_CONNECTION: pgsql
+  DB_HOST: ${DB_HOST:-db}
+  DB_PORT: ${DB_PORT:-5432}
+  DB_DATABASE: ${DB_DATABASE:?Set the isolated commerce database}
+  DB_USERNAME: ${DB_USERNAME:?Set the restricted commerce database role}
+  DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD}
+  DB_SSLMODE: ${DB_SSLMODE:-prefer}
+  SESSION_DRIVER: database
+  SESSION_SECURE_COOKIE: "true"
+  SESSION_COOKIE: ${SESSION_COOKIE:?Set an environment-specific session cookie name}
+  SANCTUM_STATEFUL_DOMAINS: ${FASHION_HOST:?Set FASHION_HOST},${ELECTRONICS_HOST:?Set ELECTRONICS_HOST},${ADMIN_HOST:?Set ADMIN_HOST}
+  CACHE_STORE: database
+  LOG_CHANNEL: stderr
+  FUNCTIONGEMMA_URL: ${FUNCTIONGEMMA_URL:-http://functiongemma:8000}
+  PAYMENT_DRIVER: ${PAYMENT_DRIVER:-stripe}
+  STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+  STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+  STRIPE_RETURN_URL: ${STRIPE_RETURN_URL:-}
+  STRIPE_SANDBOX: ${STRIPE_SANDBOX:-true}
+  BILLPLZ_SANDBOX: ${BILLPLZ_SANDBOX:-true}
+  BILLPLZ_API_KEY: ${BILLPLZ_API_KEY:-}
+  BILLPLZ_SIGNATURE_KEY: ${BILLPLZ_SIGNATURE_KEY:-}
+  BILLPLZ_FASHION_COLLECTION_ID: ${BILLPLZ_FASHION_COLLECTION_ID:-}
+  BILLPLZ_ELECTRONICS_COLLECTION_ID: ${BILLPLZ_ELECTRONICS_COLLECTION_ID:-}
+  PAYMENT_WEBHOOK_BASE_URL: ${PAYMENT_WEBHOOK_BASE_URL:-https://${API_HOST}}
+  BILLPLZ_FASHION_RETURN_URL: ${BILLPLZ_FASHION_RETURN_URL:-}
+  BILLPLZ_ELECTRONICS_RETURN_URL: ${BILLPLZ_ELECTRONICS_RETURN_URL:-}
+x-backend-build: &backend-build
+  context: .
+  dockerfile: docker/backend/Dockerfile
+  target: production
+services:
+  backend:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:-local}
+    build: *backend-build
+    environment: *environment
+    volumes: [uploads:/var/www/html/storage/app/public]
+    networks: [application, supabase]
+    restart: unless-stopped
+  worker:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:-local}
+    build: *backend-build
+    environment: *environment
+    command: [php, artisan, commerce:work]
+    volumes: [uploads:/var/www/html/storage/app/public]
+    networks: [application, supabase]
+    stop_grace_period: 40s
+    restart: unless-stopped
+  fashion:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/fashion:${RELEASE_ID:-local}
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+      args: {APP: fashion}
+    networks: [application]
+    restart: unless-stopped
+  electronics:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/electronics:${RELEASE_ID:-local}
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+      args: {APP: electronics}
+    networks: [application]
+    restart: unless-stopped
+  admin:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/admin:${RELEASE_ID:-local}
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+      args: {APP: admin}
+    networks: [application]
+    restart: unless-stopped
+  gateway:
+    image: caddy:2-alpine
+    ports: ["127.0.0.1:${GATEWAY_PORT:?Set the environment-specific loopback gateway port}:8080"]
+    environment:
+      FASHION_HOST: ${FASHION_HOST}
+      ELECTRONICS_HOST: ${ELECTRONICS_HOST}
+      ADMIN_HOST: ${ADMIN_HOST}
+      API_HOST: ${API_HOST}
+    volumes:
+      - ./docker/Caddyfile.tunnel:/etc/caddy/Caddyfile:ro
+      - ./backend/public:/var/www/html/public:ro
+      - uploads:/srv/uploads:ro
+    networks: [application]
+    depends_on: [backend, fashion, electronics, admin]
+    healthcheck:
+      test: [CMD-SHELL, "wget -q -O /dev/null --header='Host: '$$API_HOST http://127.0.0.1:8080/up"]
+      interval: 20s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    restart: unless-stopped
+  functiongemma:
+    profiles: [assistant]
+    image: ${APP_IMAGE_PREFIX:-shop3i}/functiongemma:${RELEASE_ID:-local}
+    build:
+      context: .
+      dockerfile: docker/functiongemma/Dockerfile
+    environment:
+      HF_TOKEN: ${HF_TOKEN:-}
+      FUNCTIONGEMMA_MODEL: ${FUNCTIONGEMMA_MODEL:-google/functiongemma-270m-it}
+    volumes: [functiongemma_models:/models]
+    networks: [application]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      start_period: 120s
+      interval: 30s
+      timeout: 5s
+      retries: 3
+networks:
+  application:
+  supabase:
+    external: true
+    name: ${SUPABASE_NETWORK:-shop3i-supabase_default}
+volumes:
+  uploads:
+  functiongemma_models:

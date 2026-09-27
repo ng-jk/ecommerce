@@ -1,0 +1,52 @@
+{
+  "production": {
+    "host": "server.example.com",
+    "user": "deploy",
+    "port": 22,
+    "directory": "/srv/shop3i-production",
+    "env_file": "/srv/shop3i-secrets/production.env",
+    "project": "shop3i-production",
+    "identity_file": "/path/to/private-ssh-key",
+    "known_hosts": "/path/to/pinned-known-hosts",
+    "readiness_urls": [
+      "https://api.production.example.com/up",
+      "https://fashion.production.example.com/",
+      "https://electronics.production.example.com/",
+      "https://admin.production.example.com/"
+    ],
+    "backward_compatible_migrations": false,
+    "profiles": [
+      "assistant"
+    ],
+    "sudo_docker": true,
+    "worker_readiness_url": "https://api.production.example.com/api/v1/shops/fashion/products",
+    "database": "commerce_production",
+    "database_container": "supabase-db",
+    "database_user": "commerce_production"
+  },
+  "testing": {
+    "host": "server.example.com",
+    "user": "deploy",
+    "port": 22,
+    "directory": "/srv/shop3i-testing",
+    "env_file": "/srv/shop3i-secrets/testing.env",
+    "project": "shop3i-testing",
+    "identity_file": "/path/to/private-ssh-key",
+    "known_hosts": "/path/to/pinned-known-hosts",
+    "readiness_urls": [
+      "https://api.testing.example.com/up",
+      "https://fashion.testing.example.com/",
+      "https://electronics.testing.example.com/",
+      "https://admin.testing.example.com/"
+    ],
+    "backward_compatible_migrations": false,
+    "profiles": [
+      "assistant"
+    ],
+    "sudo_docker": true,
+    "worker_readiness_url": "https://api.testing.example.com/api/v1/shops/fashion/products",
+    "database": "commerce_testing",
+    "database_container": "supabase-db",
+    "database_user": "commerce_testing"
+  }
+}

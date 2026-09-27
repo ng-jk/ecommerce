@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\AccessPolicy;
 use App\Models\Operation;
 use App\Models\Shop;
 use App\Models\User;
@@ -27,6 +28,9 @@ class OperationController extends Controller
         }
         if (str_starts_with($action, 'admin.')) {
             abort_unless($user?->role === User::Admin, 403);
+        }
+        if ($action !== 'assistant') {
+            app(AccessPolicy::class)->enforce($action, $user);
         }
         $key = $request->header('Idempotency-Key');
         $receipt = $request->header('X-Operation-Token');
@@ -58,13 +62,15 @@ class OperationController extends Controller
 
     public function show(Request $request, Shop $shop, string $id): JsonResponse
     {
+        // Resolve identity first: logout commits token revocation and its receipt atomically.
+        $viewer = $request->user('sanctum');
         $op = Operation::where('shop_id', $shop->id)->where('public_id', $id)->firstOrFail();
         abort_unless(hash_equals($op->receipt_hash, hash('sha256', (string) $request->header('X-Operation-Token'))), 404);
         $effectiveAction = $op->action === 'assistant' ? ($op->result['executed_action'] ?? null) : $op->action;
         $effectiveResult = $op->action === 'assistant' ? ($op->result['api_result'] ?? []) : $op->result;
         if ($op->user_id && ! ($effectiveAction === 'auth.logout' && $op->status === Operation::Succeeded)) {
-            abort_unless($request->user('sanctum')?->id === $op->user_id && $request->user('sanctum')?->shop_id === $shop->id, 404);
-            abort_unless($request->user('sanctum')->account_status === 'active', 403);
+            abort_unless($viewer?->id === $op->user_id && $viewer?->shop_id === $shop->id, 404);
+            abort_unless($viewer->account_status === 'active', 403);
         }
 
         if ($op->status === Operation::Succeeded && in_array($effectiveAction, ['auth.login', 'auth.register'], true)) {

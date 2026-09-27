@@ -1,0 +1,109 @@
+{
+  "post": {
+    "operationId": "customPaymentConfirm",
+    "summary": "Machine-only custom payment confirmation; never callable by an assistant",
+    "x-machine-only": true,
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "parameters": [
+      {
+        "name": "integration",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "maxLength": 80
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "required": [
+              "invoice_id"
+            ],
+            "properties": {
+              "invoice_id": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    "responses": {
+      "202": {
+        "description": "Confirmation event durably queued; an idempotent replay may already be processed.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "received",
+                "event_id",
+                "status"
+              ],
+              "properties": {
+                "received": {
+                  "type": "boolean",
+                  "enum": [
+                    true
+                  ]
+                },
+                "event_id": {
+                  "type": "integer"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "queued",
+                    "processed"
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Malformed confirmation."
+      },
+      "401": {
+        "description": "Missing, invalid, or revoked integration credential."
+      },
+      "403": {
+        "description": "Integration is not authorized for this invoice or payment method."
+      },
+      "404": {
+        "description": "Integration or invoice not found."
+      },
+      "409": {
+        "description": "Idempotency key was already used with a different payload or invoice state conflicts."
+      },
+      "422": {
+        "description": "Invalid invoice identifier."
+      },
+      "429": {
+        "description": "Rate limited."
+      }
+    }
+  }
+}

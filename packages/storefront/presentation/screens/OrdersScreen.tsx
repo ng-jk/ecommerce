@@ -1,13 +1,14 @@
 import { money } from "@portfolio/api-client";
+import { Link } from "expo-router";
 import { View } from "react-native";
 import {
-Button,
-Copy,
-Heading,
-Loading,
-Page,
-Panel,
-SignInRequired,
+  Button,
+  Copy,
+  Heading,
+  Loading,
+  Page,
+  Panel,
+  SignInRequired,
 } from "../components/ui";
 import { useOrders } from "../view-models/useOrders";
 export function OrdersScreen() {
@@ -37,9 +38,15 @@ export function OrdersScreen() {
                 </Copy>
                 <Copy muted>
                   {new Date(order.created_at).toLocaleDateString()} ·{" "}
-                  {options[order.status] ?? "Unavailable status"} · SIMULATED
-                  PAYMENT
+                  {options[order.status] ?? "Unavailable status"} ·{" "}
+                  {order.payment_label ?? "Payment details unavailable"}
                 </Copy>
+                {order.payment?.checkout_url && (
+                  <Link href={order.payment.checkout_url}>Pay securely</Link>
+                )}
+                {order.payment?.invoice_id && (
+                  <Copy>Payment reference: {order.payment.invoice_id}</Copy>
+                )}
                 {order.items.map((item) => (
                   <Copy key={item.product_id}>
                     {item.quantity} × {item.name} —{" "}
@@ -54,6 +61,7 @@ export function OrdersScreen() {
               </Panel>
             ))
           )}
+          <Button title="Check payment status" secondary onPress={load} />
           {last > 1 && (
             <View style={{ flexDirection: "row", gap: 12 }}>
               <Button

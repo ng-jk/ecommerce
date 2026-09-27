@@ -2,8 +2,9 @@
 
 namespace App\Domain\Assistant;
 
-use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class FunctionGemma
 {
@@ -21,13 +22,19 @@ class FunctionGemma
             return ['type' => 'function', 'function' => ['name' => $tool['name'], 'description' => $tool['description'], 'parameters' => $parameters]];
         }, $tools);
         unset($collected['password'], $collected['password_confirmation']);
-        $response = Http::connectTimeout(3)->timeout(config('assistant.timeout'))->post(config('assistant.url').'/infer', ['message' => $message, 'tools' => $definitions, 'collected' => $collected]);
-        if ($response->status() === 422) {
-            throw ValidationException::withMessages(['message' => 'Please clarify the action and its parameters, or select an available action.']);
+        try {
+            $response = (new ProposalAgent($definitions, $collected))->prompt($message, provider: 'functiongemma', timeout: config('assistant.timeout'));
+        } catch (Throwable $error) {
+            if ($error instanceof RequestException && $error->response->status() === 422) {
+                throw ValidationException::withMessages(['message' => 'Please clarify the action and its parameters, or select an available action.']);
+            }
+            abort(503, 'Language service is unavailable.');
         }
-        abort_unless($response->successful(), 503, 'Language service is unavailable.');
-        $proposal = $response->json();
-        abort_unless(is_array($proposal) && isset($proposal['name'], $proposal['arguments']) && is_string($proposal['name']) && is_array($proposal['arguments']), 503, 'Invalid language service response.');
+        abort_unless($response->toolCalls->count() === 1, 503, 'Invalid language service response.');
+        $raw = $response->raw?->json('choices.0.message.tool_calls.0.function.arguments');
+        abort_unless(is_string($raw) && is_object(json_decode($raw)), 503, 'Invalid language service arguments.');
+        $call = $response->toolCalls->first();
+        $proposal = ['name' => $call->name, 'arguments' => $call->arguments];
         if (isset($proposal['arguments']['password']) || isset($proposal['arguments']['password_confirmation'])) {
             throw ValidationException::withMessages(['data.password' => 'Supply credentials through structured data.']);
         }

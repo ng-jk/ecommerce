@@ -1,15 +1,15 @@
 import { router } from "expo-router";
 import React from "react";
 import {
-ActivityIndicator,
-Platform,
-Pressable,
-ScrollView,
-Text,
-TextInput,
-View,
-useWindowDimensions,
-type TextInputProps,
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+  useWindowDimensions,
+  type TextInputProps,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useStore } from "../view-models/context";
@@ -165,10 +165,14 @@ export function Page({
   children,
   scrollRef,
   onContentLayout,
+  navigationPath = "/menu",
+  navigationTitle = "Menu",
 }: {
   children: React.ReactNode;
   scrollRef?: React.RefObject<ScrollView | null>;
   onContentLayout?: (y: number) => void;
+  navigationPath?: "/menu" | "/";
+  navigationTitle?: string;
 }) {
   const { theme, message, shop } = useStore();
   const { width } = useWindowDimensions();
@@ -216,7 +220,10 @@ export function Page({
             <Text style={{ fontSize: 30, color: theme.ink }}>
               {theme.brand}
             </Text>
-            <Button title="Menu" onPress={() => router.push("/menu")} />
+            <Button
+              title={navigationTitle}
+              onPress={() => router.push(navigationPath)}
+            />
           </View>
         </View>
         <View
@@ -255,7 +262,7 @@ export function Page({
         >
           <Copy bold>{theme.brand} / A little more intentional.</Copy>
           <Copy size={12} muted>
-            Portfolio demonstration. Simulated payments. Prices in MYR.
+            Prices in MYR. Payment details appear with your order.
           </Copy>
           <Copy size={12} muted>
             Designed & built by Ng Jun Kai · Laravel + Expo

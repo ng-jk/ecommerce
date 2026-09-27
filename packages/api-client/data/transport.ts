@@ -1,11 +1,11 @@
 import { z } from "zod";
 import {
-ApiError,
-type FailureKind,
-type ShopSlug,
-type StoragePort,
+  ApiError,
+  type FailureKind,
+  type ShopSlug,
+  type StoragePort,
 } from "../domain/types";
-import { accepted,errorBody,operation } from "./schemas";
+import { accepted, errorBody, operation } from "./schemas";
 export type TransportOptions = {
   shop: ShopSlug;
   origin: string;
@@ -15,7 +15,17 @@ export type TransportOptions = {
   storage: StoragePort;
   fetch?: typeof fetch;
   sleep?: (ms: number) => Promise<void>;
+  digest?: (value: string) => Promise<string>;
 };
+export async function digestIdentity(value: string): Promise<string> {
+  const bytes = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(value),
+  );
+  return Array.from(new Uint8Array(bytes), (byte) =>
+    byte.toString(16).padStart(2, "0"),
+  ).join("");
+}
 export function classify(status: number): FailureKind {
   if (status === 401) return "unauthenticated";
   if (status === 403) return "forbidden";
@@ -182,18 +192,26 @@ export function createTransport(options: TransportOptions) {
     schema: z.ZodType<T, z.ZodTypeDef, unknown>,
     method = "GET",
     body?: unknown,
+    operationReceipt?: string,
+    pendingStorage = options.storage,
   ): Promise<T> {
     const auth = path === "auth/me";
-    const fingerprint = JSON.stringify([options.shop, path, method, body]);
-    const storageKey = `pending.${fingerprint}`;
+    const fingerprint = JSON.stringify([
+      options.shop,
+      path,
+      method,
+      body,
+      ...(operationReceipt ? [operationReceipt] : []),
+    ]);
+    let storageKey = "";
     let key = options.randomUUID();
-    let receipt = (options.randomUUID() + options.randomUUID()).replaceAll(
-      "-",
-      "",
-    );
+    let receipt =
+      operationReceipt ??
+      (options.randomUUID() + options.randomUUID()).replaceAll("-", "");
     if (!path.startsWith("auth/") && method !== "GET") {
       try {
-        const previous = await options.storage.get(storageKey);
+        storageKey = `pending.${await (options.digest ?? digestIdentity)(fingerprint)}`;
+        const previous = await pendingStorage.get(storageKey);
         if (previous) {
           const record = z
             .object({ key: z.string().uuid(), receipt: z.string().length(64) })
@@ -201,7 +219,7 @@ export function createTransport(options: TransportOptions) {
           key = record.key;
           receipt = record.receipt;
         } else
-          await options.storage.set(
+          await pendingStorage.set(
             storageKey,
             JSON.stringify({ key, receipt }),
           );
@@ -264,12 +282,13 @@ export function createTransport(options: TransportOptions) {
           result.data.status === "processing"
         )
           continue;
-        await options.storage.remove(storageKey).catch(() => undefined);
-        if (result.data.status !== "succeeded")
+        if (result.data.status !== "succeeded") {
+          await pendingStorage.remove(storageKey).catch(() => undefined);
           throw responseError(
             result.data.http_status ?? 500,
             result.data.result,
           );
+        }
         response = {
           status: result.data.http_status ?? 200,
           body: result.data.result,
@@ -291,6 +310,7 @@ export function createTransport(options: TransportOptions) {
         response.status,
         "invalid_body",
       );
+    await pendingStorage.remove(storageKey).catch(() => undefined);
     return parsed.data;
   };
 }

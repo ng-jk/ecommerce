@@ -1,4 +1,4 @@
-import type { Address,StoragePort } from "@portfolio/api-client/domain/types";
+import type { Address, StoragePort } from "@portfolio/api-client/domain/types";
 import type { CommerceClient } from "./ports";
 export async function checkout(
   api: Pick<CommerceClient, "checkout">,
@@ -6,6 +6,7 @@ export async function checkout(
   uuid: () => string,
   userId: number,
   address: Address,
+  paymentMethod?: string,
 ): Promise<void> {
   const keyName = `checkout.${userId}`;
   let key = await storage.get(keyName);
@@ -13,6 +14,7 @@ export async function checkout(
     key = uuid();
     await storage.set(keyName, key);
   }
-  await api.checkout(key, address);
+  if (paymentMethod === undefined) await api.checkout(key, address);
+  else await api.checkout(key, address, paymentMethod);
   await storage.remove(keyName);
 }

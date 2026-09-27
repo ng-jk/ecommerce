@@ -1,5 +1,7 @@
 # Implementation plan: verified asynchronous commerce
 
+Next expansion: [Shopify-style scope, payment design, delegation and completion gates](shopify-expansion-plan.md).
+
 Current implementation evidence and remaining work: [refactor status](refactor-status.md).
 The baseline below describes the starting point, not the current code.
 
@@ -17,14 +19,14 @@ the API adaptation of the Inertia error contract must remain explicit decisions.
 - Laravel API and PostgreSQL exist, with transactional synchronous checkout.
 - Three Expo apps enable `strict: true`; shared storefront code needs separation
   into domain, data, and presentation layers.
-- Existing GitHub Actions runs PHP tests, TypeScript, lint, contract drift, and web
-  exports. It does not implement Python orchestration, deployment, formal proofs,
-  full logic coverage, or the required architectural gates.
+- A legacy GitHub Actions workflow existed for verification and deployment wiring.
+  It is removed under the manual-only release policy. The Python pipeline remains
+  operator-invoked; a push or pull request does not start CI or deployment.
 - Existing API/browser/concurrency tests are useful regression coverage, not
   evidence that the new architecture or all logic meets this specification.
 - Initial size inventory found oversized `package-lock.json`,
   `backend/composer.lock`, `docs/openapi.json`, and
-  `packages/api-client/schema.d.ts`. The CI scanner must count blank lines too.
+  `packages/api-client/schema.d.ts`. The review scanner must count blank lines too.
   Binary images must not be interpreted as text.
 
 ## Phase 1 — Contracts and executable review gates
@@ -110,26 +112,34 @@ remaining model-to-implementation verification boundary.
 
 ## Phase 5 — Reproducible delivery
 
-1. Replace workflow shell orchestration with Python subcommands for review, lint,
-   test, prove, build, deploy, smoke, and rollback. YAML only wires jobs/permissions.
+1. Use Python subcommands for review, lint, test, prove, build, deploy, smoke, and
+   rollback. Operators invoke them manually; GitHub Actions does not schedule or
+   execute these commands.
 2. Build immutable images once per verified commit; store a digest-based release
    manifest and reports. Enforce serial deployment and bounded build concurrency.
-3. Provision staging and production configuration, secrets, registry access,
-   domain/TLS settings, and authenticated host access through environment settings.
+3. Provision separate testing and production configuration, secrets, registry
+   access, domain/TLS settings, and authenticated host access through environment
+   settings. Use `testing` for the isolated test host and `deployment/main` for
+   production. Keep `developement` local-only.
 4. Deploy database-compatible migrations, API/workers/scheduler, and all three web
    apps; smoke-test real operation completion and perform a rollback rehearsal.
 5. Add separately configured native build/distribution jobs and platform testing.
 
-Exit: a verified commit can deploy to staging and the configured production target,
-and a failed rollout can recover without losing accepted operations or orders.
+Exit: an explicitly verified commit can be manually deployed to the isolated test
+host and, after separate operator promotion to `deployment/main`, manually deployed
+to production. Testing never promotes automatically. A failed rollout can recover
+without losing accepted operations or orders.
 
 ## Configuration decisions needed before affected phases
 
 - Confirm PostgreSQL-backed caching as the intended “memory storage” behavior.
-- Deployment and release are on hold; first establish local availability.
+- Deployment and release remain on hold until the manual Python gates pass and the
+  separate testing/production hosts, registry access, secrets and verified SSH
+  host identities are provisioned.
 - Review the primary-control counting convention, especially repeated list rows.
-- Supply deployment host, domains, registry, protected release policy, and secret
-  references before activating deployment. Do not put secret values in these docs.
+- Do not put secret values in these docs. Domain and branch assignments are
+  recorded in [deployment.md](deployment.md); host, registry, secret references,
+  and verified SSH host identities remain deployment prerequisites.
 - Define native signing/distribution destinations before activating native release.
 
 These do not prevent work on independent contracts, tests, or architectural gates.

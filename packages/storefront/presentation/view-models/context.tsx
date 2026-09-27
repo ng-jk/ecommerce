@@ -1,17 +1,17 @@
 import {
-ApiError,
-type Address,
-type CartLine,
-type ShopSlug,
-type StoragePort,
-type User,
+  ApiError,
+  type Address,
+  type CartLine,
+  type ShopSlug,
+  type StoragePort,
+  type User,
 } from "@portfolio/api-client/domain/types";
-import React,{
-createContext,
-useCallback,
-useContext,
-useEffect,
-useState,
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
 import { checkout as checkoutUseCase } from "../../domain/checkout";
 import type { CommerceClient } from "../../domain/ports";
@@ -62,6 +62,8 @@ type Store = {
   api: CommerceClient;
   user: User | null;
   cart: CartLine[];
+  paymentMethods: Record<string, string>;
+  defaultPaymentMethod: string;
   ready: boolean;
   busy: boolean;
   message: string;
@@ -74,7 +76,8 @@ type Store = {
   ) => Promise<void>;
   logout: () => Promise<void>;
   refreshCart: () => Promise<void>;
-  checkout: (address: Address) => Promise<void>;
+  refreshSession: () => Promise<void>;
+  checkout: (address: Address, paymentMethod?: string) => Promise<void>;
   setCart: (items: { product_id: number; quantity: number }[]) => Promise<void>;
 };
 const Context = createContext<Store | null>(null);
@@ -96,10 +99,16 @@ export function StoreStateProvider({
   const [ready, setReady] = useState(false),
     [busy, setBusy] = useState(false),
     [message, setMessage] = useState("");
-  const refreshCart = useCallback(
-    async () => updateCart((await api.cart()).items),
-    [api],
+  const [paymentMethods, setPaymentMethods] = useState<Record<string, string>>(
+    {},
   );
+  const [defaultPaymentMethod, setDefaultPaymentMethod] = useState("");
+  const refreshCart = useCallback(async () => {
+    const data = await api.cart();
+    updateCart(data.items);
+    setPaymentMethods(data.payment_methods ?? {});
+    setDefaultPaymentMethod(data.default_payment_method ?? "");
+  }, [api]);
   useEffect(() => {
     let live = true;
     void (async () => {
@@ -107,7 +116,10 @@ export function StoreStateProvider({
         const data = await api.me();
         if (live) {
           setUser(data.user);
-          updateCart((await api.cart()).items);
+          const cartData = await api.cart();
+          updateCart(cartData.items);
+          setPaymentMethods(cartData.payment_methods ?? {});
+          setDefaultPaymentMethod(cartData.default_payment_method ?? "");
         }
       } catch (e) {
         if (live && !(e instanceof ApiError && e.status === 401))
@@ -157,9 +169,28 @@ export function StoreStateProvider({
     setUser(null);
     updateCart([]);
   };
-  const checkout = async (address: Address) => {
+  const refreshSession = async () => {
+    try {
+      setUser((await api.me()).user);
+      await refreshCart();
+    } catch (error) {
+      if (!(error instanceof ApiError && error.status === 401)) throw error;
+      setUser(null);
+      updateCart([]);
+      await storage.remove("token");
+      await storage.clear?.();
+    }
+  };
+  const checkout = async (address: Address, paymentMethod?: string) => {
     if (!user) throw new Error("Sign in to check out.");
-    await checkoutUseCase(api, storage, randomUUID, user.id, address);
+    await checkoutUseCase(
+      api,
+      storage,
+      randomUUID,
+      user.id,
+      address,
+      paymentMethod,
+    );
   };
   const setCart = async (items: { product_id: number; quantity: number }[]) =>
     updateCart((await api.setCart(items)).items);
@@ -171,6 +202,8 @@ export function StoreStateProvider({
         api,
         user,
         cart,
+        paymentMethods,
+        defaultPaymentMethod,
         ready,
         busy,
         message,
@@ -179,6 +212,7 @@ export function StoreStateProvider({
         authenticate,
         logout,
         refreshCart,
+        refreshSession,
         checkout,
         setCart,
       }}

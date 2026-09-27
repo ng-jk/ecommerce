@@ -466,6 +466,8 @@ export interface operationsPart1 {
                     checkout_key: string;
                     shipping_address: components["schemas"]["schema-Address"];
                     expected_version: number;
+                    /** @description Optional configured payment method identifier or custom method name. Server configuration determines availability. */
+                    payment_method?: string;
                 };
             };
         };

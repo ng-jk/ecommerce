@@ -18,7 +18,7 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, \Illuminate\Database\Eloquent\SoftDeletes, Notifiable;
 
-    protected $attributes = ['account_status' => 'active', 'version' => 0, 'auth_version' => 0];
+    protected $attributes = ['role' => self::Customer, 'account_status' => 'active', 'version' => 0, 'auth_version' => 0];
 
     public const Customer = 'customer';
 

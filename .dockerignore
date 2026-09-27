@@ -8,6 +8,8 @@ node_modules
 **/dist-native
 **/.env
 .env
+**/.env.*
+!**/.env.example
 backend/vendor
 backend/database/*.sqlite
 backend/storage/logs/*
@@ -30,3 +32,6 @@ verification-artifacts
 .pytest_cache
 .ruff_cache
 .hypothesis
+.deploy
+**/*.pem
+**/*.key

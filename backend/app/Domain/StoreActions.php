@@ -2,14 +2,17 @@
 
 namespace App\Domain;
 
+use App\Domain\Payments\PaymentProviders;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Shop;
 use App\Models\User;
 use App\Support\PublicData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -44,7 +47,8 @@ class StoreActions extends Controller
         $lines = $request->user()->cart ?? [];
         $products = Product::where('shop_id', $shop->id)->whereIn('id', array_column($lines, 'product_id'))->get()->keyBy('id');
 
-        return ['version' => $request->user()->version, 'items' => array_map(fn ($line) => [...$line, 'product' => $products->get($line['product_id'])], $lines)];
+        return ['version' => $request->user()->version, 'items' => array_map(fn ($line) => [...$line, 'product' => $products->get($line['product_id'])], $lines),
+            ...app(PaymentProviders::class)->options($shop->slug)];
     }
 
     public function updateCart(Request $request, Shop $shop): array
@@ -70,6 +74,7 @@ class StoreActions extends Controller
     {
         $data = $this->validate($request, [
             'checkout_key' => 'required|uuid',
+            'payment_method' => 'sometimes|string|max:80|regex:/^[a-z][a-z0-9_-]*$/D',
             'shipping_address' => 'required|array:name,line1,city,postcode,country',
             'shipping_address.name' => 'required|string|max:100',
             'shipping_address.line1' => 'required|string|max:200',
@@ -83,9 +88,12 @@ class StoreActions extends Controller
             $existing = Order::where('user_id', $user->id)->where('checkout_key', $data['checkout_key'])->first();
             if ($existing) {
                 abort_unless($existing->shipping_address === $data['shipping_address'], 409, 'Checkout key belongs to a different request.');
+                abort_if(isset($data['payment_method']) && $existing->payment_method !== $data['payment_method'], 409, 'Checkout key belongs to a different payment method.');
 
                 return $existing;
             }
+            $selection = app(PaymentProviders::class)->select($shop->slug, $data['payment_method'] ?? null);
+            $driver = $selection['method'];
             $cart = $user->cart ?? [];
             if (! $cart) {
                 throw ValidationException::withMessages(['cart' => 'Your cart is empty.']);
@@ -103,13 +111,20 @@ class StoreActions extends Controller
                 $product->decrement('stock', $line['quantity']);
                 $product->increment('version');
             }
-            $order = Order::create(['shop_id' => $shop->id, 'user_id' => $user->id, 'checkout_key' => $data['checkout_key'], 'items' => $items, 'shipping_address' => $data['shipping_address'], 'subtotal' => $subtotal, 'shipping' => 800, 'total' => $subtotal + 800, 'status' => 'placed', 'payment_method' => 'simulated', 'currency' => 'MYR']);
+            $order = Order::create(['shop_id' => $shop->id, 'user_id' => $user->id, 'checkout_key' => $data['checkout_key'], 'items' => $items, 'shipping_address' => $data['shipping_address'], 'subtotal' => $subtotal, 'shipping' => 800, 'total' => $subtotal + 800, 'status' => 'placed', 'payment_method' => $driver, 'currency' => 'MYR']);
+            if ($driver !== 'simulated') {
+                Payment::create(['public_id' => (string) Str::uuid(),
+                    'order_id' => $order->id, 'status' => Payment::Queued,
+                    'provider' => $selection['provider'], 'integration' => $selection['integration'],
+                    'sandbox' => $driver === 'stripe' ? config('payments.stripe.sandbox') : config('payments.sandbox'),
+                    'collection_id' => $driver === 'billplz' ? config('payments.collections.'.$shop->slug) : $driver]);
+            }
             $user->forceFill(['cart' => [], 'version' => $user->version + 1])->save();
 
             return $order;
         }, 3);
 
-        return ['order' => $order];
+        return ['order' => $order->load('payment')];
     }
 
     public function orders(Request $request, Shop $shop): array

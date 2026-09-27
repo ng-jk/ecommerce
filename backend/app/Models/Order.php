@@ -3,12 +3,38 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class Order extends Model
 {
     use SoftDeletes;
+
+    protected $with = ['payment'];
+
+    protected $appends = ['payment_label', 'can_fulfill'];
+
+    public function getPaymentLabelAttribute(): string
+    {
+        return $this->payment_method === 'simulated' ? 'Simulated payment' : ($this->payment?->label ?? 'Payment unavailable');
+    }
+
+    public function getCanFulfillAttribute(): bool
+    {
+        return $this->payment_method === 'simulated' || $this->payment?->status === Payment::Paid;
+    }
+
+    public function payment(): HasOne
+    {
+        return $this->hasOne(Payment::class);
+    }
+
+    public function shop(): BelongsTo
+    {
+        return $this->belongsTo(Shop::class);
+    }
 
     protected $attributes = ['version' => 0];
 

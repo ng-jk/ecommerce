@@ -197,6 +197,49 @@ it("browser authentication retains server session without storing a bearer token
   await hook.unmount();
 });
 
+it("refreshes assistant sessions and server payment choices without hiding authorization failures", async () => {
+  const api = apiFixture();
+  api.cart.mockResolvedValue({
+    items: [],
+    payment_methods: { card: "Card" },
+    default_payment_method: "card",
+  });
+  const hook = await mount(api);
+  expect(hook.value.paymentMethods).toEqual({ card: "Card" });
+  expect(hook.value.defaultPaymentMethod).toBe("card");
+  await act(async () => {
+    await hook.value.refreshSession();
+    await hook.value.checkout(address, "card");
+  });
+  expect(api.checkout).toHaveBeenLastCalledWith(
+    "00000000-0000-4000-8000-000000000001",
+    address,
+    "card",
+  );
+  api.cart.mockResolvedValue({
+    items: [],
+    payment_methods: {},
+    default_payment_method: null,
+  });
+  await act(async () => {
+    await hook.value.refreshCart();
+  });
+  expect(hook.value.defaultPaymentMethod).toBe("");
+  api.me.mockRejectedValueOnce(new ApiError("Denied", 403, "forbidden"));
+  await expect(hook.value.refreshSession()).rejects.toThrow("Denied");
+  await hook.storage.set("checkout.pending", "owned-checkout");
+  await hook.storage.set("token", "old-native-token");
+  api.me.mockRejectedValueOnce(new ApiError("Expired", 401, "unauthenticated"));
+  await act(async () => {
+    await hook.value.refreshSession();
+  });
+  expect(hook.value.user).toBeNull();
+  expect(hook.value.cart).toEqual([]);
+  expect(await hook.storage.get("checkout.pending")).toBeNull();
+  expect(await hook.storage.get("token")).toBeNull();
+  await hook.unmount();
+});
+
 it("requires explicit providers and reads the selected admin shop", async () => {
   const error = vi.spyOn(console, "error").mockImplementation(() => undefined);
   await expect(mountHook(useStore)).rejects.toThrow(

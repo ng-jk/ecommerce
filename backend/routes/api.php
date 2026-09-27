@@ -1,16 +1,19 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CustomPaymentController;
 use App\Http\Controllers\OperationController;
+use App\Http\Controllers\PaymentWebhookController;
+use App\Http\Controllers\StripeWebhookController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('v1/shops/{shop:slug}')->middleware('throttle:300,1,commerce-')->group(function (): void {
-    Route::post('assistant', [OperationController::class, 'submit'])->name('assistant')->middleware('throttle:10,1,assistant-');
+Route::prefix('v1/shops/{shop:slug}')->middleware('throttle:'.config('commerce.rate_limit').',1,commerce-')->group(function (): void {
+    Route::post('assistant', [OperationController::class, 'submit'])->name('assistant')->middleware('throttle:'.config('assistant.rate_limit').',1,assistant-');
     Route::get('operations/{id}', [OperationController::class, 'show']);
     Route::get('products', [OperationController::class, 'submit'])->name('catalog');
     Route::get('products/{id}', [OperationController::class, 'submit'])->name('product');
-    Route::post('auth/register', [OperationController::class, 'submit'])->name('auth.register')->middleware('throttle:10,1,auth-');
-    Route::post('auth/login', [OperationController::class, 'submit'])->name('auth.login')->middleware('throttle:10,1,auth-');
+    Route::post('auth/register', [OperationController::class, 'submit'])->name('auth.register')->middleware('throttle:'.config('commerce.auth_rate_limit').',1,auth-');
+    Route::post('auth/login', [OperationController::class, 'submit'])->name('auth.login')->middleware('throttle:'.config('commerce.auth_rate_limit').',1,auth-');
     Route::middleware(['auth:sanctum', 'shop.access'])->group(function (): void {
         Route::get('auth/me', [AuthController::class, 'me']);
         Route::post('auth/logout', [OperationController::class, 'submit'])->name('auth.logout');
@@ -18,4 +21,11 @@ Route::prefix('v1/shops/{shop:slug}')->middleware('throttle:300,1,commerce-')->g
             Route::$method($path, [OperationController::class, 'submit'])->name($action);
         }
     });
+});
+
+Route::post('v1/payments/billplz/{reference}', PaymentWebhookController::class)->whereUuid('reference')->middleware('throttle:120,1,billplz-');
+Route::post('v1/payments/stripe', StripeWebhookController::class)->middleware('throttle:120,1,stripe-');
+Route::prefix('v1/payment-integrations/{integration}')->where(['integration' => '[a-z][a-z0-9_-]{0,79}'])->middleware('throttle:120,1,custom-payment-')->group(function (): void {
+    Route::post('confirm', [CustomPaymentController::class, 'confirm']);
+    Route::get('{event}', [CustomPaymentController::class, 'show'])->whereNumber('event');
 });

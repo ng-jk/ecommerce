@@ -273,8 +273,76 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Natural-language action selection, collection and execution. Durable 202 response; poll using X-Operation-Token. Reuse the same receipt across conversation turns, new idempotency key per turn. Every write requires a separate confirm:true turn and the returned conversation_version. discover:true returns caller-authorized tools. Credentials must be supplied as data, not message. Infrastructure operations are registered but cannot be model-invoked. */
+        /** @description Natural-language action selection, collection and execution. Durable 202 response; poll using X-Operation-Token. Reuse the same receipt across conversation turns, new idempotency key per turn. Every write requires a separate confirm:true turn and the returned conversation_version. discover:true returns caller-authorized tools. Credentials must be supplied as data, not message. Infrastructure operations are registered but cannot be model-invoked. Natural-language reads also require confirmation. Discovery includes role, effective allowed_roles and natural_language_confirmation_required. Configuration in backend/config/commerce.php restricts REST and AI execution; disabling a tool invalidates pending confirmation. */
         post: operations["assistant"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payments/billplz/{reference}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Provider-only signed callback; never callable by AI or customer tools */
+        post: operations["billplzWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payments/stripe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Stripe-signed webhook; machine-only and never callable by an assistant */
+        post: operations["stripeWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payment-integrations/{integration}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Machine-only custom payment confirmation; never callable by an assistant */
+        post: operations["customPaymentConfirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/payment-integrations/{integration}/{event}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Machine-only custom payment event status; never callable by an assistant */
+        get: operations["customPaymentStatus"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;

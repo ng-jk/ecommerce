@@ -28,7 +28,7 @@ class AssistantActions
         $registry = app(ToolRegistry::class);
         $available = $registry->available($user);
         if ($input['discover'] ?? false) {
-            return ['status' => Conversation::Draft, 'message' => 'Choose an action or describe what you want to do.', 'available_actions' => array_map(fn ($tool) => $registry->describe($tool, $shop->slug), $available), 'required_input' => [['field' => 'message', 'type' => 'string']]];
+            return ['role' => $user?->role ?? 'guest', 'status' => Conversation::Draft, 'message' => 'Choose an action or describe what you want to do.', 'available_actions' => array_map(fn ($tool) => $registry->describe($tool, $shop->slug), $available), 'required_input' => [['field' => 'message', 'type' => 'string']]];
         }
         if (isset($input['conversation_id'])) {
             $conversation = Conversation::where('public_id', $input['conversation_id'])->where('shop_id', $shop->id)->lockForUpdate()->firstOrFail();

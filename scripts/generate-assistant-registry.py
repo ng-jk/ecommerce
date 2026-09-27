@@ -18,9 +18,9 @@ ACTION = {
     ),
     "checkout": (
         "checkout",
-        "Place an order from my current cart with simulated payment",
+        "Place an order from my cart using the configured payment provider; then list orders for its secure payment link",
     ),
-    "orders": ("orders", "List my orders"),
+    "orders": ("orders", "List my orders, payment status, and secure payment links"),
     "adminProducts": ("admin.products", "Administrator: list inventory products"),
     "adminProduct": (
         "admin.product",
@@ -32,7 +32,7 @@ ACTION = {
     ),
     "updateProduct": ("admin.update", "Administrator: edit a product by ID"),
     "deleteProduct": ("admin.delete", "Administrator: soft delete a product by ID"),
-    "adminOrders": ("admin.orders", "Administrator: list shop orders"),
+    "adminOrders": ("admin.orders", "Administrator: list shop orders and verified payment status"),
     "updateOrder": (
         "admin.advance",
         "Administrator: advance an order one status at a time",
@@ -41,6 +41,10 @@ ACTION = {
         "operations.show",
         "Retrieve an operation using its private receipt",
     ),
+    "billplzWebhook": ("payments.webhook", "Provider-only signed callback; cannot be invoked by the assistant"),
+    "stripeWebhook": ("payments.stripe-webhook", "Stripe-only signed raw-body callback; cannot be invoked by the assistant"),
+    "customPaymentConfirm": ("payments.custom-confirm", "Machine-only integration payment attestation; cannot be invoked by the assistant"),
+    "customPaymentStatus": ("payments.custom-status", "Machine-only integration event status; cannot be invoked by the assistant"),
     "assistant": ("assistant", "Conversational API; cannot be called recursively"),
 }
 
@@ -89,11 +93,22 @@ def generate():
                     "method": method.upper(),
                     "path": route,
                     "parameters": schema,
-                    "role": "admin"
-                    if action.startswith("admin.")
-                    else ("user" if operation.get("security") else "public"),
-                    "callable": name not in ("assistant", "operationStatus"),
-                    "confirmation": method != "get",
+                    "role": "machine"
+                    if operation.get("x-machine-only")
+                    else (
+                        "admin"
+                        if action.startswith("admin.")
+                        else ("user" if operation.get("security") else "public")
+                    ),
+                    "callable": name not in (
+                        "assistant",
+                        "operationStatus",
+                        "billplzWebhook",
+                        "stripeWebhook",
+                        "customPaymentConfirm",
+                        "customPaymentStatus",
+                    ),
+                    "confirmation": method != "get" and not operation.get("x-machine-only"),
                     "responses": operation["responses"],
                 }
             )

@@ -4,7 +4,19 @@ import { useState } from "react";
 import { subtotal as cartSubtotal } from "../../domain/cart";
 import { useStore } from "./context";
 export function useCheckout() {
-  const { user, ready, cart, checkout, busy, run, refreshCart } = useStore();
+  const {
+    user,
+    ready,
+    cart,
+    checkout,
+    busy,
+    run,
+    refreshCart,
+    paymentMethods,
+    defaultPaymentMethod,
+  } = useStore();
+  const [selectedPayment, setPaymentMethod] = useState("");
+  const paymentMethod = selectedPayment || defaultPaymentMethod;
   const [address, setAddress] = useState<Address>({
     name: "",
     line1: "",
@@ -14,10 +26,23 @@ export function useCheckout() {
   });
   const submit = () =>
     run(async () => {
-      await checkout(address);
+      if (paymentMethod) await checkout(address, paymentMethod);
+      else await checkout(address);
       await refreshCart();
       router.replace("/orders");
     });
   const subtotal = cartSubtotal(cart);
-  return { user, ready, cart, busy, address, setAddress, submit, subtotal };
+  return {
+    user,
+    ready,
+    cart,
+    busy,
+    address,
+    setAddress,
+    submit,
+    subtotal,
+    paymentMethods,
+    paymentMethod,
+    setPaymentMethod,
+  };
 }

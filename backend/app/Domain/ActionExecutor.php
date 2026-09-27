@@ -31,6 +31,12 @@ class ActionExecutor
             abort_unless($user?->role === User::Admin, 403);
         }
         abort_if(in_array($op->action, ['auth.me', 'auth.logout', 'cart.read', 'cart.update', 'checkout', 'orders'], true) && ! $user, 401);
+        if ($op->action !== 'assistant') {
+            if (! array_key_exists($op->action, config('commerce.actions', []))) {
+                throw ValidationException::withMessages(['action' => 'Unknown command.']);
+            }
+            app(AccessPolicy::class)->enforce($op->action, $user);
+        }
         $op->state_before = $this->state($user);
         $input = $op->payload['input'];
         if (in_array($op->action, ['cart.update', 'checkout', 'admin.update', 'admin.delete', 'admin.advance'], true)) {

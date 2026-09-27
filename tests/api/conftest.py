@@ -9,7 +9,7 @@ import httpx
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-REDACT = re.compile(r"password|token|cookie|authorization|receipt|email", re.IGNORECASE)
+REDACT = re.compile(r"password|token|cookie|authorization|receipt|email|signature", re.IGNORECASE)
 
 
 def sanitize(value):
@@ -72,14 +72,26 @@ def api_evidence(request):
     )
     document = json.loads((ROOT / "docs/openapi.json").read_text())
     terminal = {}
+    payment_events = {}
     for exchange in exchanges:
         result = exchange["response"]["body"]
         if isinstance(result, dict) and result.get("status") in {
             "succeeded",
             "rejected",
             "failed",
-        }:
+        } and result.get("operation_id"):
             terminal[result["operation_id"]] = result
+        event_match = re.fullmatch(
+            r"/api/v1/payment-integrations/[^/]+/(\d+)",
+            exchange["request"]["path"],
+        )
+        if (
+            event_match
+            and exchange["request"]["method"] == "GET"
+            and isinstance(result, dict)
+            and result.get("status") in {"queued", "processed", "rejected"}
+        ):
+            payment_events[int(event_match.group(1))] = result["status"]
     operations = []
     for path, reference in document["paths"].items():
         definition = json.loads((ROOT / "docs" / reference["$ref"]).read_text())
@@ -105,10 +117,22 @@ def api_evidence(request):
                         200 <= entry["response"]["status"] < 300
                         and (
                             entry["response"]["status"] != 202
-                            or terminal.get(
-                                entry["response"]["body"]["operation_id"], {}
-                            ).get("status")
-                            == "succeeded"
+                            or (
+                                isinstance(entry["response"]["body"], dict)
+                                and (
+                                    terminal.get(
+                                        entry["response"]["body"].get("operation_id"), {}
+                                    ).get("status")
+                                    == "succeeded"
+                                    if entry["response"]["body"].get("operation_id")
+                                    else (
+                                        payment_events.get(
+                                            entry["response"]["body"].get("event_id")
+                                        )
+                                        == "processed"
+                                    )
+                                )
+                            )
                         )
                         for entry in matches
                     ),

@@ -97,6 +97,9 @@ class AdminActions extends Controller
         $data = $this->validate($request, ['status' => ['required', Rule::in(array_values(Order::transitions()))]]);
         $order = DB::transaction(function () use ($shop, $id, $data) {
             $order = Order::where('shop_id', $shop->id)->lockForUpdate()->findOrFail($id);
+            if (! $order->can_fulfill) {
+                throw ValidationException::withMessages(['payment' => 'Payment must be verified before fulfillment.']);
+            }
             $next = Order::transitions();
             if (($next[$order->status] ?? null) !== $data['status']) {
                 throw ValidationException::withMessages(['status' => 'Orders must advance one stage at a time.']);

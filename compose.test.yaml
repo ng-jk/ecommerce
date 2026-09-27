@@ -16,14 +16,24 @@ services:
     environment:
       POSTGRES_DB: commerce_test
   backend:
+    volumes: &payment-test-fixtures
+      - ./tests/fixtures/payment-providers.php:/var/www/html/bootstrap/providers.php:ro
+      - ./tests/fixtures/payment-test-provider.php:/var/www/html/bootstrap/payment-test-provider.php:ro
     image: ecommerce-portfolio-backend
     environment:
+      COMMERCE_RATE_LIMIT: "3000"
+      AUTH_RATE_LIMIT: "240"
+      ASSISTANT_RATE_LIMIT: "240"
       APP_ENV: testing
       DB_DATABASE: commerce_test
       SANCTUM_STATEFUL_DOMAINS: fashion.localhost:8088,electronics.localhost:8088,admin.localhost:8088
   worker:
+    volumes: *payment-test-fixtures
     image: ecommerce-portfolio-backend
     environment:
+      COMMERCE_RATE_LIMIT: "3000"
+      AUTH_RATE_LIMIT: "240"
+      ASSISTANT_RATE_LIMIT: "240"
       APP_ENV: testing
       DB_DATABASE: commerce_test
   fashion:

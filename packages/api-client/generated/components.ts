@@ -7,6 +7,7 @@ export interface components {
         Address: components["schemas"]["schema-Address"];
         CartInput: components["schemas"]["schema-CartInput"];
         CartLine: components["schemas"]["schema-CartLine"];
+        Cart: components["schemas"]["schema-Cart"];
         OrderItem: components["schemas"]["schema-OrderItem"];
         Order: components["schemas"]["schema-Order"];
         Error: components["schemas"]["schema-Error"];
@@ -80,6 +81,16 @@ export interface components {
             quantity: number;
             product: components["schemas"]["schema-Product"];
         };
+        "schema-Cart": {
+            version: number;
+            items: components["schemas"]["schema-CartLine"][];
+            /** @description Enabled payment method identifiers mapped to customer-facing labels. Empty object means no configured method is currently available. */
+            payment_methods: {
+                [key: string]: string;
+            };
+            /** @description Configured default when available in payment_methods; null when no configured default is usable. */
+            default_payment_method: string | null;
+        };
         "schema-OrderItem": {
             product_id: number;
             name: string;
@@ -89,13 +100,10 @@ export interface components {
         "schema-Order": {
             id: number;
             shop_id: number;
-            user_id: number;
-            /** Format: uuid */
-            checkout_key: string;
             /** @enum {string} */
             status: "placed" | "processing" | "shipped" | "completed";
-            /** @enum {string} */
-            payment_method: "simulated";
+            /** @description Configured provider identifier such as stripe, billplz, simulated, or a custom method name. */
+            payment_method: string;
             currency: string;
             items: components["schemas"]["schema-OrderItem"][];
             shipping_address: components["schemas"]["schema-Address"];
@@ -104,6 +112,25 @@ export interface components {
             total: number;
             created_at: string;
             version: number;
+            payment_label?: string;
+            can_fulfill?: boolean;
+            payment?: {
+                /** Format: uuid */
+                public_id: string;
+                /** @enum {string} */
+                status: "queued" | "creating" | "pending" | "review" | "paid" | "cancelled";
+                label: string;
+                /** Format: uuid */
+                invoice_id?: string;
+                /** @enum {string} */
+                provider?: "billplz" | "stripe" | "custom";
+                /**
+                 * Format: uri
+                 * @description Billplz hosted payment URL or Stripe Checkout URL at https://checkout.stripe.com/c/pay/.
+                 */
+                checkout_url: string | null;
+                paid_at: string | null;
+            } | null;
         };
         "schema-ProductPage": {
             data: components["schemas"]["schema-Product"][];

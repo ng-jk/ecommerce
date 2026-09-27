@@ -25,10 +25,12 @@ The acceptance requirements remain in `engineering-spec.md` and `crud-rules.md`.
   be wired into navigation before adding any future temp route.
 - Strict TypeScript, unchecked-index and exact-optional checks, type-aware async
   lint rules, source-size checks, and generated API declaration splitting are active.
-- Python orchestrates review/lint/test/prove/build/integration/coverage/deploy.
-  Browser and mutation stages are optional. GitHub Actions calls these gates; deployment requires complete
-  evidence for the clean commit, configured registry/SSH credentials, and the
-  protected production environment. No remote deployment has been performed.
+- Python orchestrates review/lint/test/prove/build/integration/coverage/deploy
+  when an operator invokes it manually. Browser and mutation stages are optional.
+  The GitHub Actions workflow has been removed; pushes and pull requests do not
+  run these gates. Deployment requires evidence for the clean commit, configured
+  registry/SSH credentials, and the separately provisioned target host. No remote
+  deployment has been performed.
 - Eleven Lean theorems compile with audited standard axioms and no proof holes.
   They cover the abstract stock, authorization, replay, money, navigation, and
   order-transition models. They do not prove the PHP or TypeScript implementation.
@@ -102,7 +104,7 @@ backend/worker were rebuilt, pending demo migrations applied, and the normal
 Docker stack started on port 8080. Both storefronts load catalogs and the admin
 demo account signs in. Screenshots are in `test-results/screenshots/`.
 The isolated integration stack remains on port 8088. Remote deployment and release
-are on hold; the CI deployment job is explicitly disabled.
+are on hold; releases require manual Python pipeline invocation.
 
 
 ## FunctionGemma integration, 2026-09-23
@@ -126,3 +128,12 @@ and does not measure argument accuracy. No fine-tuning has been performed. This 
 a working API integration, not evidence of reliable arbitrary-language routing.
 Domain training and a larger held-out evaluation are still needed before release.
 Deployment/release remain on hold. No chat UI was added by this API change.
+
+
+## Assistant parity audit, 2026-09-26
+
+See [the function/permission table and recorded evidence](assistant-access-audit.md).
+All 17 commerce tools passed assistant dispatch tests in both shops. Configurable
+permissions, cart schema bounds, model parsing whitespace and logout receipt
+ordering were completed. Free-form FunctionGemma routing remains 11/17 on the fixed
+API benchmark; no claim of perfect language interpretation or a chat UI is made.

@@ -1,14 +1,15 @@
 import { z } from "zod";
 import type {
-Address,
-CartInput,
-Product,
-ShopSlug,
-StoragePort,
+  Address,
+  CartInput,
+  Product,
+  ShopSlug,
+  StoragePort,
 } from "../domain/types";
-import { Cache,memoryStorage } from "./cache";
+import { Cache, memoryStorage } from "./cache";
 import * as schemas from "./schemas";
 import { createTransport } from "./transport";
+import { assistantAdapter } from "./assistant";
 export function createClient(options: {
   shop: ShopSlug;
   origin: string;
@@ -16,6 +17,7 @@ export function createClient(options: {
   getToken(): Promise<string | null>;
   randomUUID?: () => string;
   storage?: StoragePort;
+  digest?: (value: string) => Promise<string>;
 }) {
   const storage = options.storage ?? memoryStorage();
   const cache = new Cache(storage, `${options.shop}.public`);
@@ -30,6 +32,12 @@ export function createClient(options: {
   const idValue = (id: string | number) =>
     z.coerce.number().int().positive().parse(id);
   return {
+    assistant: assistantAdapter(
+      request,
+      options.native ? storage : memoryStorage(),
+      options.randomUUID ?? (() => crypto.randomUUID()),
+      options.native,
+    ),
     catalog: async (search = "", category = "", page = 1) => {
       const path = `products?search=${encodeURIComponent(z.string().max(100).parse(search))}&category=${encodeURIComponent(z.string().max(80).parse(category))}&page=${pageNumber(page)}`;
       const cached = await cache.read(path, schemas.catalog);
@@ -87,11 +95,20 @@ export function createClient(options: {
       cartVersion = result.version;
       return result;
     },
-    checkout: (checkout_key: string, shipping_address: Address) =>
+    checkout: (
+      checkout_key: string,
+      shipping_address: Address,
+      payment_method?: string,
+    ) =>
       request("checkout", z.object({ order: schemas.order }), "POST", {
         checkout_key: z.string().uuid().parse(checkout_key),
         expected_version: cartVersion,
         shipping_address: schemas.address.parse(shipping_address),
+        ...(payment_method === undefined
+          ? {}
+          : {
+              payment_method: z.string().min(1).max(80).parse(payment_method),
+            }),
       }),
     orders: (page = 1) =>
       request(`orders?page=${pageNumber(page)}`, schemas.orders),

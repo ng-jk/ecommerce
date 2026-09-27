@@ -607,10 +607,13 @@
             "type": "object",
             "properties": {
               "product_id": {
-                "type": "integer"
+                "type": "integer",
+                "minimum": 1
               },
               "quantity": {
-                "type": "integer"
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 99
               }
             },
             "required": [
@@ -699,7 +702,7 @@
   {
     "name": "checkout",
     "action": "checkout",
-    "description": "Place an order from my current cart with simulated payment",
+    "description": "Place an order from my cart using the configured payment provider; then list orders for its secure payment link",
     "method": "POST",
     "path": "/api/v1/shops/{shop}/checkout",
     "parameters": {
@@ -742,6 +745,11 @@
         "expected_version": {
           "type": "integer",
           "minimum": 0
+        },
+        "payment_method": {
+          "type": "string",
+          "maxLength": 80,
+          "description": "Optional configured payment method identifier or custom method name. Server configuration determines availability."
         }
       },
       "required": [
@@ -820,7 +828,7 @@
   {
     "name": "orders",
     "action": "orders",
-    "description": "List my orders",
+    "description": "List my orders, payment status, and secure payment links",
     "method": "GET",
     "path": "/api/v1/shops/{shop}/orders",
     "parameters": {
@@ -1394,7 +1402,7 @@
   {
     "name": "adminOrders",
     "action": "admin.orders",
-    "description": "Administrator: list shop orders",
+    "description": "Administrator: list shop orders and verified payment status",
     "method": "GET",
     "path": "/api/v1/shops/{shop}/admin/orders",
     "parameters": {
@@ -1744,6 +1752,243 @@
             }
           }
         }
+      }
+    }
+  },
+  {
+    "name": "billplzWebhook",
+    "action": "payments.webhook",
+    "description": "Provider-only signed callback; cannot be invoked by the assistant",
+    "method": "POST",
+    "path": "/api/v1/payments/billplz/{reference}",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "reference": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "reference"
+      ],
+      "additionalProperties": false
+    },
+    "role": "public",
+    "callable": false,
+    "confirmation": true,
+    "responses": {
+      "200": {
+        "description": "Verified callback stored durably; not a payment success claim"
+      },
+      "401": {
+        "description": "Missing or invalid signature"
+      },
+      "404": {
+        "description": "Unknown payment reference"
+      },
+      "413": {
+        "description": "Callback too large"
+      },
+      "422": {
+        "description": "Invalid callback fields; validation_error map"
+      },
+      "429": {
+        "description": "Rate limited"
+      },
+      "503": {
+        "description": "Signature verification not configured"
+      }
+    }
+  },
+  {
+    "name": "stripeWebhook",
+    "action": "payments.stripe-webhook",
+    "description": "Stripe-only signed raw-body callback; cannot be invoked by the assistant",
+    "method": "POST",
+    "path": "/api/v1/payments/stripe",
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Raw Stripe event JSON. Signature verification must use the unmodified request bytes.",
+      "required": []
+    },
+    "role": "machine",
+    "callable": false,
+    "confirmation": false,
+    "responses": {
+      "200": {
+        "description": "Verified event durably accepted; this response does not claim payment success."
+      },
+      "400": {
+        "description": "Malformed event body."
+      },
+      "401": {
+        "description": "Missing or invalid Stripe signature."
+      },
+      "413": {
+        "description": "Event body too large."
+      },
+      "429": {
+        "description": "Rate limited."
+      },
+      "503": {
+        "description": "Stripe signature verification is not configured."
+      }
+    }
+  },
+  {
+    "name": "customPaymentConfirm",
+    "action": "payments.custom-confirm",
+    "description": "Machine-only integration payment attestation; cannot be invoked by the assistant",
+    "method": "POST",
+    "path": "/api/v1/payment-integrations/{integration}/confirm",
+    "parameters": {
+      "type": "object",
+      "required": [
+        "invoice_id",
+        "integration"
+      ],
+      "properties": {
+        "invoice_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "integration": {
+          "type": "string",
+          "maxLength": 80
+        }
+      },
+      "additionalProperties": false
+    },
+    "role": "machine",
+    "callable": false,
+    "confirmation": false,
+    "responses": {
+      "202": {
+        "description": "Confirmation event durably queued; an idempotent replay may already be processed.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "received",
+                "event_id",
+                "status"
+              ],
+              "properties": {
+                "received": {
+                  "type": "boolean",
+                  "enum": [
+                    true
+                  ]
+                },
+                "event_id": {
+                  "type": "integer"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "queued",
+                    "processed"
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Malformed confirmation."
+      },
+      "401": {
+        "description": "Missing, invalid, or revoked integration credential."
+      },
+      "403": {
+        "description": "Integration is not authorized for this invoice or payment method."
+      },
+      "404": {
+        "description": "Integration or invoice not found."
+      },
+      "409": {
+        "description": "Idempotency key was already used with a different payload or invoice state conflicts."
+      },
+      "422": {
+        "description": "Invalid invoice identifier."
+      },
+      "429": {
+        "description": "Rate limited."
+      }
+    }
+  },
+  {
+    "name": "customPaymentStatus",
+    "action": "payments.custom-status",
+    "description": "Machine-only integration event status; cannot be invoked by the assistant",
+    "method": "GET",
+    "path": "/api/v1/payment-integrations/{integration}/{event}",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "integration": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "event": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "integration",
+        "event"
+      ],
+      "additionalProperties": false
+    },
+    "role": "machine",
+    "callable": false,
+    "confirmation": false,
+    "responses": {
+      "200": {
+        "description": "Current status of an event visible to this integration.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "event_id",
+                "status"
+              ],
+              "properties": {
+                "event_id": {
+                  "type": "integer"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "queued",
+                    "processed",
+                    "rejected"
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Missing, invalid, or revoked integration credential."
+      },
+      "403": {
+        "description": "Event belongs to another integration."
+      },
+      "404": {
+        "description": "Event not found."
+      },
+      "429": {
+        "description": "Rate limited."
       }
     }
   }

@@ -18,6 +18,8 @@
         </include>
     </source>
     <php>
+        <env force="true" name="PAYMENT_DRIVER" value="simulated"/>
+        <server force="true" name="PAYMENT_DRIVER" value="simulated"/>
         <env force="true" name="APP_ENV" value="testing"/>
         <server force="true" name="APP_ENV" value="testing"/>
         <env force="true" name="APP_MAINTENANCE_DRIVER" value="file"/>

@@ -15,36 +15,17 @@
   "frontend/fashion/src/app/menu.tsx": {
     "kind": "main",
     "fallback": "/",
-    "controls": [
-      "menu",
-      "shop",
-      "bag",
-      "account",
-      "orders"
-    ]
+    "controls": ["menu", "shop", "bag", "account", "orders", "assistant"]
   },
   "frontend/fashion/src/app/account.tsx": {
     "kind": "main",
     "fallback": "/",
-    "controls": [
-      "menu",
-      "name",
-      "email",
-      "password",
-      "submit",
-      "mode"
-    ]
+    "controls": ["menu", "name", "email", "password", "submit", "mode"]
   },
   "frontend/fashion/src/app/cart.tsx": {
     "kind": "main",
     "fallback": "/",
-    "controls": [
-      "menu",
-      "decrease",
-      "increase",
-      "remove",
-      "checkout"
-    ]
+    "controls": ["menu", "decrease", "increase", "remove", "checkout"]
   },
   "frontend/fashion/src/app/checkout.tsx": {
     "kind": "main",
@@ -55,7 +36,8 @@
       "line1",
       "city",
       "postcode",
-      "submit"
+      "submit",
+      "payment method"
     ]
   },
   "frontend/fashion/src/app/orders.tsx": {
@@ -64,6 +46,7 @@
     "controls": [
       "menu",
       "refresh",
+      "secure-payment-link collection",
       "previous",
       "next"
     ]
@@ -71,21 +54,12 @@
   "frontend/fashion/src/app/product/[id].tsx": {
     "kind": "main",
     "fallback": "/",
-    "controls": [
-      "menu",
-      "decrease",
-      "increase",
-      "add",
-      "bag"
-    ]
+    "controls": ["menu", "decrease", "increase", "add", "bag"]
   },
   "frontend/fashion/src/app/+not-found.tsx": {
     "kind": "main",
     "fallback": "/",
-    "controls": [
-      "menu",
-      "home"
-    ]
+    "controls": ["menu", "home"]
   },
   "frontend/electronics/src/app/index.tsx": {
     "kind": "main",
@@ -103,36 +77,17 @@
   "frontend/electronics/src/app/menu.tsx": {
     "kind": "main",
     "fallback": "/",
-    "controls": [
-      "menu",
-      "shop",
-      "bag",
-      "account",
-      "orders"
-    ]
+    "controls": ["menu", "shop", "bag", "account", "orders", "assistant"]
   },
   "frontend/electronics/src/app/account.tsx": {
     "kind": "main",
     "fallback": "/",
-    "controls": [
-      "menu",
-      "name",
-      "email",
-      "password",
-      "submit",
-      "mode"
-    ]
+    "controls": ["menu", "name", "email", "password", "submit", "mode"]
   },
   "frontend/electronics/src/app/cart.tsx": {
     "kind": "main",
     "fallback": "/",
-    "controls": [
-      "menu",
-      "decrease",
-      "increase",
-      "remove",
-      "checkout"
-    ]
+    "controls": ["menu", "decrease", "increase", "remove", "checkout"]
   },
   "frontend/electronics/src/app/checkout.tsx": {
     "kind": "main",
@@ -143,7 +98,8 @@
       "line1",
       "city",
       "postcode",
-      "submit"
+      "submit",
+      "payment method"
     ]
   },
   "frontend/electronics/src/app/orders.tsx": {
@@ -152,6 +108,7 @@
     "controls": [
       "menu",
       "refresh",
+      "secure-payment-link collection",
       "previous",
       "next"
     ]
@@ -159,34 +116,29 @@
   "frontend/electronics/src/app/product/[id].tsx": {
     "kind": "main",
     "fallback": "/",
-    "controls": [
-      "menu",
-      "decrease",
-      "increase",
-      "add",
-      "bag"
-    ]
+    "controls": ["menu", "decrease", "increase", "add", "bag"]
   },
   "frontend/electronics/src/app/+not-found.tsx": {
     "kind": "main",
     "fallback": "/",
-    "controls": [
-      "menu",
-      "home"
-    ]
+    "controls": ["menu", "home"]
   },
   "frontend/admin/src/app/index.tsx": {
     "kind": "main",
     "fallback": "/",
-    "controls": [
-      "email",
-      "password",
-      "sign-in",
-      "products",
-      "orders",
-      "sign-out",
-      "switch-shop"
-    ]
+    "controls": ["email", "password", "sign-in", "switch-shop", "assistant"],
+    "variants": {
+      "authenticated": {
+        "kind": "main",
+        "controls": [
+          "products",
+          "orders",
+          "sign-out",
+          "switch-shop",
+          "assistant"
+        ]
+      }
+    }
   },
   "frontend/admin/src/app/products/index.tsx": {
     "kind": "main",
@@ -203,14 +155,7 @@
   "frontend/admin/src/app/products/create.tsx": {
     "kind": "main",
     "fallback": "/",
-    "controls": [
-      "name",
-      "category",
-      "description",
-      "image",
-      "next",
-      "cancel"
-    ],
+    "controls": ["name", "category", "description", "image", "next", "cancel"],
     "variants": {
       "inventory": {
         "kind": "main",
@@ -263,5 +208,95 @@
       "next",
       "Indexed status filter"
     ]
+  },
+  "frontend/fashion/src/app/assistant.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "menu",
+      "message or one missing detail",
+      "send",
+      "available action collection (single select pattern)",
+      "discover",
+      "new request"
+    ],
+    "variants": {
+      "confirmation": {
+        "kind": "main",
+        "controls": ["navigation", "confirm", "new request"]
+      },
+      "pending": {
+        "kind": "main",
+        "controls": ["navigation", "retry same turn"]
+      },
+      "completed": {
+        "kind": "main",
+        "controls": [
+          "navigation",
+          "new request",
+          "secure payment link collection (single open hosted payment pattern)"
+        ]
+      }
+    }
+  },
+  "frontend/electronics/src/app/assistant.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "menu",
+      "message or one missing detail",
+      "send",
+      "available action collection (single select pattern)",
+      "discover",
+      "new request"
+    ],
+    "variants": {
+      "confirmation": {
+        "kind": "main",
+        "controls": ["navigation", "confirm", "new request"]
+      },
+      "pending": {
+        "kind": "main",
+        "controls": ["navigation", "retry same turn"]
+      },
+      "completed": {
+        "kind": "main",
+        "controls": [
+          "navigation",
+          "new request",
+          "secure payment link collection (single open hosted payment pattern)"
+        ]
+      }
+    }
+  },
+  "frontend/admin/src/app/assistant.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "dashboard",
+      "message or one missing detail",
+      "send",
+      "available action collection (single select pattern)",
+      "discover",
+      "new request"
+    ],
+    "variants": {
+      "confirmation": {
+        "kind": "main",
+        "controls": ["navigation", "confirm", "new request"]
+      },
+      "pending": {
+        "kind": "main",
+        "controls": ["navigation", "retry same turn"]
+      },
+      "completed": {
+        "kind": "main",
+        "controls": [
+          "navigation",
+          "new request",
+          "secure payment link collection (single open hosted payment pattern)"
+        ]
+      }
+    }
   }
 }

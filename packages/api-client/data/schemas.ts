@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { hostedPaymentUrlPattern } from "../domain/payments";
 const integer = z.number().int().nonnegative();
 export const product = z.object({
   id: integer,
@@ -35,6 +36,8 @@ export const cartInput = z.object({
 });
 export const cart = z.object({
   version: integer,
+  payment_methods: z.record(z.string()).optional(),
+  default_payment_method: z.string().nullable().optional(),
   items: z.array(cartInput.extend({ product: product.nullable() })).max(50),
 });
 export const order = z.object({
@@ -46,6 +49,27 @@ export const order = z.object({
   shipping: integer,
   currency: z.string(),
   payment_method: z.string(),
+  payment_label: z.string().optional(),
+  can_fulfill: z.boolean().optional(),
+  payment: z
+    .object({
+      public_id: z.string().uuid(),
+      invoice_id: z.string().optional(),
+      provider: z.enum(["billplz", "stripe", "custom"]).optional(),
+      status: z.enum([
+        "queued",
+        "creating",
+        "pending",
+        "review",
+        "paid",
+        "cancelled",
+      ]),
+      label: z.string(),
+      checkout_url: z.string().regex(hostedPaymentUrlPattern).nullable(),
+      paid_at: z.string().nullable(),
+    })
+    .nullable()
+    .optional(),
   created_at: z.string(),
   version: integer.default(0),
   items: z.array(

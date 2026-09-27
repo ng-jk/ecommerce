@@ -13,5 +13,8 @@
   "order_advance_valid": "d129c5769fa5292c1538d3bc319799a37e1ff5d5cf7ce3cee456bc2db6b14b54",
   "assistant_unauthorized_no_execution": "1e16904477eaea76f74fc9d93dd4cf27d28df8a61e2cd79b6a3657d35d298f8f",
   "assistant_incomplete_no_execution": "af0b0c3f61b93cac8f0f9797811ecc12b6b3dc5284ea38f56228e7e101ec5126",
-  "assistant_write_requires_confirmation": "9e1a24a0780336d3a9e14d8726d9170338802ac318fc226ae1cb9721764bc02b"
+  "assistant_write_requires_confirmation": "9e1a24a0780336d3a9e14d8726d9170338802ac318fc226ae1cb9721764bc02b",
+  "payment_paid_is_terminal": "8233c59cca4e39b949fc497244c4b4368b4f95ed1304f51a1784df3b2518c794",
+  "payment_unverified_unchanged": "72f7feaef6c3fa0584fb8320f3811ea84c70f6063fb5741425f01fb8cda49ad4",
+  "payment_release_is_idempotent": "114f5ae8d5a25d81649dde5ce15bce5ae463982d59cccfdd89eda6313d6905c0"
 }

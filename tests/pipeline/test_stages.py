@@ -63,9 +63,12 @@ def test_unit_coverage_and_optional_browser_commands(commands, monkeypatch, exis
         any("CREATE DATABASE commerce_unit" in args for args, _ in commands)
         is not exists
     )
-    assert "--coverage.thresholds.branches=100" in commands[0][0]
-    assert "--cov-fail-under=100" in commands[1][0]
-    assert "--coverage-clover=/reports/sqlite.xml" in commands[3][0]
+    assert "tests/deployment" in commands[0][0]
+    assert "--cov=tools.manual_release" in commands[0][0]
+    assert "--cov-fail-under=100" in commands[0][0]
+    assert "--coverage.thresholds.branches=100" in commands[1][0]
+    assert "--cov-fail-under=100" in commands[2][0]
+    assert "--coverage-clover=/reports/sqlite.xml" in commands[4][0]
     stages.browser()
     assert commands[-1][0][-2:] == ["playwright", "test"]
 

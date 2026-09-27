@@ -1,4 +1,5 @@
 import runpy
+import json
 from http.server import ThreadingHTTPServer
 from threading import Thread
 from unittest.mock import Mock
@@ -40,6 +41,50 @@ def test_http_health_valid_body_and_invalid_paths(endpoint, monkeypatch):
     monkeypatch.setattr(server, "engine", None)
     assert client.get("/health").status_code == 503
     assert client.post("/infer", json={}).status_code == 503
+
+
+def test_sdk_chat_transport_returns_one_proposal_without_execution(endpoint):
+    client, model = endpoint
+    request = {
+        "model": "google/functiongemma-270m-it",
+        "messages": [{"role": "system", "content": "Select a tool"},
+                     {"role": "user", "content": "Show products"}],
+        "tools": [{"type": "function", "function": {"name": "catalog"}}],
+        "collected": {"search": "shirt"},
+    }
+    response = client.post("/v1/chat/completions", json=request)
+    assert response.status_code == 200
+    result = response.json()
+    assert result["choices"][0]["finish_reason"] == "tool_calls"
+    call = result["choices"][0]["message"]["tool_calls"][0]
+    assert call["function"]["name"] == "catalog"
+    assert json.loads(call["function"]["arguments"]) == {}
+    model.infer.assert_called_once_with({
+        "message": "Show products", "tools": request["tools"],
+        "collected": {"search": "shirt"},
+    })
+    request["messages"] = request["messages"][1:]
+    del request["collected"]
+    assert client.post("/v1/chat/completions", json=request).status_code == 200
+
+
+@pytest.mark.parametrize("patch", [
+    None, [], {"model": "other"}, {"stream": True}, {"messages": None},
+    {"messages": []}, {"messages": [{"role": "assistant"}]},
+    {"messages": [None]},
+    {"messages": [None, {"role": "user"}]},
+    {"messages": [{"role": "user", "content": "bad"}, {"role": "user"}]},
+    {"messages": [{"role": "system", "content": None}, {"role": "user"}]},
+])
+def test_sdk_transport_rejects_invalid_chat_requests(endpoint, patch):
+    client, model = endpoint
+    request = {
+        "model": "google/functiongemma-270m-it",
+        "messages": [{"role": "user", "content": "Show products"}],
+    }
+    body = request | patch if isinstance(patch, dict) else patch
+    assert client.post("/v1/chat/completions", content=json.dumps(body)).status_code == 422
+    model.infer.assert_not_called()
 
 
 @pytest.mark.parametrize("failure", [False, True])

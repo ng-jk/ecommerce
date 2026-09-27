@@ -1,0 +1,74 @@
+{
+  "get": {
+    "operationId": "customPaymentStatus",
+    "summary": "Machine-only custom payment event status; never callable by an assistant",
+    "x-machine-only": true,
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "parameters": [
+      {
+        "name": "integration",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "maxLength": 80
+        }
+      },
+      {
+        "name": "event",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Current status of an event visible to this integration.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "event_id",
+                "status"
+              ],
+              "properties": {
+                "event_id": {
+                  "type": "integer"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "queued",
+                    "processed",
+                    "rejected"
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Missing, invalid, or revoked integration credential."
+      },
+      "403": {
+        "description": "Event belongs to another integration."
+      },
+      "404": {
+        "description": "Event not found."
+      },
+      "429": {
+        "description": "Rate limited."
+      }
+    }
+  }
+}

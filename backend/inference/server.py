@@ -4,6 +4,7 @@ import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from engine import Engine
+from chat_adapter import infer_chat
 
 engine = None
 
@@ -33,14 +34,16 @@ class Handler(BaseHTTPRequestHandler):
             raw = self.rfile.read(min(max(size, 0), 65537))
             if not 0 < size <= 65536:
                 return self.reply(413, {"error": "Invalid body size"})
-            if self.path != "/infer":
+            if self.path not in {"/infer", "/v1/chat/completions"}:
                 return self.reply(404, {"error": "Unknown endpoint"})
             if engine is None:
                 return self.reply(
                     503,
                     {"error": "Model unavailable; configure model access and restart"},
                 )
-            result = engine.infer(json.loads(raw))
+            request = json.loads(raw)
+            result = (infer_chat(engine, request) if self.path == "/v1/chat/completions"
+                      else engine.infer(request))
             self.reply(200, result)
         except (ValueError, KeyError, TypeError):
             self.reply(422, {"error": "No valid single tool call; clarify the request"})

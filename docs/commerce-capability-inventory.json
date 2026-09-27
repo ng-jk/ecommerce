@@ -1,0 +1,1122 @@
+{
+  "version": 1,
+  "status": "baseline inventory; feature completion is not implied",
+  "source": "shopify-expansion-plan.md original capability IDs and delivery waves",
+  "current_evidence": [
+    "Existing and newly added routes/screens are recorded in backend/routes/api.php and frontend/screens.json.",
+    "Laravel AI SDK v1.0.0 now mediates FunctionGemma proposals; visible /assistant routes exist in both storefronts and admin.",
+    "17 business tools have structured assistant dispatch tests. Latest actual-model fixed benchmark: 10/17; historical 11/17 is not the current result.",
+    "Stripe/custom full-payment integration has local unit/API evidence using external provider fakes; merchant sandbox verification is outstanding.",
+    "Full Shopify-style parity, admin payment-method CRUD, separate invoice ledger, partial payments, refunds, CMS editor and remaining planned modules are not complete."
+  ],
+  "capabilities": [
+    {
+      "id": 1,
+      "name": "Website builder and theme editor",
+      "wave": 6,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "theme.read",
+          "acceptance": "Admin can preview the active theme and its published revision."
+        },
+        {
+          "id": "theme.publish",
+          "acceptance": "Authorized admin publishes a validated revision; preview changes do not affect live storefront."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "theme schema and renderer",
+        "revision storage"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "CMS: pages, blog and navigation",
+      "wave": 6,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "content.manage",
+          "acceptance": "Admin creates, edits, previews, publishes and archives a page or post with revision history."
+        },
+        {
+          "id": "navigation.manage",
+          "acceptance": "Published menus resolve only to permitted shop-local destinations."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "CMS schema",
+        "slug uniqueness",
+        "rich-text sanitization"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Products and catalog",
+      "wave": 3,
+      "status": "locally verified",
+      "actions": [
+        {
+          "id": "catalog.browse",
+          "acceptance": "Guest filters and paginates a shop catalog; page metadata and empty results are returned."
+        },
+        {
+          "id": "product.admin-crud",
+          "acceptance": "Admin creates, views, edits and soft-deletes a product; stale edits conflict."
+        }
+      ],
+      "ui": [
+        "Storefront /, /product/[id] in fashion and electronics",
+        "Admin /products, /products/create, /products/[id]/edit"
+      ],
+      "api": [
+        "GET /api/v1/shops/{shop}/products",
+        "GET /api/v1/shops/{shop}/products/{id}",
+        "GET|POST /api/v1/shops/{shop}/admin/products",
+        "GET|PATCH|DELETE /api/v1/shops/{shop}/admin/products/{id}"
+      ],
+      "ai": [
+        "catalog",
+        "product",
+        "adminProducts",
+        "adminProduct",
+        "createProduct",
+        "updateProduct",
+        "deleteProduct"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": 4,
+      "name": "Product variants and media",
+      "wave": 3,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "variant.define",
+          "acceptance": "Admin defines option combinations with unique SKU and price/stock per sellable variant."
+        },
+        {
+          "id": "variant.select",
+          "acceptance": "Customer selection resolves to one available variant and checkout uses that variant's server price."
+        },
+        {
+          "id": "media.attach",
+          "acceptance": "Admin uploads an owned, MIME-validated image and sees it attached after persistence."
+        },
+        {
+          "id": "media.replace",
+          "acceptance": "Replacement failure keeps the prior media; orphan staging files expire safely."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "catalog schema migration",
+        "variant-aware cart and checkout",
+        "central FileUploader exists but product upload route is absent",
+        "private staging and storage configuration"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Collections and discovery",
+      "wave": 3,
+      "status": "in progress",
+      "actions": [
+        {
+          "id": "collection.manage",
+          "acceptance": "Admin orders products into a manual or rule-based collection."
+        },
+        {
+          "id": "collection.browse",
+          "acceptance": "Storefront displays only published collection members, paginated and shop-scoped."
+        },
+        {
+          "id": "search.catalog",
+          "acceptance": "Search returns paginated matches with supported indexed filters and stable ordering."
+        },
+        {
+          "id": "search.full-text",
+          "acceptance": "PostgreSQL full-text query uses matching GIN index semantics; unsupported filters are rejected."
+        }
+      ],
+      "ui": [
+        "Storefront / search and category controls"
+      ],
+      "api": [
+        "GET /api/v1/shops/{shop}/products?search=&category=&page="
+      ],
+      "ai": [
+        "catalog"
+      ],
+      "dependencies": [
+        "collection schema",
+        "indexed membership/order",
+        "current simple search/category route exists; broader indexed search and facets require review"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Bulk CSV imports and exports",
+      "wave": 3,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "catalog.import",
+          "acceptance": "Validated import preview reports row errors before an idempotent, authorized commit."
+        },
+        {
+          "id": "catalog.export",
+          "acceptance": "Export contains only authorized shop fields and records job status for large files."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "CSV schema/versioning",
+        "bounded asynchronous file jobs"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Custom fields and metafields",
+      "wave": 3,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "metafield.define",
+          "acceptance": "Admin defines a typed, namespaced field with validation and visibility policy."
+        },
+        {
+          "id": "metafield.write",
+          "acceptance": "Product values validate against the definition and cannot cross shop boundaries."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "typed field registry",
+        "API allowlist"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Inventory management",
+      "wave": 3,
+      "status": "in progress",
+      "actions": [
+        {
+          "id": "inventory.adjust",
+          "acceptance": "Admin records a versioned stock adjustment with actor and reason; stock cannot become negative."
+        },
+        {
+          "id": "inventory.reconcile",
+          "acceptance": "Available stock equals the result of authorized receipts, adjustments, reservations and fulfillment."
+        }
+      ],
+      "ui": [
+        "Admin product create/edit stock controls"
+      ],
+      "api": [
+        "PATCH /api/v1/shops/{shop}/admin/products/{id}"
+      ],
+      "ai": [
+        "updateProduct"
+      ],
+      "dependencies": [
+        "Existing product stock field and admin edit are available; multi-location inventory and dedicated adjustment ledger remain planned."
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Purchasing and inventory transfers",
+      "wave": 3,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "purchase-order.manage",
+          "acceptance": "Admin creates and receives a supplier purchase order; receiving updates stock once."
+        },
+        {
+          "id": "inventory.transfer",
+          "acceptance": "Transfer reserves and receives stock once between configured locations."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "Supplier and purchase-order model",
+        "Multi-location inventory and consistent stock locking"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Inventory alerts",
+      "wave": 3,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "inventory.alert",
+          "acceptance": "Configured low-stock threshold creates one deduplicated alert with current shop and location."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "Inventory location/threshold configuration",
+        "Notification delivery provider"
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Cart and checkout",
+      "wave": 4,
+      "status": "locally verified",
+      "actions": [
+        {
+          "id": "cart.read",
+          "acceptance": "Customer reads only their current shop cart and version."
+        },
+        {
+          "id": "cart.update",
+          "acceptance": "Replace, add, remove or change quantities with bounds; stale versions conflict."
+        },
+        {
+          "id": "checkout.submit",
+          "acceptance": "Checkout validates address, cart version and server-calculated integer totals; duplicate key has one effect."
+        }
+      ],
+      "ui": [
+        "Storefront /cart and /checkout in both shops"
+      ],
+      "api": [
+        "GET|PUT /api/v1/shops/{shop}/cart",
+        "POST /api/v1/shops/{shop}/checkout"
+      ],
+      "ai": [
+        "cart",
+        "updateCart",
+        "checkout (confirmation required)"
+      ],
+      "dependencies": [
+        "Configured payment selection is being expanded; checkout totals and stock remain server-authoritative."
+      ]
+    },
+    {
+      "id": 12,
+      "name": "Delivery options and details",
+      "wave": 4,
+      "status": "in progress",
+      "actions": [
+        {
+          "id": "delivery.quote",
+          "acceptance": "Eligible delivery choices and charges are shown from configured rules before confirmation."
+        },
+        {
+          "id": "delivery.address",
+          "acceptance": "Checkout validates and stores the selected delivery address; available delivery services and charge are shown before order submission."
+        }
+      ],
+      "ui": [
+        "Storefront /checkout in both shops"
+      ],
+      "api": [
+        "POST /api/v1/shops/{shop}/checkout"
+      ],
+      "ai": [
+        "checkout (confirmation required)"
+      ],
+      "dependencies": [
+        "Address and fixed shipping charge exist; configurable delivery choices and carrier rates are not evidenced."
+      ]
+    },
+    {
+      "id": 13,
+      "name": "Online payments",
+      "wave": 2,
+      "status": "in progress",
+      "actions": [
+        {
+          "id": "payment.stripe.start",
+          "acceptance": "Configured eligible shop creates hosted Checkout for immutable invoice amount and currency."
+        },
+        {
+          "id": "payment.stripe.reconcile",
+          "acceptance": "Signed duplicate or out-of-order events reconcile once; browser return alone never settles."
+        },
+        {
+          "id": "payment.billplz.reconcile",
+          "acceptance": "Signed provider event is verified, durably ingested and reconciled idempotently."
+        }
+      ],
+      "ui": [
+        "Storefront orders show payment status/link; provider selection is in checkout"
+      ],
+      "api": [
+        "POST /api/v1/payments/stripe signed webhook",
+        "POST /api/v1/payments/billplz/{reference} signed webhook"
+      ],
+      "ai": [],
+      "dependencies": [
+        "Billplz flow exists in local test configuration; real Billplz sandbox verification is pending. Stripe integration is implemented in the current work and requires sandbox verification."
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Alternative, manual and partial payments",
+      "wave": 2,
+      "status": "in progress",
+      "actions": [
+        {
+          "id": "payment.method.configure",
+          "acceptance": "Admin orders eligible methods per shop; checkout displays only enabled eligible methods."
+        },
+        {
+          "id": "payment.manual.confirm",
+          "acceptance": "Scoped integration credential confirms its bound immutable invoice once; revoked/cross-shop/partial attestations reject."
+        },
+        {
+          "id": "payment.partial",
+          "acceptance": "Integration records an explicit amount and reference; cumulative allocations cannot exceed invoice balance and remaining balance stays visible."
+        }
+      ],
+      "ui": [],
+      "api": [
+        "POST /api/v1/payment-integrations/{integration}/confirm",
+        "GET /api/v1/payment-integrations/{integration}/{event}"
+      ],
+      "ai": [],
+      "dependencies": [
+        "Custom machine credential and full-invoice attestation flow exists; partial allocations and merchant manual UI need implementation."
+      ]
+    },
+    {
+      "id": 15,
+      "name": "Disputes and fraud",
+      "wave": 2,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "payment.dispute.record",
+          "acceptance": "Dispute event changes payment state and creates an auditable review item without changing fulfillment implicitly."
+        },
+        {
+          "id": "fraud.review",
+          "acceptance": "Risk signals create an auditable review state; automated signals cannot independently claim payment or fulfillment."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "Provider dispute events",
+        "Fraud policy and review workflow"
+      ]
+    },
+    {
+      "id": 16,
+      "name": "Orders and order lifecycle",
+      "wave": 4,
+      "status": "locally verified",
+      "actions": [
+        {
+          "id": "order.customer.list",
+          "acceptance": "Customer sees only own paginated orders."
+        },
+        {
+          "id": "order.admin.advance",
+          "acceptance": "Admin advances only declared transitions with expected version and an audit event."
+        }
+      ],
+      "ui": [
+        "Storefront /orders in both shops",
+        "Admin /orders"
+      ],
+      "api": [
+        "GET /api/v1/shops/{shop}/orders",
+        "GET|PATCH /api/v1/shops/{shop}/admin/orders/{id}"
+      ],
+      "ai": [
+        "orders",
+        "adminOrders",
+        "updateOrder"
+      ],
+      "dependencies": []
+    },
+    {
+      "id": 17,
+      "name": "Draft orders and invoices",
+      "wave": 4,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "draft.create",
+          "acceptance": "Admin saves an uncharged draft with customer, lines and versioned totals."
+        },
+        {
+          "id": "invoice.issue",
+          "acceptance": "Issued invoice is immutable, payable through an eligible configured method, and records allocations."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "invoice/payment ledger",
+        "draft order state model"
+      ]
+    },
+    {
+      "id": 18,
+      "name": "Returns, refunds and exchanges",
+      "wave": 4,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "return.request",
+          "acceptance": "Eligible order lines and quantities are checked against prior returns."
+        },
+        {
+          "id": "refund.execute",
+          "acceptance": "Confirmed refund is provider-idempotent, capped by captured balance and reconciled asynchronously."
+        },
+        {
+          "id": "exchange.create",
+          "acceptance": "Exchange links returned and replacement lines with stock and payment differences explicit."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "return policy",
+        "payment allocations and provider refund APIs",
+        "no refund endpoint currently exists"
+      ]
+    },
+    {
+      "id": 19,
+      "name": "Shipping configuration",
+      "wave": 4,
+      "status": "externally blocked",
+      "actions": [
+        {
+          "id": "shipping.rate",
+          "acceptance": "Quote uses destination, package and carrier service eligibility."
+        },
+        {
+          "id": "shipping.label",
+          "acceptance": "Purchased label is attached once and can be voided under provider rules."
+        },
+        {
+          "id": "shipping.track",
+          "acceptance": "Carrier events update tracking with deduplication and expose customer-safe status."
+        },
+        {
+          "id": "shipping.configure",
+          "acceptance": "Admin configures eligible service, zones, package rules and rates; checkout uses only current shop configuration."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "Carrier account, supported region/services, credentials and sandbox",
+        "No shipping rates/labels/tracking provider is verified."
+      ]
+    },
+    {
+      "id": 20,
+      "name": "Fulfillment",
+      "wave": 4,
+      "status": "in progress",
+      "actions": [
+        {
+          "id": "fulfillment.transition",
+          "acceptance": "Admin advances a paid order through allowed processing/shipped/completed states with expected-version checks."
+        },
+        {
+          "id": "fulfillment.create",
+          "acceptance": "Admin fulfills eligible quantities and records carrier/tracking reference."
+        },
+        {
+          "id": "fulfillment.update",
+          "acceptance": "Duplicate or out-of-order carrier events do not regress fulfillment state."
+        }
+      ],
+      "ui": [
+        "Admin /orders"
+      ],
+      "api": [
+        "GET|PATCH /api/v1/shops/{shop}/admin/orders",
+        "PATCH /api/v1/shops/{shop}/admin/orders/{id}"
+      ],
+      "ai": [
+        "adminOrders",
+        "updateOrder"
+      ],
+      "dependencies": [
+        "Current order-state transitions are locally verified; partial fulfillment and carrier-event sync remain planned."
+      ]
+    },
+    {
+      "id": 21,
+      "name": "Customers",
+      "wave": 5,
+      "status": "locally verified",
+      "actions": [
+        {
+          "id": "customer.profile",
+          "acceptance": "Customer can review the current profile; the server returns only the signed-in principal's profile for the selected shop."
+        },
+        {
+          "id": "customer.own-data",
+          "acceptance": "Customer requests expose only the signed-in principal data for the current shop."
+        }
+      ],
+      "ui": [
+        "Storefront /account in both shops"
+      ],
+      "api": [
+        "GET /api/v1/shops/{shop}/auth/me"
+      ],
+      "ai": [
+        "me"
+      ],
+      "dependencies": [
+        "Customer account foundation exists; customer search/segmentation UI is not evidenced."
+      ]
+    },
+    {
+      "id": 22,
+      "name": "Accounts and credit",
+      "wave": 5,
+      "status": "in progress",
+      "actions": [
+        {
+          "id": "account.register-login",
+          "acceptance": "Customer registers or signs in within the selected shop; wrong-shop credentials do not disclose data."
+        },
+        {
+          "id": "credit.offer",
+          "acceptance": "Eligible financing offer shows provider terms without treating a quote as approval."
+        },
+        {
+          "id": "credit.reconcile",
+          "acceptance": "Provider decision and repayment events reconcile against a customer and order audit trail."
+        }
+      ],
+      "ui": [
+        "Storefront /account in both shops"
+      ],
+      "api": [
+        "POST /api/v1/shops/{shop}/auth/register",
+        "POST /api/v1/shops/{shop}/auth/login",
+        "POST /api/v1/shops/{shop}/auth/logout"
+      ],
+      "ai": [
+        "register",
+        "login",
+        "logout"
+      ],
+      "dependencies": [
+        "Account registration/sign-in/sign-out are locally verified. Credit and lending need an eligible regulated provider, jurisdiction policy and sandbox."
+      ]
+    },
+    {
+      "id": 23,
+      "name": "Discounts and promotions",
+      "wave": 5,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "discount.manage",
+          "acceptance": "Admin defines bounded eligibility, dates, usage limits and stacking rules."
+        },
+        {
+          "id": "discount.apply",
+          "acceptance": "Server validates the code and recomputes totals atomically; stale/expired codes reject safely."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "promotion rule engine",
+        "cart/checkout pricing contract"
+      ]
+    },
+    {
+      "id": 24,
+      "name": "Gift cards, bundles and digital products",
+      "wave": 5,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "giftcard.issue",
+          "acceptance": "Authorized issue creates a unique code whose secret is shown only at issuance."
+        },
+        {
+          "id": "bundle.purchase",
+          "acceptance": "Bundle price/stock and component effects are calculated from server configuration."
+        },
+        {
+          "id": "digital.deliver",
+          "acceptance": "Paid eligible digital line grants an expiring authorized download."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "ledger and secret delivery",
+        "payment allocation rules",
+        "Bundle inventory/pricing model",
+        "Protected digital asset storage and download access"
+      ]
+    },
+    {
+      "id": 25,
+      "name": "Subscriptions, preorders and try-before-you-buy",
+      "wave": 5,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "subscription.lifecycle",
+          "acceptance": "Customer can view/cancel a subscription and duplicate billing events do not double-charge."
+        },
+        {
+          "id": "preorder.purchase",
+          "acceptance": "Preorder availability and expected date are clear; allocation follows configured limits."
+        },
+        {
+          "id": "try-before-buy.lifecycle",
+          "acceptance": "Customer sees the trial/return window and any conversion charge; expiry or return events are idempotent."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "Recurring billing provider",
+        "Preorder allocation model",
+        "Explicit trial/return policy"
+      ]
+    },
+    {
+      "id": 26,
+      "name": "Marketing: email and SMS",
+      "wave": 6,
+      "status": "externally blocked",
+      "actions": [
+        {
+          "id": "message.transactional",
+          "acceptance": "Order/account message is sent from a durable outbox and provider retries do not duplicate user-visible sends."
+        },
+        {
+          "id": "message.preference",
+          "acceptance": "Marketing consent and unsubscribe are enforced per channel and jurisdiction."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "email/SMS provider credentials",
+        "consent and deliverability configuration"
+      ]
+    },
+    {
+      "id": 27,
+      "name": "Advertising and affiliates",
+      "wave": 6,
+      "status": "externally blocked",
+      "actions": [
+        {
+          "id": "affiliate.attribute",
+          "acceptance": "Eligible referral is attributed once with disclosed attribution window."
+        },
+        {
+          "id": "ads.sync",
+          "acceptance": "Only consent-permitted, minimized conversion events are sent to a configured ad platform."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "affiliate/ad network contracts and credentials",
+        "consent policy"
+      ]
+    },
+    {
+      "id": 28,
+      "name": "SEO and tracking",
+      "wave": 6,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "seo.manage",
+          "acceptance": "Admin sets validated page metadata and canonical paths for published content."
+        },
+        {
+          "id": "tracking.configure",
+          "acceptance": "Analytics tags honor consent and cannot read private checkout/account data."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "page/CMS routing",
+        "consent integration and analytics provider"
+      ]
+    },
+    {
+      "id": 29,
+      "name": "Sales channels",
+      "wave": 7,
+      "status": "externally blocked",
+      "actions": [
+        {
+          "id": "channel.connect",
+          "acceptance": "Authorized admin connects a channel with scoped revocable credentials."
+        },
+        {
+          "id": "channel.sync",
+          "acceptance": "Catalog/order sync records cursor, deduplicates events and reports conflicts for review."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "each channel's API access, credentials, approval and sandbox"
+      ]
+    },
+    {
+      "id": 30,
+      "name": "Markets and localization",
+      "wave": 7,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "market.configure",
+          "acceptance": "Admin configures allowed country, currency, locale and catalog availability."
+        },
+        {
+          "id": "market.price",
+          "acceptance": "Displayed and charged amounts use an explicit market price and currency; no implicit FX conversion."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "market model",
+        "currency-aware prices and localization data"
+      ]
+    },
+    {
+      "id": 31,
+      "name": "Taxes and duties",
+      "wave": 7,
+      "status": "externally blocked",
+      "actions": [
+        {
+          "id": "tax.quote",
+          "acceptance": "Checkout presents a jurisdiction-appropriate tax quote with source and calculation status."
+        },
+        {
+          "id": "duty.collect",
+          "acceptance": "Cross-border duties are disclosed and reconciled against provider calculation."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "tax/duty provider or maintained jurisdiction rules",
+        "merchant registrations and sandbox validation"
+      ]
+    },
+    {
+      "id": 32,
+      "name": "B2B commerce",
+      "wave": 7,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "b2b.company",
+          "acceptance": "Company locations have authorized buyers, catalogs and payment terms scoped to that company."
+        },
+        {
+          "id": "b2b.order",
+          "acceptance": "Buyer submits an order under assigned terms; approval and credit checks execute server-side."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "company/contact model",
+        "price lists and payment terms",
+        "credit integration if financing is offered"
+      ]
+    },
+    {
+      "id": 33,
+      "name": "Point of sale",
+      "wave": 7,
+      "status": "externally blocked",
+      "actions": [
+        {
+          "id": "pos.sale",
+          "acceptance": "Authorized POS sale uses the same stock/order invariants and is idempotent across retries."
+        },
+        {
+          "id": "pos.return",
+          "acceptance": "POS return references a valid sale and records refund/stock disposition."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "POS hardware/provider, payment terminal certification and location inventory"
+      ]
+    },
+    {
+      "id": 34,
+      "name": "Analytics and reporting",
+      "wave": 8,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "analytics.sales",
+          "acceptance": "Authorized report filters by shop/time and reconciles totals against completed order/payment records."
+        },
+        {
+          "id": "analytics.export",
+          "acceptance": "Large export is bounded, access-controlled and records snapshot time and filters."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "event/reporting model",
+        "retention and privacy policy"
+      ]
+    },
+    {
+      "id": 35,
+      "name": "Staff, roles and permissions",
+      "wave": 1,
+      "status": "in progress",
+      "actions": [
+        {
+          "id": "staff.invite",
+          "acceptance": "Shop admin invites staff with a least-privilege role and one-time expiring acceptance."
+        },
+        {
+          "id": "permission.configure",
+          "acceptance": "Effective permissions are shop-scoped and rechecked when queued work executes."
+        }
+      ],
+      "ui": [
+        "Admin sign-in and shop switch exist; staff management UI is absent"
+      ],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "current customer/admin role allowlists exist; staff entities, granular roles and invite routes are absent"
+      ]
+    },
+    {
+      "id": 36,
+      "name": "Flow automation",
+      "wave": 8,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "automation.define",
+          "acceptance": "Admin defines a bounded trigger/action workflow with validation and an explicit enabled state."
+        },
+        {
+          "id": "automation.run",
+          "acceptance": "Repeated event delivery executes an eligible action once and records failure/retry state."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "event catalog",
+        "safe rule engine",
+        "outbox and observability"
+      ]
+    },
+    {
+      "id": 37,
+      "name": "Sidekick AI assistant",
+      "wave": 8,
+      "status": "in progress",
+      "actions": [
+        {
+          "id": "assistant.discover",
+          "acceptance": "Discovery exposes only caller-permitted registered business tools."
+        },
+        {
+          "id": "assistant.confirm",
+          "acceptance": "Mutation draft gathers required fields, displays preview and confirmation, then uses the same durable operation."
+        }
+      ],
+      "ui": [
+        "Fashion /assistant",
+        "Electronics /assistant",
+        "Admin /assistant"
+      ],
+      "api": [
+        "POST /api/v1/shops/{shop}/assistant"
+      ],
+      "ai": [
+        "17 existing commerce tools listed in docs/assistant-access-audit.md"
+      ],
+      "dependencies": [
+        "Broader held-out model evaluations and routing reliability; current benchmark10/17",
+        "Advanced content generation, analytics and automation assistant capabilities remain planned"
+      ]
+    },
+    {
+      "id": 38,
+      "name": "APIs and extension contracts",
+      "wave": 1,
+      "status": "in progress",
+      "actions": [
+        {
+          "id": "api.contract",
+          "acceptance": "Every business operation has versioned request/result schema and generated client without drift."
+        },
+        {
+          "id": "extension.register",
+          "acceptance": "Extension receives only declared events and scoped capabilities; revoked credentials stop queued execution."
+        }
+      ],
+      "ui": [],
+      "api": [
+        "Current OpenAPI describes 19 registered operations; expansion actions are not yet registered"
+      ],
+      "ai": [],
+      "dependencies": [
+        "OpenAPI/client generation exists",
+        "extension lifecycle, credentials and event contract are planned"
+      ]
+    },
+    {
+      "id": 39,
+      "name": "Headless commerce and developer tools",
+      "wave": 8,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "headless.catalog",
+          "acceptance": "External storefront consumes versioned public catalog schemas without receiving backend secrets."
+        },
+        {
+          "id": "developer.webhook",
+          "acceptance": "Developer configures scoped webhook subscriptions and verifies signed, replay-protected deliveries."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "developer app and key lifecycle",
+        "webhook subscription/delivery service"
+      ]
+    },
+    {
+      "id": 40,
+      "name": "Privacy and data rights",
+      "wave": 8,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "privacy.export",
+          "acceptance": "Verified subject receives a bounded export of their shop-associated personal data."
+        },
+        {
+          "id": "privacy.erase",
+          "acceptance": "Authorized erasure anonymizes or deletes eligible data while preserving legally required financial records."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "retention/legal policy by jurisdiction",
+        "identity verification and audit design"
+      ]
+    },
+    {
+      "id": 41,
+      "name": "Sourcing and suppliers",
+      "wave": 7,
+      "status": "planned",
+      "actions": [
+        {
+          "id": "supplier.manage",
+          "acceptance": "Admin records shop-scoped supplier and purchase-order terms."
+        },
+        {
+          "id": "sourcing.receive",
+          "acceptance": "Receiving a purchase order updates inventory atomically and is safe to replay."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "supplier and purchase-order schema",
+        "inventory locations"
+      ]
+    },
+    {
+      "id": 42,
+      "name": "Finance and accounting integrations",
+      "wave": 8,
+      "status": "externally blocked",
+      "actions": [
+        {
+          "id": "finance.export",
+          "acceptance": "Reconciled sales, fees, refunds and tax entries export with stable accounting identifiers."
+        },
+        {
+          "id": "finance.sync",
+          "acceptance": "Configured ledger integration reconciles provider responses and reports unmatched entries."
+        }
+      ],
+      "ui": [],
+      "api": [],
+      "ai": [],
+      "dependencies": [
+        "accounting/banking provider credentials",
+        "merchant region and chart-of-accounts mapping"
+      ]
+    }
+  ]
+}

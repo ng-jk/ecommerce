@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { createClient } from "../../packages/api-client/data/repository";
+import { order as orderSchema } from "../../packages/api-client/data/schemas";
 import { memoryStorage } from "../../packages/api-client/data/cache";
 
 const product = {
@@ -111,6 +112,76 @@ it("validates and caches only public catalog reads", async () => {
   await expect(api.catalog("x".repeat(101))).rejects.toThrow();
   await expect(api.catalog("", "", 0)).rejects.toThrow();
 });
+it("submits a configured payment method and exposes the assistant with default secure identity generation", async () => {
+  const api = createClient({
+    shop: "fashion",
+    origin: "https://example.test",
+    native: true,
+    getToken: async () => null,
+  });
+  fetcher.mockResolvedValueOnce(json({ order }));
+  await api.checkout(
+    "00000000-0000-4000-8000-000000000001",
+    address,
+    "merchant-invoice",
+  );
+  expect(
+    JSON.parse(String(fetcher.mock.lastCall?.[1]?.body)).payment_method,
+  ).toBe("merchant-invoice");
+  expect(() =>
+    api.checkout("00000000-0000-4000-8000-000000000001", address, ""),
+  ).toThrow();
+  fetcher.mockResolvedValueOnce(
+    json({
+      status: "needs_input",
+      message: "Choose",
+      available_actions: [],
+      required_input: [],
+    }),
+  );
+  expect((await api.assistant({ discover: true })).status).toBe("needs_input");
+});
+it("keeps web assistant credentials, receipts and pending identities out of durable storage while safely retrying", async () => {
+  const storage = memoryStorage();
+  const writes = vi.spyOn(storage, "set");
+  let counter = 0;
+  let turns = 0;
+  const reply = {
+    status: "needs_input",
+    message: "Choose",
+    available_actions: [],
+    required_input: [],
+  };
+  const api = createClient({
+    shop: "fashion",
+    origin: "https://example.test",
+    native: false,
+    getToken: async () => null,
+    storage,
+    randomUUID: () =>
+      `00000000-0000-4000-8000-${String(++counter).padStart(12, "0")}`,
+  });
+  fetcher.mockImplementation(async (url) => {
+    if (String(url).endsWith("/sanctum/csrf-cookie"))
+      return new Response(null, { status: 204 });
+    return json(++turns === 1 ? { ...reply, status: "invalid" } : reply);
+  });
+  const turn = { action: "login", data: { password: "PrivatePassword123!" } };
+  await expect(api.assistant(turn)).rejects.toMatchObject({
+    kind: "invalid_body",
+  });
+  await api.assistant(turn);
+  const calls = fetcher.mock.calls.filter(([url]) =>
+    String(url).endsWith("/assistant"),
+  );
+  expect(new Headers(calls[0]?.[1]?.headers).get("Idempotency-Key")).toBe(
+    new Headers(calls[1]?.[1]?.headers).get("Idempotency-Key"),
+  );
+  expect(new Headers(calls[0]?.[1]?.headers).get("X-Operation-Token")).toBe(
+    new Headers(calls[1]?.[1]?.headers).get("X-Operation-Token"),
+  );
+  expect(writes).not.toHaveBeenCalled();
+});
 it("carries authoritative cart versions into mutations and checkout", async () => {
   const api = client();
   fetcher.mockResolvedValueOnce(json({ items: [], version: 7 }));
@@ -204,4 +275,43 @@ it("validates detail, metadata, authentication and logout contracts", async () =
   await expect(api.logout()).resolves.toBeUndefined();
   expect(() => api.login("invalid", "password")).toThrow();
   expect(() => api.register("Customer", user.email, "short")).toThrow();
+});
+
+it("validates payment metadata and rejects forged external checkout URLs", () => {
+  const payment = {
+    public_id: "550e8400-e29b-41d4-a716-446655440000",
+    status: "pending",
+    label: "Awaiting payment",
+    checkout_url: "https://www.billplz-sandbox.com/bills/bill1",
+    paid_at: null,
+  };
+  expect(
+    orderSchema.safeParse({
+      ...order,
+      payment: {
+        ...payment,
+        invoice_id: "invoice-1",
+        provider: "stripe",
+        checkout_url: "https://checkout.stripe.com/c/pay/cs_test_123",
+      },
+    }).success,
+  ).toBe(true);
+  expect(orderSchema.parse({ ...order, payment }).payment).toEqual(payment);
+  for (const checkout_url of [
+    "javascript:alert(1)",
+    "https://evil.test/bills/bill1",
+    "https://www.billplz.com.evil.test/bills/a",
+    "http://www.billplz.com/bills/a",
+  ]) {
+    expect(
+      orderSchema.safeParse({ ...order, payment: { ...payment, checkout_url } })
+        .success,
+    ).toBe(false);
+  }
+  expect(
+    orderSchema.safeParse({
+      ...order,
+      payment: { ...payment, status: "forged-paid" },
+    }).success,
+  ).toBe(false);
 });

@@ -22,6 +22,8 @@ vi.mock(
 );
 vi.mock("expo-router", () => ({
   router,
+  Link: ({ href, children }: { href: string; children: React.ReactNode }) =>
+    createElement("a", { href }, children),
   useLocalSearchParams: () => ({ id: "1" }),
 }));
 vi.mock("../../packages/storefront/presentation/view-models/context", () => ({
@@ -107,10 +109,15 @@ const state = {
   cart: [] as CartLine[],
   subtotal: 100,
   address,
+  paymentMethods: undefined as Record<string, string> | undefined,
+  paymentMethod: "",
+  setPaymentMethod: vi.fn(),
   setAddress: vi.fn(),
   submit: vi.fn(),
   change: vi.fn(),
   orders: [] as {
+    payment_label?: string;
+    payment?: { checkout_url: string; invoice_id?: string };
     id: number;
     status: string;
     total: number;
@@ -303,7 +310,7 @@ it("checkout validates every required field and supports retrying with an empty 
     value: typeof address,
   ) => typeof address;
   expect(update(address).name).toBe("Changed");
-  await screen.press("Place demo order");
+  await screen.press("Place order");
   expect(state.submit).toHaveBeenCalledOnce();
   state.cart = [{ product_id: 1, quantity: 1, product }];
   for (const key of ["name", "line1", "city", "postcode"] as const) {
@@ -311,7 +318,7 @@ it("checkout validates every required field and supports retrying with an empty 
     await screen.refresh();
     expect(
       screen.container.querySelector<HTMLButtonElement>(
-        '[aria-label="Place demo order"]',
+        '[aria-label="Place order"]',
       )?.disabled,
     ).toBe(true);
   }
@@ -337,6 +344,11 @@ it("orders render all account/loading/empty states and paginated labeled items",
     {
       id: 1,
       status: "placed",
+      payment_label: "Awaiting payment",
+      payment: {
+        checkout_url: "https://www.billplz-sandbox.com/bills/bill1",
+        invoice_id: "merchant-invoice-1",
+      },
       total: 100,
       created_at: "2026-09-22",
       shipping_address: address,
@@ -355,6 +367,14 @@ it("orders render all account/loading/empty states and paginated labeled items",
   state.page = 2;
   await screen.refresh();
   expect(screen.container.textContent).toContain("Placed");
+  expect(screen.container.textContent).toContain("Awaiting payment");
+  expect(screen.container.textContent).toContain(
+    "Payment reference: merchant-invoice-1",
+  );
+  expect(screen.container.querySelector("a")?.getAttribute("href")).toBe(
+    "https://www.billplz-sandbox.com/bills/bill1",
+  );
+  await screen.press("Check payment status");
   expect(screen.container.textContent).toContain("Unavailable status");
   await screen.press("Previous");
   await screen.press("Next");
@@ -374,6 +394,32 @@ it("menu exposes all main destinations", async () => {
     ["/account"],
     ["/orders"],
   ]);
+  await screen.press("Assistant");
+  expect(router.push).toHaveBeenLastCalledWith("/assistant");
+  await screen.unmount();
+});
+it("renders only server payment methods, blocks unknown values and cycles the selected method", async () => {
+  state.paymentMethods = { stripe: "Card", manual: "Merchant invoice" };
+  state.paymentMethod = "stripe";
+  const screen = await render(createElement(CheckoutScreen));
+  await screen.press("Payment: Card");
+  expect(state.setPaymentMethod).toHaveBeenLastCalledWith("manual");
+  state.paymentMethod = "unsupported";
+  await screen.refresh();
+  expect(screen.container.textContent).toContain("Choose an available method");
+  await screen.press("Payment: Choose an available method");
+  expect(state.setPaymentMethod).toHaveBeenLastCalledWith("stripe");
+  state.paymentMethods = {};
+  await screen.refresh();
+  expect(screen.container.textContent).toContain(
+    "Payment is currently unavailable",
+  );
+  expect(
+    [...screen.container.querySelectorAll("button")].find(
+      (button) => button.textContent === "Place order",
+    )?.disabled,
+  ).toBe(true);
+  state.paymentMethods = undefined;
   await screen.unmount();
 });
 

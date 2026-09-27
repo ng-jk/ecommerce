@@ -35,7 +35,8 @@ class Client:
     def finish(self, response, headers):
         assert response.status_code == 202, response.text
         data = response.json()
-        deadline = time.monotonic() + 20
+        deadline = time.monotonic() + 45
+        poll_delay = 0.05
         while time.monotonic() < deadline:
             result = self.http.get(
                 "http://localhost:8088" + data["poll_url"], headers=headers
@@ -44,7 +45,8 @@ class Client:
             operation = result.json()
             if operation["status"] in ("succeeded", "rejected", "failed"):
                 return operation
-            time.sleep(0.05)
+            time.sleep(poll_delay)
+            poll_delay = min(0.5, poll_delay * 1.5)
         raise AssertionError("Worker did not complete the accepted operation")
 
     def call(self, method, path, body=None):
@@ -219,4 +221,6 @@ def test_cart_boundary_types_and_duplicate_lines_do_not_change_state():
     )
     assert duplicate["http_status"] == 422
     current = buyer.call("GET", "cart")["result"]
-    assert current == {"items": [], "version": 0}
+    assert current == {"items": [], "version": 0,
+                       "payment_methods": {"simulated": "Simulated payment"},
+                       "default_payment_method": "simulated"}

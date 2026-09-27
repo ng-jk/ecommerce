@@ -58,6 +58,11 @@
               "expected_version": {
                 "type": "integer",
                 "minimum": 0
+              },
+              "payment_method": {
+                "type": "string",
+                "maxLength": 80,
+                "description": "Optional configured payment method identifier or custom method name. Server configuration determines availability."
               }
             },
             "required": [

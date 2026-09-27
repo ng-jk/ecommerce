@@ -1,6 +1,9 @@
 {
   "get": {
     "operationId": "cart",
+    "x-operation-result-schema": {
+      "$ref": "../openapi.json#/components/schemas/Cart"
+    },
     "parameters": [
       {
         "name": "shop",
@@ -76,6 +79,9 @@
   },
   "put": {
     "operationId": "updateCart",
+    "x-operation-result-schema": {
+      "$ref": "../openapi.json#/components/schemas/Cart"
+    },
     "parameters": [
       {
         "name": "shop",

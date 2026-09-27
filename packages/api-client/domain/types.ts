@@ -39,6 +39,21 @@ export type Order = {
   shipping: number;
   currency: string;
   payment_method: string;
+  payment_label?: string | undefined;
+  can_fulfill?: boolean | undefined;
+  payment?:
+    | {
+        public_id: string;
+        invoice_id?: string | undefined;
+        provider?: "billplz" | "stripe" | "custom" | undefined;
+        status:
+          "queued" | "creating" | "pending" | "review" | "paid" | "cancelled";
+        label: string;
+        checkout_url: string | null;
+        paid_at: string | null;
+      }
+    | null
+    | undefined;
   created_at: string;
   version: number;
   items: {

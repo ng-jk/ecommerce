@@ -1,0 +1,64 @@
+{
+  "post": {
+    "operationId": "billplzWebhook",
+    "summary": "Provider-only signed callback; never callable by AI or customer tools",
+    "parameters": [
+      {
+        "name": "reference",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    ],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/x-www-form-urlencoded": {
+          "schema": {
+            "type": "object",
+            "required": [
+              "id",
+              "x_signature"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "x_signature": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Verified callback stored durably; not a payment success claim"
+      },
+      "401": {
+        "description": "Missing or invalid signature"
+      },
+      "404": {
+        "description": "Unknown payment reference"
+      },
+      "413": {
+        "description": "Callback too large"
+      },
+      "422": {
+        "description": "Invalid callback fields; validation_error map"
+      },
+      "429": {
+        "description": "Rate limited"
+      },
+      "503": {
+        "description": "Signature verification not configured"
+      }
+    }
+  }
+}

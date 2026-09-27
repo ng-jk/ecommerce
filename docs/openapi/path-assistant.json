@@ -102,6 +102,6 @@
         }
       }
     },
-    "description": "Natural-language action selection, collection and execution. Durable 202 response; poll using X-Operation-Token. Reuse the same receipt across conversation turns, new idempotency key per turn. Every write requires a separate confirm:true turn and the returned conversation_version. discover:true returns caller-authorized tools. Credentials must be supplied as data, not message. Infrastructure operations are registered but cannot be model-invoked."
+    "description": "Natural-language action selection, collection and execution. Durable 202 response; poll using X-Operation-Token. Reuse the same receipt across conversation turns, new idempotency key per turn. Every write requires a separate confirm:true turn and the returned conversation_version. discover:true returns caller-authorized tools. Credentials must be supplied as data, not message. Infrastructure operations are registered but cannot be model-invoked. Natural-language reads also require confirmation. Discovery includes role, effective allowed_roles and natural_language_confirmation_required. Configuration in backend/config/commerce.php restricts REST and AI execution; disabling a tool invalidates pending confirmation."
   }
 }

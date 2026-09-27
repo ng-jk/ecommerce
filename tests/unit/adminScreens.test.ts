@@ -115,12 +115,10 @@ const store = {
   authenticate: vi.fn().mockResolvedValue(undefined),
   logout: vi.fn().mockResolvedValue(undefined),
   api: {
-    adminProducts: vi
-      .fn()
-      .mockResolvedValue({
-        products: { data: [product], meta: { last_page: 2 } },
-        options,
-      }),
+    adminProducts: vi.fn().mockResolvedValue({
+      products: { data: [product], meta: { last_page: 2 } },
+      options,
+    }),
     adminProduct: vi.fn().mockResolvedValue({ product, options }),
     saveProduct: vi.fn().mockResolvedValue({ product }),
     deleteProduct: vi.fn().mockResolvedValue({ deleted: true }),
@@ -212,6 +210,8 @@ it("authenticates on a standalone dashboard and handles every role and shop swit
   await screen.press("Sign out");
   await screen.press("Switch shop");
   expect(router.push.mock.calls).toEqual([["/products"], ["/orders"]]);
+  await screen.press("Assistant");
+  expect(router.push).toHaveBeenLastCalledWith("/assistant");
   expect(switchShop).toHaveBeenCalledTimes(2);
   store.user = { ...user, role: "customer" };
   await screen.rerender(createElement(Home));
@@ -329,5 +329,28 @@ it("renders a safe transition label when the server omits its display label", as
   });
   const screen = await render(createElement(Orders));
   expect(screen.container.textContent).toContain("Mark next stage");
+  await screen.unmount();
+});
+
+it("shows payment status and blocks the fulfillment control for unpaid orders", async () => {
+  store.api.adminOrders.mockResolvedValueOnce({
+    orders: {
+      data: [
+        {
+          id: 1,
+          total: 100,
+          status: "placed",
+          payment_label: "Awaiting payment",
+          can_fulfill: false,
+        },
+      ],
+      meta: { last_page: 1 },
+    },
+    options: { placed: "Placed", processing: "Processing" },
+    transitions: { placed: "processing" },
+  });
+  const screen = await render(createElement(Orders));
+  expect(screen.container.textContent).toContain("Awaiting payment");
+  expect(screen.container.textContent).not.toContain("Mark Processing");
   await screen.unmount();
 });

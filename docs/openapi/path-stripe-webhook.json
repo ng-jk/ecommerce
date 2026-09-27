@@ -1,0 +1,51 @@
+{
+  "post": {
+    "operationId": "stripeWebhook",
+    "summary": "Stripe-signed webhook; machine-only and never callable by an assistant",
+    "x-machine-only": true,
+    "x-raw-body-signature": "Stripe-Signature",
+    "parameters": [
+      {
+        "name": "Stripe-Signature",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Stripe signature verified against the exact raw request body."
+      }
+    ],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Raw Stripe event JSON. Signature verification must use the unmodified request bytes."
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Verified event durably accepted; this response does not claim payment success."
+      },
+      "400": {
+        "description": "Malformed event body."
+      },
+      "401": {
+        "description": "Missing or invalid Stripe signature."
+      },
+      "413": {
+        "description": "Event body too large."
+      },
+      "429": {
+        "description": "Rate limited."
+      },
+      "503": {
+        "description": "Stripe signature verification is not configured."
+      }
+    }
+  }
+}

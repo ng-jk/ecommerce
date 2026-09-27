@@ -2,6 +2,7 @@
 
 namespace App\Domain\Assistant;
 
+use App\Domain\AccessPolicy;
 use App\Models\Order;
 use App\Models\User;
 
@@ -17,6 +18,7 @@ class ToolRegistry
             }
             if (isset($tool['parameters']['properties']['status'])) {
                 $tool['parameters']['properties']['status']['enum'] = array_keys(Order::options());
+                $tool['parameters']['properties']['status']['options'] = Order::options();
             }
             if ($tool['action'] === 'cart.update') {
                 $tool['description'] = 'Add a product to my cart by product name and quantity, or replace the complete cart using items.';
@@ -30,7 +32,7 @@ class ToolRegistry
 
     public function available(?User $user): array
     {
-        return array_values(array_filter($this->all(), fn (array $tool): bool => $tool['callable'] && ($tool['role'] === 'public' || ($user && ($tool['role'] === 'user' || $user->role === User::Admin)))));
+        return array_values(array_filter($this->all(), fn (array $tool): bool => $tool['callable'] && app(AccessPolicy::class)->allows($tool['action'], $user) && ($tool['role'] === 'public' || ($user && ($tool['role'] === 'user' || $user->role === User::Admin)))));
     }
 
     public function find(string $name, ?User $user): array
@@ -45,6 +47,6 @@ class ToolRegistry
 
     public function describe(array $tool, string $shop): array
     {
-        return ['name' => $tool['name'], 'method' => $tool['method'], 'path' => str_replace('{shop}', $shop, $tool['path']), 'description' => $tool['description'], 'parameters' => $tool['parameters'], 'confirmation_required' => $tool['confirmation']];
+        return ['name' => $tool['name'], 'method' => $tool['method'], 'path' => str_replace('{shop}', $shop, $tool['path']), 'description' => $tool['description'], 'parameters' => $tool['parameters'], 'confirmation_required' => $tool['confirmation'], 'natural_language_confirmation_required' => true, 'allowed_roles' => app(AccessPolicy::class)->roles($tool['action'])];
     }
 }

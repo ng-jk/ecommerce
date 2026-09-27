@@ -30,7 +30,8 @@ export default function Orders() {
               Order #{order.id} · {money(order.total)} ·{" "}
               {options[order.status] ?? "Unavailable status"}
             </Copy>
-            {next && (
+            <Copy>{order.payment_label ?? "Payment details unavailable"}</Copy>
+            {next && order.can_fulfill !== false && (
               <Button
                 title={`Mark ${options[next] ?? "next stage"}`}
                 onPress={() => {

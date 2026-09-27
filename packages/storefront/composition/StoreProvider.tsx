@@ -1,7 +1,7 @@
 import { createClient } from "@portfolio/api-client/data/repository";
 import type { ShopSlug } from "@portfolio/api-client/domain/types";
 import * as Crypto from "expo-crypto";
-import React,{ useMemo } from "react";
+import React, { useMemo } from "react";
 import { Platform } from "react-native";
 import { localStorageAdapter } from "../data/storage";
 import { StoreStateProvider } from "../presentation/view-models/context";
@@ -28,6 +28,8 @@ export function StoreProvider({
         getToken: () => storage.get("token"),
         storage,
         randomUUID: Crypto.randomUUID,
+        digest: (value) =>
+          Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, value),
       }),
     [shop, storage],
   );

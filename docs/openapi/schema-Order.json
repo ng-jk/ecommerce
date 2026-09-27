@@ -7,13 +7,6 @@
     "shop_id": {
       "type": "integer"
     },
-    "user_id": {
-      "type": "integer"
-    },
-    "checkout_key": {
-      "type": "string",
-      "format": "uuid"
-    },
     "status": {
       "type": "string",
       "enum": [
@@ -25,9 +18,8 @@
     },
     "payment_method": {
       "type": "string",
-      "enum": [
-        "simulated"
-      ]
+      "maxLength": 80,
+      "description": "Configured provider identifier such as stripe, billplz, simulated, or a custom method name."
     },
     "currency": {
       "type": "string"
@@ -56,13 +48,71 @@
     "version": {
       "type": "integer",
       "minimum": 0
+    },
+    "payment_label": {
+      "type": "string"
+    },
+    "can_fulfill": {
+      "type": "boolean"
+    },
+    "payment": {
+      "type": "object",
+      "properties": {
+        "public_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "queued",
+            "creating",
+            "pending",
+            "review",
+            "paid",
+            "cancelled"
+          ]
+        },
+        "label": {
+          "type": "string"
+        },
+        "invoice_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "provider": {
+          "type": "string",
+          "enum": [
+            "billplz",
+            "stripe",
+            "custom"
+          ]
+        },
+        "checkout_url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://(?:(?:www\\.)?billplz\\.com/.*|checkout\\.stripe\\.com/c/pay/.*)$",
+          "description": "Billplz hosted payment URL or Stripe Checkout URL at https://checkout.stripe.com/c/pay/.",
+          "nullable": true
+        },
+        "paid_at": {
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "required": [
+        "public_id",
+        "status",
+        "label",
+        "checkout_url",
+        "paid_at"
+      ],
+      "nullable": true
     }
   },
   "required": [
     "id",
     "shop_id",
-    "user_id",
-    "checkout_key",
     "status",
     "payment_method",
     "currency",

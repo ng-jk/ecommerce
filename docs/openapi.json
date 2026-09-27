@@ -50,6 +50,18 @@
     },
     "/api/v1/shops/{shop}/assistant": {
       "$ref": "./openapi/path-assistant.json"
+    },
+    "/api/v1/payments/billplz/{reference}": {
+      "$ref": "./openapi/path-billplz-webhook.json"
+    },
+    "/api/v1/payments/stripe": {
+      "$ref": "./openapi/path-stripe-webhook.json"
+    },
+    "/api/v1/payment-integrations/{integration}/confirm": {
+      "$ref": "./openapi/path-payment-integration-confirm.json"
+    },
+    "/api/v1/payment-integrations/{integration}/{event}": {
+      "$ref": "./openapi/path-payment-integration-status.json"
     }
   },
   "components": {
@@ -68,6 +80,9 @@
       },
       "CartLine": {
         "$ref": "./openapi/schema-CartLine.json"
+      },
+      "Cart": {
+        "$ref": "./openapi/schema-Cart.json"
       },
       "OrderItem": {
         "$ref": "./openapi/schema-OrderItem.json"

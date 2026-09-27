@@ -8,6 +8,9 @@ import re
 from .runner import ROOT, run
 
 REQUIRED = (
+    "payment_paid_is_terminal",
+    "payment_unverified_unchanged",
+    "payment_release_is_idempotent",
     "assistant_unauthorized_no_execution",
     "assistant_incomplete_no_execution",
     "assistant_write_requires_confirmation",

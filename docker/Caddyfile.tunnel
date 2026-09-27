@@ -1,0 +1,59 @@
+{
+	auto_https off
+	admin off
+}
+
+# Only the loopback-bound origin accepts tunnel traffic. The Cloudflare edge
+# provides HTTPS; fix scheme/port here instead of trusting client forwarding fields.
+(api) {
+	request_header -X-Forwarded-For
+	request_header -X-Forwarded-Host
+	request_header -X-Forwarded-Prefix
+	request_header -Forwarded
+	request_header X-Forwarded-Port 443
+	request_header X-Forwarded-Proto https
+	handle_path /storage/* {
+		root * /srv/uploads
+		file_server
+	}
+	@backend path /api/* /sanctum/* /up
+	handle @backend {
+		root * /var/www/html/public
+		php_fastcgi backend:9000 {
+			env HTTPS on
+			env SERVER_PORT 443
+			header_up X-Forwarded-Proto https
+			header_up X-Forwarded-Port 443
+			header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
+		}
+		file_server
+	}
+}
+
+http://{$FASHION_HOST}:8080 {
+	import api
+	handle {
+		reverse_proxy fashion:80
+	}
+}
+http://{$ELECTRONICS_HOST}:8080 {
+	import api
+	handle {
+		reverse_proxy electronics:80
+	}
+}
+http://{$ADMIN_HOST}:8080 {
+	import api
+	handle {
+		reverse_proxy admin:80
+	}
+}
+http://{$API_HOST}:8080 {
+	import api
+	handle {
+		respond "Not found" 404
+	}
+}
+http://:8080 {
+	respond "Unknown host" 404
+}

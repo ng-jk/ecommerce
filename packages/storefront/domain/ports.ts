@@ -1,13 +1,15 @@
 import type {
-Address,
-CartInput,
-CartLine,
-Order,
-Page,
-Product,
-User,
+  Address,
+  CartInput,
+  CartLine,
+  Order,
+  Page,
+  Product,
+  User,
 } from "@portfolio/api-client/domain/types";
+import type { AssistantPort } from "@portfolio/api-client/domain/assistant";
 export interface CommerceClient {
+  assistant?: AssistantPort["assistant"];
   catalog(
     search?: string,
     category?: string,
@@ -29,9 +31,17 @@ export interface CommerceClient {
   ): Promise<{ user: User; token?: string | undefined }>;
   me(): Promise<{ user: User }>;
   logout(): Promise<void>;
-  cart(): Promise<{ items: CartLine[] }>;
+  cart(): Promise<{
+    items: CartLine[];
+    payment_methods?: Record<string, string> | undefined;
+    default_payment_method?: string | null | undefined;
+  }>;
   setCart(items: CartInput[]): Promise<{ items: CartLine[] }>;
-  checkout(key: string, address: Address): Promise<{ order: Order }>;
+  checkout(
+    key: string,
+    address: Address,
+    paymentMethod?: string,
+  ): Promise<{ order: Order }>;
   orders(page?: number): Promise<{
     orders: Page<Order>;
     options: Record<string, string>;
@@ -46,7 +56,10 @@ export interface CommerceClient {
   ): Promise<{ product: Product; options: Record<string, string> }>;
   saveProduct(product: Partial<Product>): Promise<{ product: Product }>;
   deleteProduct(id: number, version: number): Promise<{ deleted: boolean }>;
-  adminOrders(page?: number, status?: string): Promise<{
+  adminOrders(
+    page?: number,
+    status?: string,
+  ): Promise<{
     orders: Page<Order>;
     options: Record<string, string>;
     transitions: Record<string, string>;

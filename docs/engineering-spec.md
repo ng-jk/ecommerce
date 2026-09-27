@@ -3,11 +3,13 @@
 Status: required target architecture; recorded requirements, not a claim of implementation.
 Companion: [implementation plan](implementation-plan.md).
 Mandatory CRUD requirements: [C01–C10](crud-rules.md), applicable to every module.
+Shopify-style expansion: [scope, delivery plan and acceptance](shopify-expansion-plan.md).
 
 ## Scope and requirement identifiers
 
 This specification applies to Laravel, the fashion/electronics Expo apps, the Expo
-admin app, shared packages, infrastructure, tests, and the Python CI/CD tooling.
+admin app, shared packages, infrastructure, tests, and the manual Python release
+tooling.
 Reviewers must cite requirement identifiers and attach evidence for compliance.
 Existing code is a migration baseline, not an exception to these requirements.
 
@@ -253,59 +255,69 @@ a rule-to-model-to-handler mapping and run differential transition traces agains
 the real implementation. An end-to-end implementation correctness claim additionally
 requires a verified refinement link; tests alone do not supply that proof.
 
-## R11 — Python-orchestrated CI/CD
+## R11 — Python-orchestrated manual release pipeline
 
-Python is the pipeline orchestrator; GitHub Actions schedules it, while Composer,
-PHP, Node/TypeScript, Lean/Lake, and Docker remain their respective build tools.
-The same Python commands must run locally and in CI, with pinned tooling, timeouts,
-structured subprocess arguments, nonzero failure propagation, and redacted logs.
+Python is the local verification and manual release orchestrator. GitHub Actions workflows are not used; pushes and pull requests do not schedule verification or deployment. The same pinned tools run locally. Use `python -m tools.pipeline verify` for the required verification gates and `python tools/manual_release.py {testing|production} --config .deploy/release.json` for deployment. The older `python -m tools.pipeline deploy` command describes a prior release design and is not the current EC2 deployment interface. The release script requires a clean checkout and a verification report tied to the exact commit.
 
 Required gates, in order of dependency:
 
-1. File-size inventory, dependency boundaries, route/control inventory, strict
-   compiler configuration, formatting/lint, secret scan, dependency review.
+1. File-size inventory, dependency boundaries, route/control inventory, strict compiler configuration, formatting/lint, secret scan, dependency review.
 2. Application unit tests, 100% coverage, and Python orchestrator tests.
 3. Lean proof compilation, axiom audit, required theorem/signature audit.
-4. PostgreSQL/worker integration, model differential tests, adversarial API and
-   concurrency/recovery tests; fail on unexpected skipped tests.
-5. API functional purchase/admin flows, API schema compatibility and generated-client
-   drift checks. Browser/native and mutation suites remain optional.
-6. Build versioned backend/worker and all three frontend web images; scan and
-   record digests, provenance, test results, and a release manifest for one commit.
-7. Deploy the immutable images to staging, run migrations and smoke tests, then
-   promote those same digests to the configured production environment.
+4. PostgreSQL/worker integration, model differential tests, adversarial API and concurrency/recovery tests; fail on unexpected skipped tests.
+5. API functional purchase/admin flows, API schema compatibility and generated-client drift checks. Browser/native and mutation suites remain optional.
+6. Build the backend/worker and all three frontend web apps on the target EC2 host through `compose.server.yaml`; this release path does not publish images to a registry.
+7. Manually deploy `testing` to its isolated environment and verify configured HTTPS and worker readiness. Production deploys only from `deployment`; after the production server passes HTTP and worker readiness, the script fast-forwards and pushes that same commit to `main`. `main` is a promotion record, not the production deploy branch. Testing never promotes or deploys to production.
 
-PR checks have no deployment secrets or production access. Production deployment
-uses a protected environment and only the configured trusted branch/tag policy.
-Never execute untrusted PR scripts in a privileged deployment job.
+PR checks have no deployment secrets or production access. The operator explicitly invokes each deploy with a private local config and verified SSH host key. Never execute untrusted PR scripts in a privileged deployment job. `developement` is the exact spelling of a local-only branch and must not be pushed or deployed.
 
-Deployment must include backend, workers, scheduler, fashion/electronics/admin web,
-gateway, and database migration orchestration. Use least-privilege credentials,
-pinned SSH host identity or an equivalent authenticated deployment channel,
-deployment serialization, health/readiness checks, and auditable release metadata.
+Deployment must include backend, workers, scheduler, fashion/electronics/admin web, gateway, and database migration orchestration. Use least-privilege credentials, pinned SSH host identity, deployment serialization, health/readiness checks, and auditable release metadata. The current release tool uploads a source archive over SSH and runs `sudo docker compose -f compose.server.yaml`; it builds locally on EC2, with no public inbound 80/443 requirement and no image registry. Cloudflare Tunnel routes the public hostnames to the host's loopback-bound gateways. Supabase is a separately managed service on a private external Docker network; its configuration and secret files remain server-only.
 
-Drain workers safely and keep command/schema compatibility across rolling versions.
-Use expand/contract migrations and tested backups. On failure, restore previous
-compatible image digests; never blindly reverse a destructive database migration.
-Verify operation completion, tenant isolation, and frontend/API compatibility
-after deployment. Do not roll back data independently of its release schema.
+Drain workers safely and keep command/schema compatibility across rolling versions. Use expand/contract migrations and tested backups. On failure, restore previous compatible release images when explicitly enabled; do not assume database migrations can be reversed. Verify operation completion, tenant isolation, and frontend/API compatibility after deployment. Do not roll back data independently of its release schema.
 
-Docker deploys Expo web exports. Android/iOS require separate native build,
-signing, distribution, and platform test jobs; Docker web deployment does not
-install native apps. Signing and production credentials remain external secrets.
+Docker deploys Expo web exports. Android/iOS require separate native build, signing, distribution, and platform test jobs; Docker web deployment does not install native apps. Signing and production credentials remain external secrets.
+## R14 — Multi-agent implementation and model selection
 
-## Review acceptance record
+For the Shopify-style expansion, spawn multiple subagents for independent bounded
+implementation/review jobs, choosing different available models by job type.
+Use gpt-6-astra for architecture, payment/security/concurrency review and Lean
+model review; gpt-6-sol for backend, frontend and test implementation; use
+gpt-6-luna for bounded documentation, inventories and mechanical consistency
+checks. Increase model capability when the task requires it; record actual model,
+scope and evidence. Never silently substitute an unavailable requested model.
+The coordinating agent owns contracts, integration, cross-module verification and
+the final acceptance report. Give each agent explicit file ownership; do not let
+agents concurrently edit shared contracts or migrations. Delegate only independent
+work, within available concurrency slots. Agent completion is not acceptance:
+integrated tests, review and the evidence gates must pass. Model choice does not
+change FunctionGemma 270M as the application's conversational routing model.
+
+## R15 — Expansion parity and payment authority
+
+Follow the linked expansion plan for the complete prior Shopify capability
+inventory, Stripe-default multi-provider payments, custom invoice attestations,
+UI/API/AI parity and evidence-based completion. This is a target requirement;
+it supersedes the historical simulated-default payment choice when implemented.
+Provider webhooks and infrastructure endpoints remain restricted machine APIs,
+not customer-callable tools. All business capabilities must have authorized UI,
+API and AI paths; permissions remain authoritative at worker execution.
+
+## Review acceptance evidence
 
 Each change records affected requirement IDs, implementation paths, tests and
 reports, proof theorem/model mappings, assumptions, migration/rollback implications,
 and unresolved deviations. Missing evidence is an open item, not a passing review.
 
-## Current delivery hold
+## Historical delivery hold
 
-Deployment and release are on hold at the user’s request. Build and run locally
-for availability and visual review; do not publish images or deploy remotely.
+This hold predates the user's explicit authorization for the initial deployment. It is superseded by that authorization and the current manual deployment procedure above. This record does not claim that a deployment succeeded.
 
 ## R12 — Conversational API and FunctionGemma
+
+User update (2026-09-27): use Laravel AI SDK v1 as the AI integration layer.
+FunctionGemma remains the inference model, accessed through the private compatible
+adapter. SDK tool proposals never bypass the authoritative confirmation and worker
+pipeline. SDK conversation helpers do not replace ownership/tenant checks.
 
 All versioned APIs belong to the generated tool registry. Every commerce action
 is discoverable according to the caller's role. The conversational endpoint and
@@ -334,3 +346,37 @@ confirmation guard model only. No claim of proving neural inference is permitted
 
 Natural-language reads also require review and confirmation. Discard model values
 not grounded in the current message; preserve validated prior conversation data.
+
+## R13 — Configured business permissions and assistant parity
+
+The explicit business-action configuration is `backend/config/commerce.php`.
+It enumerates enabled actions and guest/customer/admin role allowlists; unknown
+or disabled actions fail closed. Ordinary authenticated users are customers.
+Configuration may restrict but cannot elevate existing authorization boundaries.
+Apply it to REST ingress, worker execution, AI discovery and confirmation.
+Discovery returns the effective caller role, permitted tools, schemas and roles.
+The same 17 business tools cover both shops, with tenant isolation preserved.
+API tests must invoke every tool through the assistant, assert business outcomes,
+and save redacted wire evidence. Real-model routing accuracy is a separate metric;
+passing structured dispatch cannot be described as perfect natural-language routing.
+
+
+## Payment integration implementation (2026-09-26)
+
+Billplz hosted DuitNow QR is opt-in; simulated checkout remains the default.
+Payment state is independent of fulfillment. Existing checkout/orders/admin-orders
+and AI tools expose server-owned payment metadata; the provider webhook is registered
+but deliberately not callable by users or the model. The webhook only authenticates
+and persists an inbox event. Workers perform all settlement logic and provider I/O,
+with I/O outside SQL transactions, lease fencing and strict bill/reference/amount
+matching. Terminal paid/cancelled states cannot be reopened. Stock release occurs
+once and only after verified provider deletion, never on redirect or failed attempt.
+Ambiguous POST creation is not retried; stock remains reserved for merchant review.
+
+Theorems `payment_paid_is_terminal`, `payment_unverified_unchanged` and
+`payment_release_is_idempotent` model guards in `PaymentProcessor::apply`.
+`PaymentTest` exercises PHP HTTP handlers and provider failures with a real database;
+`tests/api/test_payments.py` exercises real HTTP, PostgreSQL and workers with a
+provider fake mounted only into the isolated test stack. Neither substitutes for
+merchant sandbox/UAT or proves the entire PHP implementation. Configuration,
+remaining recovery/refund limitations and activation steps are in README.

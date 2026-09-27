@@ -44,7 +44,7 @@ for (const [shop, product] of [
     await page.getByLabel("City", { exact: true }).fill("Melaka");
     await page.getByLabel("Postcode").fill("75000");
     await page
-      .getByRole("button", { name: "Place demo order", exact: true })
+      .getByRole("button", { name: "Place order", exact: true })
       .click();
     await expect(
       page.getByRole("heading", { name: "Your orders." }),

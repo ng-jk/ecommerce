@@ -1,0 +1,7 @@
+services:
+  backend:
+    volumes:
+      - ./backend/config/commerce.php:/var/www/html/config/commerce.php:ro
+  worker:
+    volumes:
+      - ./backend/config/commerce.php:/var/www/html/config/commerce.php:ro

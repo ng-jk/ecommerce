@@ -8,10 +8,15 @@ const state = vi.hoisted(() => ({
   OS: "web",
   create: vi.fn(),
   uuid: vi.fn(() => "uuid"),
+  digest: vi.fn(async () => "hash"),
   replace: vi.fn(),
 }));
 vi.mock("react-native", () => ({ Platform: state }));
-vi.mock("expo-crypto", () => ({ randomUUID: state.uuid }));
+vi.mock("expo-crypto", () => ({
+  randomUUID: state.uuid,
+  digestStringAsync: state.digest,
+  CryptoDigestAlgorithm: { SHA256: "SHA-256" },
+}));
 vi.mock("expo-router", () => ({
   Stack: () => createElement("span", {}, "Stack"),
   router: { replace: state.replace },
@@ -71,12 +76,14 @@ it("composes browser/native clients with a shop-scoped token port and configured
       native: boolean;
       origin: string;
       getToken: () => Promise<string | null>;
+      digest: (value: string) => Promise<string>;
     };
     expect(options.native).toBe(os !== "web");
     expect(options.origin).toBe(
       os === "web" ? "" : (origin ?? "http://localhost:8080"),
     );
     expect(await options.getToken()).toBe("token-value");
+    expect(await options.digest("private identity")).toBe("hash");
     expect(container.textContent).toBe("Content");
   }
   vi.unstubAllEnvs();

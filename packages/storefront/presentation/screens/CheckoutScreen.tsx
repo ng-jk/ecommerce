@@ -1,19 +1,32 @@
 import { money } from "@portfolio/api-client";
 import { View } from "react-native";
 import {
-Button,
-Copy,
-Field,
-Heading,
-Loading,
-Page,
-Panel,
-SignInRequired,
+  Button,
+  Copy,
+  Field,
+  Heading,
+  Loading,
+  Page,
+  Panel,
+  SignInRequired,
 } from "../components/ui";
 import { useCheckout } from "../view-models/useCheckout";
+import { nextChoice } from "../../domain/assistant";
 export function CheckoutScreen() {
-  const { user, ready, cart, busy, address, setAddress, submit, subtotal } =
-    useCheckout();
+  const {
+    user,
+    ready,
+    cart,
+    busy,
+    address,
+    setAddress,
+    submit,
+    subtotal,
+    paymentMethods,
+    paymentMethod,
+    setPaymentMethod,
+  } = useCheckout();
+  const paymentKeys = Object.keys(paymentMethods ?? {});
   return (
     <Page>
       <Heading>The final little details.</Heading>
@@ -41,17 +54,34 @@ export function CheckoutScreen() {
               />
             ))}
             <Copy muted>Country: Malaysia</Copy>
+            {paymentMethods !== undefined && paymentKeys.length === 0 && (
+              <Copy>
+                Payment is currently unavailable. Try again after the merchant
+                configures a payment method.
+              </Copy>
+            )}
+            {paymentKeys.length > 0 && (
+              <Button
+                title={`Payment: ${paymentMethods[paymentMethod] ?? "Choose an available method"}`}
+                disabled={busy}
+                onPress={() =>
+                  setPaymentMethod(nextChoice(paymentKeys, paymentMethod))
+                }
+              />
+            )}
             <Copy size={22}>
               Total: {money(subtotal + (cart.length ? 800 : 0))}
             </Copy>
             <Copy size={13} muted>
-              This is a simulated checkout. No payment is taken. The server
-              confirms current prices and stock when you place the order.
+              We confirm current prices and stock when you place the order.
+              Payment instructions and status appear on your orders page.
             </Copy>
             <Button
-              title={busy ? "Placing order…" : "Place demo order"}
+              title={busy ? "Placing order…" : "Place order"}
               disabled={
                 busy ||
+                (paymentMethods !== undefined && paymentKeys.length === 0) ||
+                (paymentKeys.length > 0 && !paymentMethods[paymentMethod]) ||
                 !address.name ||
                 !address.line1 ||
                 !address.city ||

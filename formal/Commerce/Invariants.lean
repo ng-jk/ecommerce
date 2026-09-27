@@ -103,4 +103,35 @@ theorem assistant_write_requires_confirmation (authorized complete : Bool) :
 #print axioms money_total_correct
 #print axioms back_never_temp
 #print axioms order_advance_valid
+
+/-- Verified provider state only; authentication, amount and reference checks are
+    preconditions implemented by PaymentProcessor.apply and tested separately. -/
+inductive PaymentStatus where
+  | pending | paid | cancelled
+  deriving DecidableEq
+
+def settlePayment (current requested : PaymentStatus) (verified : Bool) : PaymentStatus :=
+  if current = .paid ∨ current = .cancelled then current
+  else if verified then requested else current
+
+theorem payment_paid_is_terminal (requested : PaymentStatus) (verified : Bool) :
+    settlePayment .paid requested verified = .paid := by
+  simp [settlePayment]
+
+theorem payment_unverified_unchanged (current requested : PaymentStatus) :
+    settlePayment current requested false = current := by
+  simp [settlePayment]
+
+def releaseReservation (released : Bool) (stock quantity : Nat) : Bool × Nat :=
+  if released then (true, stock) else (true, stock + quantity)
+
+theorem payment_release_is_idempotent (released : Bool) (stock quantity : Nat) :
+    let first := releaseReservation released stock quantity
+    releaseReservation first.1 first.2 quantity = first := by
+  cases released <;> simp [releaseReservation]
+
+#print axioms payment_paid_is_terminal
+#print axioms payment_unverified_unchanged
+#print axioms payment_release_is_idempotent
+
 end Commerce
