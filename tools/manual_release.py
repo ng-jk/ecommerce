@@ -19,16 +19,16 @@ def run(args, *, cwd=ROOT, input=None):
     result = subprocess.run(
         args,
         cwd=cwd,
-        input=input,
+        input=None if input is None else input.encode("utf-8"),
         capture_output=True,
-        text=True,
+        text=False,
         timeout=3600,
         check=False,
     )
     if result.returncode:
         # Remote commands can include operational configuration; never print stdout/stderr.
         raise RuntimeError(f"{args[0]} failed with exit code {result.returncode}")
-    return result.stdout.strip()
+    return result.stdout.decode("utf-8").strip()
 
 
 def configuration(path, environment):

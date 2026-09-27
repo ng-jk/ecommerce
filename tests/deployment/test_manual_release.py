@@ -232,7 +232,7 @@ def test_command_failure_does_not_disclose_stderr(monkeypatch):
     monkeypatch.setattr(
         release.subprocess,
         "run",
-        lambda *a, **k: SimpleNamespace(returncode=1, stdout="", stderr="secret"),
+        lambda *a, **k: SimpleNamespace(returncode=1, stdout=b"", stderr=b"secret"),
     )
     with pytest.raises(RuntimeError, match="exit code 1") as error:
         release.run(["ssh", "host"])
@@ -240,7 +240,7 @@ def test_command_failure_does_not_disclose_stderr(monkeypatch):
     monkeypatch.setattr(
         release.subprocess,
         "run",
-        lambda *a, **k: SimpleNamespace(returncode=0, stdout=" ready\n"),
+        lambda *a, **k: SimpleNamespace(returncode=0, stdout=b" ready\n"),
     )
     assert release.run(["git", "status"]) == "ready"
 
@@ -361,3 +361,30 @@ def test_shared_database_is_refused(setup):
     path.write_text(json.dumps(config))
     with pytest.raises(ValueError, match="separate database"):
         release.configuration(path, "testing")
+
+
+def test_runner_preserves_literal_lf_in_actual_subprocess():
+    import sys
+
+    script = "set -eu\nprintf 'ready'\n# café\n"
+    result = release.run(
+        [sys.executable, "-c", "import sys; print(sys.stdin.buffer.read().hex())"],
+        input=script,
+    )
+    assert bytes.fromhex(result) == script.encode("utf-8")
+    assert b"\r\n" not in bytes.fromhex(result)
+
+
+def test_runner_sends_utf8_bytes_without_text_translation(monkeypatch):
+    from types import SimpleNamespace
+
+    calls = []
+
+    def run(*args, **kwargs):
+        calls.append(kwargs)
+        return SimpleNamespace(returncode=0, stdout="prêt\n".encode())
+
+    monkeypatch.setattr(release.subprocess, "run", run)
+    assert release.run(["ssh", "host", "sh -s"], input="echo ok\n") == "prêt"
+    assert calls[0]["input"] == b"echo ok\n"
+    assert calls[0]["text"] is False
