@@ -1,5 +1,5 @@
-import runpy
 import json
+import runpy
 from http.server import ThreadingHTTPServer
 from threading import Thread
 from unittest.mock import Mock

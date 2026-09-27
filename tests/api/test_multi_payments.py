@@ -11,7 +11,6 @@ import httpx
 from tests.api.test_assistant_matrix import Assistant
 from tests.api.test_worker_api import Client, address
 
-
 BASE = "http://localhost:8088"
 CUSTOM_TOKEN = "TEST_CUSTOM_PAYMENT_TOKEN_2026_WITH_MORE_THAN_THIRTY_TWO_BYTES"
 

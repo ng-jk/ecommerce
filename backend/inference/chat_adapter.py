@@ -6,7 +6,7 @@ import uuid
 
 def infer_chat(engine, request):
     if not isinstance(request, dict):
-        raise ValueError("Invalid request")
+        raise TypeError("Invalid request")
     if request.get("model") != "google/functiongemma-270m-it":
         raise ValueError("Unsupported model")
     if request.get("stream", False) is not False:

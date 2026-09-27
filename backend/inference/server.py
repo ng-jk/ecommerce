@@ -3,8 +3,8 @@
 import json
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-from engine import Engine
 from chat_adapter import infer_chat
+from engine import Engine
 
 engine = None
 
