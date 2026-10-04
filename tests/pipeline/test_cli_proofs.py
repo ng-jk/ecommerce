@@ -120,3 +120,7 @@ def test_lean_build_and_axiom_audit(tmp_path, monkeypatch, outcome, local):
     audit.assert_called_once_with("logical model")
     assert calls[0][1:] == ["build", "Commerce"]
     assert calls[0][0] == (str(executable) if local else "lake")
+    assert [call[1:] for call in calls[1:]] == [
+        ["env", "lean", "Commerce/Invariants.lean"],
+        ["env", "lean", "Commerce/Plugins.lean"],
+    ]

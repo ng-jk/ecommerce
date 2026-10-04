@@ -7,6 +7,7 @@ vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
 const state = vi.hoisted(() => ({
   OS: "web",
   create: vi.fn(),
+  createPlugins: vi.fn(),
   uuid: vi.fn(() => "uuid"),
   digest: vi.fn(async () => "hash"),
   replace: vi.fn(),
@@ -34,6 +35,9 @@ vi.mock("expo-router", () => ({
 }));
 vi.mock("../../packages/api-client/services/commerce/data/repository", () => ({
   createClient: state.create,
+}));
+vi.mock("@portfolio/merchant-plugins", () => ({
+  createPluginClient: state.createPlugins,
 }));
 vi.mock("../../packages/storefront/services/store/data/storage", () => ({
   localStorageAdapter: () => storage,
@@ -102,6 +106,11 @@ it("composes browser/native clients with a shop-scoped token port and configured
     );
     expect(await options.getToken()).toBe("token-value");
     expect(await options.digest("private identity")).toBe("hash");
+    const pluginOptions = state.createPlugins.mock.lastCall?.[0] as typeof options;
+    expect(pluginOptions.native).toBe(options.native);
+    expect(pluginOptions.origin).toBe(options.origin);
+    expect(await pluginOptions.getToken()).toBe("token-value");
+    expect(await pluginOptions.digest("plugin operation identity")).toBe("hash");
     expect(container.textContent).toBe("Content");
   }
   vi.unstubAllEnvs();

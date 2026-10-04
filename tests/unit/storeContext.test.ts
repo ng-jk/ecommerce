@@ -65,6 +65,10 @@ async function mount(api = apiFixture(), storage = memoryStorage()) {
       createElement(StoreStateProvider, {
         shop: "fashion",
         api,
+        plugins: {
+          list: vi.fn(), detail: vi.fn(), install: vi.fn(), update: vi.fn(),
+          balance: vi.fn(), credit: vi.fn(),
+        },
         storage,
         randomUUID: () => "00000000-0000-4000-8000-000000000001",
         children: createElement(Probe),

@@ -90,7 +90,18 @@ def test_all_business_functions_through_assistant(shop):
     )
     admin = Assistant(shop, admin_login["token"])
     tools = admin.turn({"discover": True})["available_actions"]
-    assert len(tools) == 17
+    assert len(tools) == 21
+    installation = admin.invoke("installPlugin", {"plugin_id": "loyalty"})["plugin"]
+    assert installation["enabled"] is False
+    assert admin.invoke("adminPlugins", {"plugin_id": "loyalty"})["plugins"]["data"]
+    assert (
+        admin.invoke("adminPlugin", {"id": installation["id"]})["plugin"]["id"]
+        == installation["id"]
+    )
+    changed_plugin = admin.invoke(
+        "updatePlugin", {"id": installation["id"], "max_credit": 100}
+    )["plugin"]
+    assert changed_plugin["max_credit"] == 100 and not changed_plugin["enabled"]
     inventory = admin.invoke("adminProducts", {"page": 1})
     assert inventory["products"]["data"]
     product = admin.invoke(

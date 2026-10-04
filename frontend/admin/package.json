@@ -14,6 +14,7 @@
   "dependencies": {
     "@expo/metro-runtime": "~57.0.16",
     "@portfolio/api-client": "*",
+    "@portfolio/merchant-plugins": "*",
     "@portfolio/storefront": "*",
     "expo": "~57.0.24",
     "expo-constants": "~57.0.19",

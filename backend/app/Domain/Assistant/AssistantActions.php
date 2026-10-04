@@ -7,6 +7,7 @@ use App\Domain\StoreActions;
 use App\Models\AssistantConversation as Conversation;
 use App\Models\Operation;
 use App\Models\Order;
+use App\Models\PluginInstallation;
 use App\Models\Product;
 use App\Models\Shop;
 use App\Models\User;
@@ -26,9 +27,9 @@ class AssistantActions
             'turn.action' => 'sometimes|string|max:80', 'turn.confirm' => 'sometimes|boolean:strict', 'turn.discover' => 'sometimes|boolean:strict',
         ])->validate()['turn'];
         $registry = app(ToolRegistry::class);
-        $available = $registry->available($user);
+        $available = $registry->available($user, $shop);
         if ($input['discover'] ?? false) {
-            return ['role' => $user?->role ?? 'guest', 'status' => Conversation::Draft, 'message' => 'Choose an action or describe what you want to do.', 'available_actions' => array_map(fn ($tool) => $registry->describe($tool, $shop->slug), $available), 'required_input' => [['field' => 'message', 'type' => 'string']]];
+            return ['role' => $user?->role ?? 'guest', 'status' => Conversation::Draft, 'message' => 'Choose an action or describe what you want to do.', 'available_actions' => array_map(fn ($tool) => $registry->describe($tool, $shop->slug, $shop), $available), 'required_input' => [['field' => 'message', 'type' => 'string']]];
         }
         if (isset($input['conversation_id'])) {
             $conversation = Conversation::where('public_id', $input['conversation_id'])->where('shop_id', $shop->id)->lockForUpdate()->firstOrFail();
@@ -50,12 +51,12 @@ class AssistantActions
         }
         if ($input['confirm'] ?? false) {
             abort_unless($conversation->status === Conversation::Confirm && empty($input['data']) && empty($input['message']), 409, 'Confirm the unchanged preview in a separate turn.');
-            $tool = $registry->find($name, $user);
+            $tool = $registry->find($name, $user, $shop);
 
             return $this->execute($conversation, $tool, $draft['prepared'], $op, $shop, $user);
         }
         if (! empty($input['message'])) {
-            $tools = $name ? [$registry->find($name, $user)] : $available;
+            $tools = $name ? [$registry->find($name, $user, $shop)] : $available;
             $proposal = app(FunctionGemma::class)->propose($input['message'], $tools, $arguments);
             if ($name && $proposal['name'] !== $name) {
                 throw ValidationException::withMessages(['message' => 'The reply did not match the pending action.']);
@@ -66,7 +67,7 @@ class AssistantActions
         if (! $name) {
             throw ValidationException::withMessages(['message' => 'Describe an action or select one from discovery.']);
         }
-        $tool = $registry->find($name, $user);
+        $tool = $registry->find($name, $user, $shop);
         $arguments = $this->merge($arguments, $input['data'] ?? []);
         $missing = app(ToolInput::class)->check($tool['parameters'], $arguments);
         $choices = [];
@@ -98,7 +99,7 @@ class AssistantActions
 
         return ['conversation_id' => $conversation->public_id, 'conversation_version' => $conversation->version, 'status' => $conversation->status,
             'message' => $missing ? 'Please provide: '.implode(', ', array_column($missing, 'field')).'.' : 'Review the action and data, then send confirm: true with this conversation version.',
-            'available_actions' => [$registry->describe($tool, $shop->slug)], 'collected_data' => $visible, 'required_input' => $missing,
+            'available_actions' => [$registry->describe($tool, $shop->slug, $shop)], 'collected_data' => $visible, 'required_input' => $missing,
             'choices' => $choices, 'preview' => $this->redact($prepared), 'options' => Conversation::options()];
     }
 
@@ -139,10 +140,15 @@ class AssistantActions
         if (in_array($action, ['cart.update', 'checkout'], true)) {
             $arguments['expected_version'] = $user->version;
         }
-        if (in_array($action, ['admin.update', 'admin.delete', 'admin.advance'], true)) {
-            $model = $action === 'admin.advance' ? Order::class : Product::class;
-            $record = $model::where('shop_id', $shop->id)->lockForUpdate()->findOrFail($id);
-            $arguments['expected_version'] = $record->version;
+        if (in_array($action, ['admin.update', 'admin.delete', 'admin.advance', 'admin.plugin.update'], true)) {
+            if ($action === 'admin.plugin.update') {
+                $record = PluginInstallation::where('shop_id', $shop->id)->lockForUpdate()->findOrFail($id);
+                $arguments['expected_version'] = $record->version;
+            } else {
+                $model = $action === 'admin.advance' ? Order::class : Product::class;
+                $record = $model::where('shop_id', $shop->id)->lockForUpdate()->findOrFail($id);
+                $arguments['expected_version'] = $record->version;
+            }
         }
         $quote = [];
         if ($action === 'checkout') {
@@ -170,10 +176,11 @@ class AssistantActions
             abort_unless($product->version === $line['version'] && $product->price === $line['price'], 409, 'The quoted product changed. Start a new checkout.');
         }
         $child = new Operation(['shop_id' => $shop->id, 'user_id' => $user?->id, 'auth_version' => $parent->auth_version, 'token_id' => $parent->token_id, 'action' => $tool['action'], 'payload' => ['input' => $prepared['input'], 'id' => $prepared['id']]]);
+        $child->id = $parent->id;
         $result = app(ActionExecutor::class)->execute($child);
         $conversation->status = Conversation::Complete;
         $conversation->draft = [];
-        $response = ['conversation_id' => $conversation->public_id, 'conversation_version' => $conversation->version, 'status' => Conversation::Complete, 'message' => 'The '.$tool['name'].' action completed successfully.', 'executed_action' => $tool['action'], 'available_actions' => [app(ToolRegistry::class)->describe($tool, $shop->slug)], 'required_input' => [], 'api_result' => $result];
+        $response = ['conversation_id' => $conversation->public_id, 'conversation_version' => $conversation->version, 'status' => Conversation::Complete, 'message' => 'The '.$tool['name'].' action completed successfully.', 'executed_action' => $tool['action'], 'available_actions' => [app(ToolRegistry::class)->describe($tool, $shop->slug, $shop)], 'required_input' => [], 'api_result' => $result];
         $conversation->result = $response;
         $conversation->save();
 

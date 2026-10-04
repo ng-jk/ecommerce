@@ -15,7 +15,15 @@
   "frontend/fashion/src/app/menu.tsx": {
     "kind": "main",
     "fallback": "/",
-    "controls": ["menu", "shop", "bag", "account", "orders", "assistant"]
+    "controls": [
+      "menu",
+      "shop",
+      "bag",
+      "account",
+      "orders",
+      "assistant",
+      "loyalty when enabled"
+    ]
   },
   "frontend/fashion/src/app/account.tsx": {
     "kind": "main",
@@ -77,7 +85,15 @@
   "frontend/electronics/src/app/menu.tsx": {
     "kind": "main",
     "fallback": "/",
-    "controls": ["menu", "shop", "bag", "account", "orders", "assistant"]
+    "controls": [
+      "menu",
+      "shop",
+      "bag",
+      "account",
+      "orders",
+      "assistant",
+      "loyalty when enabled"
+    ]
   },
   "frontend/electronics/src/app/account.tsx": {
     "kind": "main",
@@ -133,6 +149,7 @@
         "controls": [
           "products",
           "orders",
+          "plugins",
           "sign-out",
           "switch-shop",
           "assistant"
@@ -298,5 +315,55 @@
         ]
       }
     }
+  },
+  "frontend/fashion/src/app/loyalty.tsx": {
+    "kind": "main",
+    "fallback": "/menu",
+    "controls": ["menu", "account", "retry on error"]
+  },
+  "frontend/electronics/src/app/loyalty.tsx": {
+    "kind": "main",
+    "fallback": "/menu",
+    "controls": ["menu", "account", "retry on error"]
+  },
+  "frontend/admin/src/app/plugins/index.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "dashboard",
+      "install",
+      "enabled filter",
+      "configure collection",
+      "credit",
+      "previous",
+      "next"
+    ]
+  },
+  "frontend/admin/src/app/plugins/create.tsx": {
+    "kind": "main",
+    "fallback": "/plugins",
+    "controls": [
+      "enabled",
+      "customer access",
+      "maximum credit",
+      "install",
+      "cancel"
+    ]
+  },
+  "frontend/admin/src/app/plugins/[id]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/plugins",
+    "controls": [
+      "enabled",
+      "customer access",
+      "maximum credit",
+      "save",
+      "cancel"
+    ]
+  },
+  "frontend/admin/src/app/plugins/credit.tsx": {
+    "kind": "main",
+    "fallback": "/plugins",
+    "controls": ["plugins", "customer id", "points", "reason", "credit"]
   }
 }

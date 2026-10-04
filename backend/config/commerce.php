@@ -22,5 +22,11 @@ return [
         'admin.delete' => ['enabled' => true, 'roles' => ['admin']],
         'admin.orders' => ['enabled' => true, 'roles' => ['admin']],
         'admin.advance' => ['enabled' => true, 'roles' => ['admin']],
+        'admin.plugins' => ['enabled' => true, 'roles' => ['admin']],
+        'admin.plugin' => ['enabled' => true, 'roles' => ['admin']],
+        'admin.plugin.install' => ['enabled' => true, 'roles' => ['admin']],
+        'admin.plugin.update' => ['enabled' => true, 'roles' => ['admin']],
+        'plugin.loyalty.balance' => ['enabled' => true, 'roles' => ['customer', 'admin']],
+        'admin.plugin.loyalty.credit' => ['enabled' => true, 'roles' => ['admin']],
     ],
 ];

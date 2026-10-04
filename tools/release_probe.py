@@ -27,6 +27,7 @@ def probe(url, timeout=120):
         raise ValueError("Worker readiness requires an HTTPS public catalog URL")
     headers = {
         "Accept": "application/json",
+        "User-Agent": "Shop3i-Release-Healthcheck/1.0",
         "Idempotency-Key": str(uuid.uuid4()),
         "X-Operation-Token": uuid.uuid4().hex + uuid.uuid4().hex,
     }

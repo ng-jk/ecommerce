@@ -5,6 +5,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ACTION = {
+    "adminPlugins": ("admin.plugins", "Administrator: list this merchant's plugin installations"),
+    "adminPlugin": ("admin.plugin", "Administrator: view this merchant's plugin configuration"),
+    "installPlugin": ("admin.plugin.install", "Administrator: install an approved plugin for this merchant only"),
+    "updatePlugin": ("admin.plugin.update", "Administrator: enable, disable or configure this merchant's plugin"),
+    "loyaltyBalance": ("plugin.loyalty.balance", "Show my loyalty points for this merchant"),
+    "creditLoyalty": ("admin.plugin.loyalty.credit", "Administrator: credit loyalty points to an active customer in this merchant"),
     "catalog": ("catalog", "Search or list products in the shop"),
     "product": ("product", "View one product by ID"),
     "login": ("auth.login", "Sign in using credentials supplied securely as data"),

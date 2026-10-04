@@ -45,6 +45,10 @@ def test_worker_completes_durable_catalog_and_receipt_is_reused(monkeypatch):
     )
     probe.probe(URL)
     assert len(calls) == 3
+    assert all(
+        call.get_header("User-agent") == "Shop3i-Release-Healthcheck/1.0"
+        for call in calls
+    )
     assert calls[0].get_header("X-operation-token") == calls[2].get_header(
         "X-operation-token"
     )

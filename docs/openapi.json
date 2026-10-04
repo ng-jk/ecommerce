@@ -62,6 +62,18 @@
     },
     "/api/v1/payment-integrations/{integration}/{event}": {
       "$ref": "./openapi/path-payment-integration-status.json"
+    },
+    "/api/v1/shops/{shop}/admin/plugins": {
+      "$ref": "./openapi/path-admin-plugins.json"
+    },
+    "/api/v1/shops/{shop}/admin/plugins/{id}": {
+      "$ref": "./openapi/path-admin-plugins-id.json"
+    },
+    "/api/v1/shops/{shop}/plugins/loyalty/balance": {
+      "$ref": "./openapi/path-plugins-loyalty-balance.json"
+    },
+    "/api/v1/shops/{shop}/admin/plugins/loyalty/credit": {
+      "$ref": "./openapi/path-admin-plugins-loyalty-credit.json"
     }
   },
   "components": {

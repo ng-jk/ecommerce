@@ -55,14 +55,23 @@ def test_deployment_field_accepts_explicit_host(monkeypatch):
 
 
 def test_required_proof_source_is_accepted_but_weakened_statement_is_not():
-    source = (runner.ROOT / "formal/Commerce/Invariants.lean").read_text(
-        encoding="utf-8"
+    source = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (runner.ROOT / "formal/Commerce").glob("*.lean")
     )
     proofs.audit_source(source)
     with pytest.raises(ValueError):
         proofs.audit_source(
             source.replace("purchase_conserves_stock", "weakened_conservation")
         )
+    for theorem in (
+        "plugin_disabled_blocks_execution",
+        "plugin_credit_requires_admin",
+        "plugin_customer_revoked_not_allowed",
+        "plugin_balance_preserves_business_state",
+    ):
+        with pytest.raises(ValueError, match=f"Missing required theorem: {theorem}"):
+            proofs.audit_source(source.replace(theorem, "removed_plugin_guard"))
 
 
 def test_review_rejects_unregistered_routes_and_crowded_variants(tmp_path, monkeypatch):

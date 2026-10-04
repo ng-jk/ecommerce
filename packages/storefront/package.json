@@ -10,6 +10,7 @@
     "./screens/cart_screen": "./screens/cart_screen/index.ts",
     "./screens/checkout_screen": "./screens/checkout_screen/index.ts",
     "./screens/home_screen": "./screens/home_screen/index.ts",
+    "./screens/loyalty_screen": "./screens/loyalty_screen/index.ts",
     "./screens/menu_screen": "./screens/menu_screen/index.ts",
     "./screens/not_found_screen": "./screens/not_found_screen/index.ts",
     "./screens/orders_screen": "./screens/orders_screen/index.ts",
@@ -19,6 +20,7 @@
     "./services/cart": "./services/cart/index.ts",
     "./services/checkout": "./services/checkout/index.ts",
     "./services/navigation": "./services/navigation/index.ts",
+    "./services/plugins": "./services/plugins/index.ts",
     "./services/store": "./services/store/index.ts"
   },
   "peerDependencies": {
@@ -30,6 +32,7 @@
     "react-native": "*"
   },
   "dependencies": {
+    "@portfolio/merchant-plugins": "*",
     "react": "*",
     "react-dom": "19.2.3",
     "zod": "3.25.76"

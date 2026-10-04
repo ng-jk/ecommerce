@@ -1,4 +1,4 @@
-import { money , hostedPaymentUrlPattern } from "@portfolio/api-client";
+import { money, hostedPaymentUrlPattern } from "@portfolio/api-client";
 
 function record(value: unknown): Record<string, unknown> | null {
   return typeof value === "object" && value !== null && !Array.isArray(value)
@@ -56,6 +56,20 @@ function cartRows(items: unknown[]): string[] {
     ];
   });
 }
+function pluginRows(value: unknown, options: unknown): string[] {
+  const plugin = record(value);
+  if (!plugin) return ["Plugin details unavailable."];
+  const labels = record(record(options)?.plugin_id);
+  const label =
+    typeof plugin.plugin_id === "string"
+      ? labels?.[plugin.plugin_id]
+      : undefined;
+  if (typeof label !== "string" || label.trim() === "")
+    return ["Plugin type unavailable. Refresh this page."];
+  return [
+    `${label}${reference(plugin.id)} — ${plugin.enabled === true ? "Enabled" : "Disabled"} · Customer access ${plugin.customer_enabled === true ? "on" : "off"}`,
+  ];
+}
 const hiddenFields = new Set([
   "shop_id",
   "version",
@@ -88,6 +102,17 @@ export function assistantResultRows(value: unknown): string[] {
   if (!result) return readableRows(value);
   if ("product" in result) return productRows(result.product);
   if ("order" in result) return orderRows(result.order, record(result.options));
+  if ("plugin" in result) return pluginRows(result.plugin, result.options);
+  const balance = record(result.balance);
+  if (balance)
+    return integer(balance.points)
+      ? [`Loyalty balance: ${balance.points} points`]
+      : ["Loyalty balance unavailable."];
+  const plugins = record(result.plugins);
+  if (Array.isArray(plugins?.data))
+    return plugins.data.length === 0
+      ? ["No plugins found."]
+      : plugins.data.flatMap((item) => pluginRows(item, result.options));
   const products = record(result.products);
   if (Array.isArray(products?.data))
     return products.data.length === 0

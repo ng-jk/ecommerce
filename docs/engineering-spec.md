@@ -2,6 +2,7 @@
 
 Status: required target architecture; recorded requirements, not a claim of implementation.
 Companion: [implementation plan](implementation-plan.md).
+Merchant-scoped extensions: [bundled plugin contract and isolation](merchant-plugins.md).
 Mandatory CRUD requirements: [C01–C10](crud-rules.md), applicable to every module.
 Shopify-style expansion: [scope, delivery plan and acceptance](shopify-expansion-plan.md).
 

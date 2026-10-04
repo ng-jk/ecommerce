@@ -16,5 +16,21 @@
   "assistant_write_requires_confirmation": "9e1a24a0780336d3a9e14d8726d9170338802ac318fc226ae1cb9721764bc02b",
   "payment_paid_is_terminal": "8233c59cca4e39b949fc497244c4b4368b4f95ed1304f51a1784df3b2518c794",
   "payment_unverified_unchanged": "72f7feaef6c3fa0584fb8320f3811ea84c70f6063fb5741425f01fb8cda49ad4",
-  "payment_release_is_idempotent": "114f5ae8d5a25d81649dde5ce15bce5ae463982d59cccfdd89eda6313d6905c0"
+  "payment_release_is_idempotent": "114f5ae8d5a25d81649dde5ce15bce5ae463982d59cccfdd89eda6313d6905c0",
+  "plugin_invalid_unchanged": "348f82230809ebf5342cd9fe82430191f22b5720c0d7b58d24529dbaa939559a",
+  "plugin_unauthorized_unchanged": "cf5ed74b3cac325d13ce0aefbfbef407e7ce1ced21f1964105e3d84b620a71b6",
+  "plugin_disabled_blocks_execution": "d667ae3998c457060b87b189dd99d47e851b70d51109d32e2f5e834baaf82f58",
+  "plugin_revoked_blocks_execution": "6a209fa8c89bbac73cbebc7bef995a56d6414e41d841c7e8dfeddb98f18496b7",
+  "plugin_foreign_target_unchanged": "0f085b834684a55cb77ff032031c18de1202fcef1efa6382420724990cc72ca4",
+  "plugin_other_shop_unchanged": "42a9180d7b073434ea9c5ff5a6c5b789b91ff3e0839fd595b91fed5553b1c826",
+  "plugin_other_configuration_unchanged": "7f448a0ed111f80d04147de7f965775e1b8eb88a016ea423ef56e2bf3a205309",
+  "plugin_sequences_preserve_other_shop": "4eda4e4d28f2a7e854f86c7317544d42ddac9a3ec636861035a1c67d6fc7f54b",
+  "plugin_sequences_preserve_other_configuration": "84f045c3360028396d80894a013984eeac7a1ebb2d5f6b1377eab9be7ba328a7",
+  "plugin_customer_revoked_blocks_execution": "e1443eb68754eaafdcd60d7e33cadedfdec846da2657c3d625207cb98c3c7b27",
+  "plugin_configuration_requires_admin": "cfa291fe9cc1bbb5066003af7e605af301b24f9c9b038533022311fbf53e1241",
+  "plugin_customer_revoked_not_allowed": "624a41c2fdc1a82755568bdf2a247599d63e6c07c9b060e056b4e6dd14cb8190",
+  "plugin_credit_requires_admin": "1dc22985c071389e4a643f8ff938486ee265ff68e5988489bf36c5bed7580218",
+  "plugin_balance_preserves_business_state": "821cc5130d0b104073db377af5c8fb2e7997e55861a0d8f2e6bce5e7de0244c5",
+  "plugin_disabled_balance_not_allowed": "4ea8a0d8b4a185809a0df725240fc10c54d16e49a6854a886f638085140fa122",
+  "plugin_credit_overflow_unchanged": "09dd8bafd3d81d761d7f5ca7bc6c528a162d37c445da850791e9ce0f79b78fe7"
 }

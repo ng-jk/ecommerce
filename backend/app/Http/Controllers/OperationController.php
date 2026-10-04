@@ -30,7 +30,7 @@ class OperationController extends Controller
             abort_unless($user?->role === User::Admin, 403);
         }
         if ($action !== 'assistant') {
-            app(AccessPolicy::class)->enforce($action, $user);
+            app(AccessPolicy::class)->enforceInShop($action, $user, $shop);
         }
         $key = $request->header('Idempotency-Key');
         $receipt = $request->header('X-Operation-Token');

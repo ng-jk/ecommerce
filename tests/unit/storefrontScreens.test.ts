@@ -20,12 +20,16 @@ vi.mock(
   "react-native-safe-area-context",
   async () => await import("./nativeUnitAdapters"),
 );
-vi.mock("expo-router", () => ({
-  router,
-  Link: ({ href, children }: { href: string; children: React.ReactNode }) =>
-    createElement("a", { href }, children),
-  useLocalSearchParams: () => ({ id: "1" }),
-}));
+vi.mock("expo-router", async () => {
+  const { useEffect } = await import("react");
+  return {
+    router,
+    Link: ({ href, children }: { href: string; children: React.ReactNode }) =>
+      createElement("a", { href }, children),
+    useLocalSearchParams: () => ({ id: "1" }),
+    useFocusEffect: (callback: () => void) => useEffect(callback, [callback]),
+  };
+});
 vi.mock(
   "../../packages/storefront/screens/store_shell_screen/interface/context",
   () => ({
@@ -111,6 +115,7 @@ const state = {
     collection: "Collection",
   },
   shop: "fashion",
+  api: {},
   user: user as User | null,
   ready: true,
   busy: false,

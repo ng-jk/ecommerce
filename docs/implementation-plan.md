@@ -1,6 +1,7 @@
 # Implementation plan: verified asynchronous commerce
 
 Next expansion: [Shopify-style scope, payment design, delegation and completion gates](shopify-expansion-plan.md).
+Current change: [merchant-scoped bundled plugins](merchant-plugins.md), with a loyalty reference and UI/API/AI parity.
 
 Current implementation evidence and remaining work: [refactor status](refactor-status.md).
 The baseline below describes the starting point, not the current code.

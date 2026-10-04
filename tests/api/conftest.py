@@ -2,6 +2,7 @@
 
 import json
 import re
+import subprocess
 import threading
 from pathlib import Path
 
@@ -9,7 +10,49 @@ import httpx
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-REDACT = re.compile(r"password|token|cookie|authorization|receipt|email|signature", re.IGNORECASE)
+REDACT = re.compile(
+    r"password|token|cookie|authorization|receipt|email|signature", re.IGNORECASE
+)
+
+
+def reset_plugin_data():
+    """Only the named isolated Docker database may reset synthetic plugin data."""
+    command = [
+        "docker",
+        "exec",
+        "commerce-tests-db-1",
+        "psql",
+        "-U",
+        "commerce",
+        "-d",
+        "commerce_test",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-Atc",
+    ]
+    database = subprocess.run(
+        command + ["SELECT current_database()"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert database.stdout.strip() == "commerce_test"
+    subprocess.run(
+        command + ["TRUNCATE loyalty_credits, loyalty_balances, plugin_installations"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+
+@pytest.fixture(scope="session", autouse=True)
+def reset_isolated_plugin_fixtures():
+    reset_plugin_data()
+
+
+@pytest.fixture
+def clean_plugin_data():
+    reset_plugin_data()
 
 
 def sanitize(value):
@@ -75,11 +118,16 @@ def api_evidence(request):
     payment_events = {}
     for exchange in exchanges:
         result = exchange["response"]["body"]
-        if isinstance(result, dict) and result.get("status") in {
-            "succeeded",
-            "rejected",
-            "failed",
-        } and result.get("operation_id"):
+        if (
+            isinstance(result, dict)
+            and result.get("status")
+            in {
+                "succeeded",
+                "rejected",
+                "failed",
+            }
+            and result.get("operation_id")
+        ):
             terminal[result["operation_id"]] = result
         event_match = re.fullmatch(
             r"/api/v1/payment-integrations/[^/]+/(\d+)",
@@ -121,7 +169,8 @@ def api_evidence(request):
                                 isinstance(entry["response"]["body"], dict)
                                 and (
                                     terminal.get(
-                                        entry["response"]["body"].get("operation_id"), {}
+                                        entry["response"]["body"].get("operation_id"),
+                                        {},
                                     ).get("status")
                                     == "succeeded"
                                     if entry["response"]["body"].get("operation_id")

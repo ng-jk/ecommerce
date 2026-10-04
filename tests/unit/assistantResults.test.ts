@@ -167,3 +167,64 @@ it("keeps unknown simple responses readable and suppresses secret, tenant and tr
     assistantResultRows({ products: {}, orders: {}, logged_out: true }),
   ).toEqual(["Logged out: true"]);
 });
+it("uses model option labels for plugins and presents loyalty balances", () => {
+  const plugin = {
+    id: 3,
+    plugin_id: "loyalty",
+    enabled: true,
+    customer_enabled: false,
+    version: 9,
+  };
+  const options = { plugin_id: { loyalty: "Reward points" } };
+  expect(assistantResultRows({ plugin, options })).toEqual([
+    "Reward points #3 — Enabled · Customer access off",
+  ]);
+  expect(assistantResultRows({ plugins: { data: [plugin] }, options })).toEqual(
+    ["Reward points #3 — Enabled · Customer access off"],
+  );
+  expect(assistantResultRows({ plugins: { data: [] }, options })).toEqual([
+    "No plugins found.",
+  ]);
+  expect(assistantResultRows({ plugin: null, options })).toEqual([
+    "Plugin details unavailable.",
+  ]);
+  expect(assistantResultRows({ plugin })).toEqual([
+    "Plugin type unavailable. Refresh this page.",
+  ]);
+  expect(assistantResultRows({ balance: { points: 42 } })).toEqual([
+    "Loyalty balance: 42 points",
+  ]);
+  expect(assistantResultRows({ balance: { points: "42" } })).toEqual([
+    "Loyalty balance unavailable.",
+  ]);
+});
+
+it("rejects missing or malformed plugin labels and shows disabled customer grants accurately", () => {
+  const plugin = {
+    id: 3,
+    plugin_id: "loyalty",
+    enabled: false,
+    customer_enabled: true,
+  };
+  expect(
+    assistantResultRows({
+      plugin,
+      options: { plugin_id: { loyalty: "Rewards" } },
+    }),
+  ).toEqual(["Rewards #3 — Disabled · Customer access on"]);
+  for (const options of [
+    {},
+    { plugin_id: null },
+    { plugin_id: { loyalty: " " } },
+  ]) {
+    expect(assistantResultRows({ plugin, options })).toEqual([
+      "Plugin type unavailable. Refresh this page.",
+    ]);
+  }
+  expect(
+    assistantResultRows({
+      plugin: { ...plugin, plugin_id: 42 },
+      options: { plugin_id: { "42": "Untrusted label" } },
+    }),
+  ).toEqual(["Plugin type unavailable. Refresh this page."]);
+});

@@ -4,6 +4,8 @@ namespace App\Domain\Assistant;
 
 use App\Domain\AccessPolicy;
 use App\Models\Order;
+use App\Models\PluginInstallation;
+use App\Models\Shop;
 use App\Models\User;
 
 class ToolRegistry
@@ -30,14 +32,14 @@ class ToolRegistry
         return $tools;
     }
 
-    public function available(?User $user): array
+    public function available(?User $user, ?Shop $shop = null): array
     {
-        return array_values(array_filter($this->all(), fn (array $tool): bool => $tool['callable'] && app(AccessPolicy::class)->allows($tool['action'], $user) && ($tool['role'] === 'public' || ($user && ($tool['role'] === 'user' || $user->role === User::Admin)))));
+        return array_values(array_filter($this->all(), fn (array $tool): bool => $tool['callable'] && ($shop ? app(AccessPolicy::class)->allowsInShop($tool['action'], $user, $shop) : (app(AccessPolicy::class)->allows($tool['action'], $user) && ! str_starts_with($tool['action'], 'plugin.') && ! str_starts_with($tool['action'], 'admin.plugin.loyalty.'))) && ($tool['role'] === 'public' || ($user && ($tool['role'] === 'user' || $user->role === User::Admin)))));
     }
 
-    public function find(string $name, ?User $user): array
+    public function find(string $name, ?User $user, ?Shop $shop = null): array
     {
-        foreach ($this->available($user) as $tool) {
+        foreach ($this->available($user, $shop) as $tool) {
             if ($tool['name'] === $name) {
                 return $tool;
             }
@@ -45,8 +47,16 @@ class ToolRegistry
         abort(403, 'This action is not available.');
     }
 
-    public function describe(array $tool, string $shop): array
+    public function describe(array $tool, string $shop, ?Shop $tenant = null): array
     {
-        return ['name' => $tool['name'], 'method' => $tool['method'], 'path' => str_replace('{shop}', $shop, $tool['path']), 'description' => $tool['description'], 'parameters' => $tool['parameters'], 'confirmation_required' => $tool['confirmation'], 'natural_language_confirmation_required' => true, 'allowed_roles' => app(AccessPolicy::class)->roles($tool['action'])];
+        $roles = app(AccessPolicy::class)->roles($tool['action']);
+        if ($tenant && $tool['action'] === 'plugin.loyalty.balance') {
+            $customerEnabled = PluginInstallation::where('shop_id', $tenant->id)->where('plugin_id', PluginInstallation::Loyalty)->where('enabled', true)->where('customer_enabled', true)->exists();
+            if (! $customerEnabled) {
+                $roles = array_values(array_diff($roles, [User::Customer]));
+            }
+        }
+
+        return ['name' => $tool['name'], 'method' => $tool['method'], 'path' => str_replace('{shop}', $shop, $tool['path']), 'description' => $tool['description'], 'parameters' => $tool['parameters'], 'confirmation_required' => $tool['confirmation'], 'natural_language_confirmation_required' => true, 'allowed_roles' => $roles];
     }
 }

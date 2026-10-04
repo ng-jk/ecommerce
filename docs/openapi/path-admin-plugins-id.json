@@ -1,0 +1,204 @@
+{
+  "get": {
+    "operationId": "adminPlugin",
+    "parameters": [
+      {
+        "name": "shop",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "fashion",
+            "electronics"
+          ]
+        }
+      },
+      {
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "in": "header",
+        "name": "X-Operation-Token",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        }
+      }
+    ],
+    "security": [
+      {
+        "cookieAuth": []
+      },
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Accepted"
+            }
+          }
+        }
+      }
+    },
+    "description": "Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result."
+  },
+  "patch": {
+    "operationId": "updatePlugin",
+    "parameters": [
+      {
+        "name": "shop",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "fashion",
+            "electronics"
+          ]
+        }
+      },
+      {
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "in": "header",
+        "name": "X-Operation-Token",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        }
+      }
+    ],
+    "security": [
+      {
+        "cookieAuth": []
+      },
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Accepted"
+            }
+          }
+        }
+      }
+    },
+    "description": "Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result.",
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "expected_version": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2147483647
+              },
+              "enabled": {
+                "type": "boolean"
+              },
+              "customer_enabled": {
+                "type": "boolean"
+              },
+              "max_credit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10000
+              }
+            },
+            "required": [
+              "expected_version"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  }
+}

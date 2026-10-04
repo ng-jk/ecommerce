@@ -17,7 +17,7 @@ Route::prefix('v1/shops/{shop:slug}')->middleware('throttle:'.config('commerce.r
     Route::middleware(['auth:sanctum', 'shop.access'])->group(function (): void {
         Route::get('auth/me', [AuthController::class, 'me']);
         Route::post('auth/logout', [OperationController::class, 'submit'])->name('auth.logout');
-        foreach ([['get', 'cart', 'cart.read'], ['put', 'cart', 'cart.update'], ['post', 'checkout', 'checkout'], ['get', 'orders', 'orders'], ['get', 'admin/products', 'admin.products'], ['get', 'admin/products/{id}', 'admin.product'], ['post', 'admin/products', 'admin.create'], ['patch', 'admin/products/{id}', 'admin.update'], ['delete', 'admin/products/{id}', 'admin.delete'], ['get', 'admin/orders', 'admin.orders'], ['patch', 'admin/orders/{id}', 'admin.advance']] as [$method,$path,$action]) {
+        foreach ([['get', 'cart', 'cart.read'], ['put', 'cart', 'cart.update'], ['post', 'checkout', 'checkout'], ['get', 'orders', 'orders'], ['get', 'admin/products', 'admin.products'], ['get', 'admin/products/{id}', 'admin.product'], ['post', 'admin/products', 'admin.create'], ['patch', 'admin/products/{id}', 'admin.update'], ['delete', 'admin/products/{id}', 'admin.delete'], ['get', 'admin/orders', 'admin.orders'], ['patch', 'admin/orders/{id}', 'admin.advance'], ['get', 'admin/plugins', 'admin.plugins'], ['get', 'admin/plugins/{id}', 'admin.plugin'], ['post', 'admin/plugins', 'admin.plugin.install'], ['patch', 'admin/plugins/{id}', 'admin.plugin.update'], ['get', 'plugins/loyalty/balance', 'plugin.loyalty.balance'], ['post', 'admin/plugins/loyalty/credit', 'admin.plugin.loyalty.credit']] as [$method,$path,$action]) {
             Route::$method($path, [OperationController::class, 'submit'])->name($action);
         }
     });

@@ -6,6 +6,7 @@ import {
   type StoragePort,
   type User,
 } from "@portfolio/api-client";
+import type { PluginClient } from "@portfolio/merchant-plugins";
 import {
   createContext,
   useCallback,
@@ -37,6 +38,7 @@ type Store = {
   shop: ShopSlug;
   theme: StoreTheme;
   api: CommerceClient;
+  plugins: PluginClient;
   user: User | null;
   cart: CartLine[];
   paymentMethods: Record<string, string>;
@@ -61,12 +63,14 @@ export const Context = createContext<Store | null>(null);
 export function useStoreState({
   shop,
   api,
+  plugins,
   storage,
   randomUUID,
   theme,
 }: {
   shop: ShopSlug;
   api: CommerceClient;
+  plugins: PluginClient;
   storage: StoragePort;
   randomUUID: () => string;
   theme: StoreTheme;
@@ -175,6 +179,7 @@ export function useStoreState({
     shop,
     theme,
     api,
+    plugins,
     user,
     cart,
     paymentMethods,

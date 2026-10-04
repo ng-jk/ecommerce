@@ -1,0 +1,13 @@
+{
+  "name": "@portfolio/merchant-plugins",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "@portfolio/api-client": "*",
+    "zod": "3.25.76"
+  }
+}

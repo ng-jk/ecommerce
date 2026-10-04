@@ -349,4 +349,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/shops/{shop}/admin/plugins": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result. */
+        get: operations["adminPlugins"];
+        put?: never;
+        /** @description Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result. */
+        post: operations["installPlugin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/shops/{shop}/admin/plugins/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result. */
+        get: operations["adminPlugin"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** @description Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result. */
+        patch: operations["updatePlugin"];
+        trace?: never;
+    };
+    "/api/v1/shops/{shop}/plugins/loyalty/balance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result. */
+        get: operations["loyaltyBalance"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/shops/{shop}/admin/plugins/loyalty/credit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result. */
+        post: operations["creditLoyalty"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }

@@ -10,11 +10,12 @@ export function StoreProvider({
   shop: ShopSlug;
   children: React.ReactNode;
 }) {
-  const { api, storage, randomUUID } = useStoreAdapter(shop);
+  const { api, plugins, storage, randomUUID } = useStoreAdapter(shop);
   return (
     <StoreStateProvider
       shop={shop}
       api={api}
+      plugins={plugins}
       storage={storage}
       randomUUID={randomUUID}
     >

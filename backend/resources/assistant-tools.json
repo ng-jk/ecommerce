@@ -1991,5 +1991,566 @@
         "description": "Rate limited."
       }
     }
+  },
+  {
+    "name": "adminPlugins",
+    "action": "admin.plugins",
+    "description": "Administrator: list this merchant's plugin installations",
+    "method": "GET",
+    "path": "/api/v1/shops/{shop}/admin/plugins",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "plugin_id": {
+          "type": "string",
+          "enum": [
+            "loyalty"
+          ]
+        },
+        "per_page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "role": "admin",
+    "callable": true,
+    "confirmation": false,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "installPlugin",
+    "action": "admin.plugin.install",
+    "description": "Administrator: install an approved plugin for this merchant only",
+    "method": "POST",
+    "path": "/api/v1/shops/{shop}/admin/plugins",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "plugin_id": {
+          "type": "string",
+          "enum": [
+            "loyalty"
+          ]
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "customer_enabled": {
+          "type": "boolean"
+        },
+        "max_credit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        }
+      },
+      "required": [
+        "plugin_id"
+      ],
+      "additionalProperties": false
+    },
+    "role": "admin",
+    "callable": true,
+    "confirmation": true,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "adminPlugin",
+    "action": "admin.plugin",
+    "description": "Administrator: view this merchant's plugin configuration",
+    "method": "GET",
+    "path": "/api/v1/shops/{shop}/admin/plugins/{id}",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "role": "admin",
+    "callable": true,
+    "confirmation": false,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "updatePlugin",
+    "action": "admin.plugin.update",
+    "description": "Administrator: enable, disable or configure this merchant's plugin",
+    "method": "PATCH",
+    "path": "/api/v1/shops/{shop}/admin/plugins/{id}",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "expected_version": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "customer_enabled": {
+          "type": "boolean"
+        },
+        "max_credit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        }
+      },
+      "required": [
+        "expected_version",
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "role": "admin",
+    "callable": true,
+    "confirmation": true,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "loyaltyBalance",
+    "action": "plugin.loyalty.balance",
+    "description": "Show my loyalty points for this merchant",
+    "method": "GET",
+    "path": "/api/v1/shops/{shop}/plugins/loyalty/balance",
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "role": "user",
+    "callable": true,
+    "confirmation": false,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "creditLoyalty",
+    "action": "admin.plugin.loyalty.credit",
+    "description": "Administrator: credit loyalty points to an active customer in this merchant",
+    "method": "POST",
+    "path": "/api/v1/shops/{shop}/admin/plugins/loyalty/credit",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "points": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "user_id",
+        "points",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "role": "admin",
+    "callable": true,
+    "confirmation": true,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
   }
 ]

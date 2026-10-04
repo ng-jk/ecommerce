@@ -8,6 +8,22 @@ import re
 from .runner import ROOT, run
 
 REQUIRED = (
+    "plugin_invalid_unchanged",
+    "plugin_unauthorized_unchanged",
+    "plugin_disabled_blocks_execution",
+    "plugin_revoked_blocks_execution",
+    "plugin_foreign_target_unchanged",
+    "plugin_customer_revoked_blocks_execution",
+    "plugin_customer_revoked_not_allowed",
+    "plugin_credit_requires_admin",
+    "plugin_balance_preserves_business_state",
+    "plugin_disabled_balance_not_allowed",
+    "plugin_credit_overflow_unchanged",
+    "plugin_configuration_requires_admin",
+    "plugin_other_shop_unchanged",
+    "plugin_other_configuration_unchanged",
+    "plugin_sequences_preserve_other_shop",
+    "plugin_sequences_preserve_other_configuration",
     "payment_paid_is_terminal",
     "payment_unverified_unchanged",
     "payment_release_is_idempotent",
@@ -56,7 +72,10 @@ def prove() -> None:
         os.environ["ELAN_HOME"] = str(ROOT / ".tools/elan")
     lake = str(executable) if executable.exists() else "lake"
     run([lake, "build", "Commerce"], cwd=ROOT / "formal")
-    output = run([lake, "env", "lean", "Commerce/Invariants.lean"], cwd=ROOT / "formal")
+    output = "\n".join(
+        run([lake, "env", "lean", module], cwd=ROOT / "formal")
+        for module in ("Commerce/Invariants.lean", "Commerce/Plugins.lean")
+    )
     if "sorryAx" in output:
         raise ValueError("Lean output contains an incomplete proof")
     for group in re.findall(r"depends on axioms:\s*\[([^]]*)\]", output):

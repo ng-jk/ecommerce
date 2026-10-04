@@ -2,6 +2,7 @@
 
 namespace App\Domain;
 
+use App\Models\Shop;
 use App\Models\User;
 
 class AccessPolicy
@@ -29,5 +30,15 @@ class AccessPolicy
     public function enforce(string $action, ?User $user): void
     {
         abort_unless($this->allows($action, $user), 403, 'This action is disabled or unavailable for your role.');
+    }
+
+    public function allowsInShop(string $action, ?User $user, Shop $shop): bool
+    {
+        return $this->allows($action, $user) && BundledPlugins::allows($shop, $user, $action);
+    }
+
+    public function enforceInShop(string $action, ?User $user, Shop $shop): void
+    {
+        abort_unless($this->allowsInShop($action, $user, $shop), 403, 'This action is disabled or unavailable for your role.');
     }
 }

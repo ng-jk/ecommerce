@@ -40,6 +40,7 @@ export function AdminHomeScreen() {
         <>
           <Button title="Products" onPress={() => router.push("/products")} />
           <Button title="Orders" onPress={() => router.push("/orders")} />
+          <Button title="Plugins" onPress={() => router.push("/plugins")} />
           <Button
             title="Sign out"
             onPress={() => {

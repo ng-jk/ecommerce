@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Shop;
 use App\Models\User;
+use App\Plugins\Loyalty\LoyaltyPlugin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -35,7 +36,7 @@ class ActionExecutor
             if (! array_key_exists($op->action, config('commerce.actions', []))) {
                 throw ValidationException::withMessages(['action' => 'Unknown command.']);
             }
-            app(AccessPolicy::class)->enforce($op->action, $user);
+            app(AccessPolicy::class)->enforceInShop($op->action, $user, $shop);
         }
         $op->state_before = $this->state($user);
         $input = $op->payload['input'];
@@ -64,6 +65,8 @@ class ActionExecutor
         }
         $store = app(StoreActions::class);
         $admin = app(AdminActions::class);
+        $plugins = app(PluginActions::class);
+        $loyalty = app(LoyaltyPlugin::class);
         $id = (int) ($op->payload['id'] ?? 0);
         $result = match ($op->action) {
             'auth.login' => app(AuthActions::class)->login($request, $shop),
@@ -84,6 +87,12 @@ class ActionExecutor
             'admin.delete' => $admin->deleteProduct($request, $shop, $id),
             'admin.orders' => $admin->orders($request, $shop),
             'admin.advance' => $admin->updateOrder($request, $shop, $id),
+            'admin.plugins' => $plugins->listing($request, $shop),
+            'admin.plugin' => $plugins->detail($shop, $id),
+            'admin.plugin.install' => $plugins->install($request, $shop),
+            'admin.plugin.update' => $plugins->update($request, $shop, $id),
+            'plugin.loyalty.balance' => $loyalty->balance($request, $shop),
+            'admin.plugin.loyalty.credit' => $loyalty->credit($request, $shop, $op),
             default => throw ValidationException::withMessages(['action' => 'Unknown command.']),
         };
         $actor = $op->action === 'auth.logout' ? null : ($result['user'] ?? $user?->fresh());

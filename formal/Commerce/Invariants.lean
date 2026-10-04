@@ -1,4 +1,5 @@
 import Commerce.Model
+import Commerce.Plugins
 namespace Commerce
 
 theorem purchase_preserves_shop (s : State) (c : Purchase) :

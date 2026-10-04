@@ -1,4 +1,5 @@
 import { createClient, type ShopSlug } from "@portfolio/api-client";
+import { createPluginClient } from "@portfolio/merchant-plugins";
 import * as Crypto from "expo-crypto";
 import { useMemo } from "react";
 import { Platform } from "react-native";
@@ -26,5 +27,17 @@ export function useStoreAdapter(shop: ShopSlug) {
       }),
     [shop, storage],
   );
-  return { api, storage, randomUUID: Crypto.randomUUID };
+  const plugins = useMemo(
+    () => createPluginClient({
+      shop,
+      native: Platform.OS !== "web",
+      origin: Platform.OS !== "web" ? (process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:8080") : "",
+      getToken: () => storage.get("token"),
+      storage,
+      randomUUID: Crypto.randomUUID,
+      digest: (value) => Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, value),
+    }),
+    [shop, storage],
+  );
+  return { api, plugins, storage, randomUUID: Crypto.randomUUID };
 }
