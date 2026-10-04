@@ -25,7 +25,7 @@ vi.mock("expo-secure-store", () => ({
     native.values.delete(key);
   },
 }));
-import { localStorageAdapter } from "../../packages/storefront/data/storage";
+import { localStorageAdapter } from "../../packages/storefront/services/store/data/storage";
 
 function webStorage() {
   const values: Record<string, string> = {};

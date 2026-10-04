@@ -65,6 +65,12 @@ tests/browser/           Browser shopping and admin tests
 
 Shared shopping screens avoid duplicating authentication, checkout, and cart logic. Each storefront has its own Router entry points, native app identifiers, branding, and build configuration. Replace an app’s route export with its own screen to diverge its design further.
 
+Every frontend follows the [shared module specification](docs/frontend-module-spec.md):
+services expose `data/` and `logic/` through `index.ts`; screens add `interface/`
+and use names such as `account_screen`. Expo routes import public screen entrypoints.
+Use `npm run architecture` to check module boundaries and the Python review gate
+for required folder structure. Shared workspace export maps also hide internal paths.
+
 ## Development with hot reload
 
 ```sh

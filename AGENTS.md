@@ -8,7 +8,8 @@ CRUD module. Do not treat baseline gaps as approved exceptions.
 - Keep authored logic code at or below 1,000 physical lines, including tests,
   scripts and logical proofs. Generated files, lockfiles, documentation and
   declarative configuration are outside this limit. Never minify logic to bypass it.
-- Enforce strict TypeScript and domain/data/presentation dependency separation.
+- Enforce strict TypeScript and [frontend module boundaries](docs/frontend-module-spec.md).
+  Services/screens expose public index.ts entrypoints; run npm run architecture.
 - Register screens as main/temp; Back must never reveal a temp screen. Limit each
   screen to seven primary interactive components using the documented inventory.
 - Validate external data at runtime, handle all HTTP outcomes, and make retries

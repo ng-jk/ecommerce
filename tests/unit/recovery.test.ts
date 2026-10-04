@@ -1,17 +1,17 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
-import { Cache, memoryStorage } from "../../packages/api-client/data/cache";
+import { Cache, memoryStorage } from "../../packages/api-client/services/cache";
 import {
   createTransport,
   retryDelay,
   responseError,
-} from "../../packages/api-client/data/transport";
+} from "../../packages/api-client/services/transport";
 import {
   ApiError,
   errorMessage,
   money,
-} from "../../packages/api-client/domain/types";
-import { checkout } from "../../packages/storefront/domain/checkout";
+} from "../../packages/api-client/services/contracts/logic/types";
+import { checkout } from "../../packages/storefront/services/checkout/logic/checkout";
 
 const uuid = "00000000-0000-4000-8000-000000000001";
 const json = (value: unknown, status = 200) =>

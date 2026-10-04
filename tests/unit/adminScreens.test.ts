@@ -2,7 +2,10 @@
 import { act, createElement, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { beforeEach, expect, it, vi } from "vitest";
-import type { Product, User } from "../../packages/api-client/domain/types";
+import type {
+  Product,
+  User,
+} from "../../packages/api-client/services/contracts/logic/types";
 
 vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
 const router = vi.hoisted(() => ({ push: vi.fn(), replace: vi.fn() }));
@@ -63,15 +66,18 @@ vi.mock("@portfolio/storefront", () => ({
       readOnly: false,
     }),
 }));
-vi.mock("../../frontend/admin/src/presentation/view-models/adminShop", () => ({
-  useAdminShop: () => ({ shop: "fashion", switchShop }),
-}));
-import Home from "../../frontend/admin/src/presentation/screens/Home";
-import Orders from "../../frontend/admin/src/presentation/screens/Orders";
-import Products from "../../frontend/admin/src/presentation/screens/Products/List";
-import Create from "../../frontend/admin/src/presentation/screens/Products/Create";
-import Edit from "../../frontend/admin/src/presentation/screens/Products/Edit";
-import { Form } from "../../frontend/admin/src/presentation/screens/Products/Form";
+vi.mock(
+  "../../frontend/admin/src/screens/admin_shell_screen/logic/useAdminShop",
+  () => ({
+    useAdminShop: () => ({ shop: "fashion", switchShop }),
+  }),
+);
+import { AdminHomeScreen as Home } from "../../frontend/admin/src/screens/admin_home_screen/interface/AdminHomeScreen";
+import { AdminOrdersScreen as Orders } from "../../frontend/admin/src/screens/admin_orders_screen/interface/AdminOrdersScreen";
+import { AdminProductsListScreen as Products } from "../../frontend/admin/src/screens/admin_products_list_screen/interface/AdminProductsListScreen";
+import { AdminProductCreateScreen as Create } from "../../frontend/admin/src/screens/admin_product_create_screen/interface/AdminProductCreateScreen";
+import { AdminProductEditScreen as Edit } from "../../frontend/admin/src/screens/admin_product_edit_screen/interface/AdminProductEditScreen";
+import { ProductForm as Form } from "../../frontend/admin/src/screens/product_form_screen/interface/ProductForm";
 
 const product: Product = {
   id: 1,

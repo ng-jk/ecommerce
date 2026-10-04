@@ -1,5 +1,6 @@
 import { Stack } from "expo-router";
-import { AdminProvider } from "../composition/AdminProvider";
+import { AdminProvider } from "../screens/admin_shell_screen";
+
 export default function Layout() {
   return (
     <AdminProvider>

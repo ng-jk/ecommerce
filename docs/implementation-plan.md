@@ -144,3 +144,17 @@ without losing accepted operations or orders.
 
 These do not prevent work on independent contracts, tests, or architectural gates.
 They must not be silently guessed and reported as fulfilled requirements.
+
+## Frontend module migration and acceptance
+
+Follow [the reusable frontend module specification](frontend-module-spec.md).
+Move reusable capabilities into services and rendering into named screen modules;
+retain thin Expo adapters. Migrate production imports to public indexes and update
+unit test mocks to the actual public dependency contract. Preserve runtime
+validation, cache partitioning, retries and navigation inventories. Generated
+OpenAPI declarations remain generated infrastructure.
+
+Completion requires architecture, strict compilation, lint, unit/coverage and API
+gates. Regression fixtures must reject relative/aliased deep imports, re-exports,
+dynamic imports and cycles. Review responsibilities and test module logic; a
+folder rename alone is insufficient. No deployment is implied.

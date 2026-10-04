@@ -15,7 +15,11 @@ def test_review_inspects_authored_files_skips_binary_and_deleted_files(
         (folder / "src/app/_layout.tsx").write_text("layout")
     (tmp_path / "frontend/screens.json").write_text("{}")
     monkeypatch.setattr(
-        review, "run", lambda *args, **kwargs: "bad.ts\nbinary.bin\ndeleted.py"
+        review,
+        "run",
+        lambda *args, **kwargs: (
+            "bad.ts\nbinary.bin\ndeleted.py\nfrontend/admin/src/domain/deleted.ts"
+        ),
     )
     findings = review.review(tmp_path)
     assert len(findings) == 10

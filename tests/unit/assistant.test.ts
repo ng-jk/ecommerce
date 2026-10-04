@@ -2,9 +2,9 @@ import { expect, it, vi } from "vitest";
 import {
   assistantAdapter,
   assistantReply,
-} from "../../packages/api-client/data/assistant";
-import { createTransport } from "../../packages/api-client/data/transport";
-import { memoryStorage } from "../../packages/api-client/data/cache";
+} from "../../packages/api-client/services/assistant";
+import { createTransport } from "../../packages/api-client/services/transport";
+import { memoryStorage } from "../../packages/api-client/services/cache";
 import {
   confirmTurn,
   continuation,
@@ -12,8 +12,8 @@ import {
   fieldData,
   inputFields,
   nextChoice,
-} from "../../packages/storefront/domain/assistant";
-import type { AssistantReply } from "../../packages/api-client/domain/assistant";
+} from "../../packages/storefront/services/assistant/logic/assistant";
+import type { AssistantReply } from "../../packages/api-client/services/assistant/logic/types";
 
 const id = "00000000-0000-4000-8000-000000000001";
 const reply: AssistantReply = {

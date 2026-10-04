@@ -5,7 +5,7 @@ import type {
   CartLine,
   Product,
   User,
-} from "../../packages/api-client/domain/types";
+} from "../../packages/api-client/services/contracts/logic/types";
 import { mountHook, deferred } from "./reactHarness";
 
 vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
@@ -21,18 +21,18 @@ vi.mock("expo-router", async () => {
 vi.mock("react-native", () => ({
   useWindowDimensions: () => ({ width: 900 }),
 }));
-vi.mock("../../packages/storefront/presentation/view-models/context", () => ({
+vi.mock("../../packages/storefront/screens/store_shell_screen", () => ({
   useStore: () => store,
 }));
 vi.mock("@portfolio/storefront", () => ({ useStore: () => store }));
-import { useHome } from "../../packages/storefront/presentation/view-models/useHome";
-import { useProduct } from "../../packages/storefront/presentation/view-models/useProduct";
-import { useCart } from "../../packages/storefront/presentation/view-models/useCart";
-import { useCheckout } from "../../packages/storefront/presentation/view-models/useCheckout";
-import { useOrders } from "../../packages/storefront/presentation/view-models/useOrders";
-import { useProducts } from "../../frontend/admin/src/presentation/view-models/useProducts";
-import { useCreateProduct } from "../../frontend/admin/src/presentation/view-models/useCreateProduct";
-import { useEditProduct } from "../../frontend/admin/src/presentation/view-models/useEditProduct";
+import { useHome } from "../../packages/storefront/screens/home_screen/logic/useHome";
+import { useProduct } from "../../packages/storefront/screens/product_screen/logic/useProduct";
+import { useCart } from "../../packages/storefront/screens/cart_screen/logic/useCart";
+import { useCheckout } from "../../packages/storefront/screens/checkout_screen/logic/useCheckout";
+import { useOrders } from "../../packages/storefront/screens/orders_screen/logic/useOrders";
+import { useAdminProductsList as useProducts } from "../../frontend/admin/src/screens/admin_products_list_screen/logic/useAdminProductsList";
+import { useAdminProductCreate as useCreateProduct } from "../../frontend/admin/src/screens/admin_product_create_screen/logic/useAdminProductCreate";
+import { useAdminProductEdit as useEditProduct } from "../../frontend/admin/src/screens/admin_product_edit_screen/logic/useAdminProductEdit";
 
 const product: Product = {
   id: 1,

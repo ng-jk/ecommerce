@@ -2,17 +2,18 @@
 import { act, createElement } from "react";
 import { createRoot } from "react-dom/client";
 import { expect, it, vi } from "vitest";
-import { ApiError, type User } from "../../packages/api-client/domain/types";
-import { memoryStorage } from "../../packages/api-client/data/cache";
+import {
+  ApiError,
+  type User,
+} from "../../packages/api-client/services/contracts/logic/types";
+import { memoryStorage } from "../../packages/api-client/services/cache";
 import {
   StoreStateProvider,
   useStore,
-} from "../../packages/storefront/presentation/view-models/context";
-import type { CommerceClient } from "../../packages/storefront/domain/ports";
-import {
-  AdminShopContext,
-  useAdminShop,
-} from "../../frontend/admin/src/presentation/view-models/adminShop";
+} from "../../packages/storefront/screens/store_shell_screen/interface/context";
+import type { CommerceClient } from "../../packages/storefront/services/store/logic/ports";
+import { AdminShopContext } from "../../frontend/admin/src/screens/admin_shell_screen/logic/shopContext";
+import { useAdminShop } from "../../frontend/admin/src/screens/admin_shell_screen/logic/useAdminShop";
 import { deferred, mountHook } from "./reactHarness";
 
 vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);

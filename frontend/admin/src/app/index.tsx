@@ -1,1 +1,1 @@
-export { default } from "../presentation/screens/Home";
+export { default } from "../screens/admin_home_screen";

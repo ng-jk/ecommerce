@@ -44,18 +44,18 @@ Existing code is a migration baseline, not an exception to these requirements.
 
 ## R03 — Frontend dependency layers
 
-Each app separates `domain/`, `data/`, and `presentation/`. Shared code follows the
-same separation rather than putting all responsibilities into one shared component.
-
-| Layer | Owns | Must not depend on |
-| --- | --- | --- |
-| Domain / logic | Use cases, state transitions, value types, repository interfaces | React, Expo, HTTP, storage implementations |
-| Data | Validated API adapters, cache, local persistence, repository implementations | Screens, router, presentation components |
-| Presentation | Screens, view models/hooks, rendering, user interaction | Direct fetch, direct storage, business decision implementations |
-
-A composition root supplies data implementations to domain interfaces. Presentation
-invokes use cases and renders their typed state. CI enforces import boundaries,
-including aliases and shared packages. Domain tests must run without a UI or network.
+Follow the reusable [frontend module specification](frontend-module-spec.md).
+Reusable capabilities use `services/<name>/{data,logic,index.ts}`; screens use
+`screens/<name>_screen/{data,logic,interface,index.ts}`. All external consumers
+import public `index.ts` entrypoints, including types and dynamic imports.
+Services never depend on screens; data and logic never depend on interface;
+interface invokes logic instead of importing data directly. Rendering belongs in
+screen interface. Service logic cannot import React/Expo or data implementations; screen logic may
+contain lifecycle hooks. Optional `logic/pure/` also enforces purity for screen decisions.
+Thin Expo routes import screen public APIs. Shared forms/shells are non-routable
+screen modules. Dependency-cruiser checks resolved imports, aliases, re-exports,
+unresolved dependencies and cycles. Unit tests may white-box owned internals;
+production consumers cannot bypass public module entrypoints.
 
 ## R04 — Screens and navigation
 

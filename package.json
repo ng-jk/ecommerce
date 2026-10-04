@@ -14,7 +14,8 @@
     "export:web": "npm run export:web --workspaces --if-present",
     "api:types": "node scripts/generate-api.mjs",
     "test:e2e": "playwright test",
-    "lint": "eslint frontend packages"
+    "lint": "eslint frontend packages",
+    "architecture": "depcruise --config .dependency-cruiser.cjs --output-type err-long frontend packages"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.0",

@@ -1,1 +1,1 @@
-export { default } from "../../presentation/screens/Products/List";
+export { default } from "../../screens/admin_products_list_screen";

@@ -1,4 +1,1 @@
-import { AssistantScreen } from "@portfolio/storefront";
-export default function Assistant() {
-  return <AssistantScreen admin />;
-}
+export { default } from "../screens/admin_assistant_screen";

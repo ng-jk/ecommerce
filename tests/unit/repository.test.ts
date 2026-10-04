@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { createClient } from "../../packages/api-client/data/repository";
-import { order as orderSchema } from "../../packages/api-client/data/schemas";
-import { memoryStorage } from "../../packages/api-client/data/cache";
+import { createClient } from "../../packages/api-client/services/commerce/data/repository";
+import { order as orderSchema } from "../../packages/api-client/services/contracts/data/schemas";
+import { memoryStorage } from "../../packages/api-client/services/cache";
 
 const product = {
   id: 1,

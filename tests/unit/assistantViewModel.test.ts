@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import { act } from "react";
 import { beforeEach, expect, it, vi } from "vitest";
-import { ApiError } from "../../packages/api-client/domain/types";
-import type { AssistantReply } from "../../packages/api-client/domain/assistant";
+import { ApiError } from "../../packages/api-client/services/contracts/logic/types";
+import type { AssistantReply } from "../../packages/api-client/services/assistant/logic/types";
 import { deferred, mountHook } from "./reactHarness";
 const state = vi.hoisted(() => ({
   api: { assistant: vi.fn() as ReturnType<typeof vi.fn> | undefined },
@@ -10,10 +10,10 @@ const state = vi.hoisted(() => ({
   refreshSession: vi.fn(),
   refreshCart: vi.fn(),
 }));
-vi.mock("../../packages/storefront/presentation/view-models/context", () => ({
+vi.mock("../../packages/storefront/screens/store_shell_screen", () => ({
   useStore: () => state,
 }));
-import { useAssistant } from "../../packages/storefront/presentation/view-models/useAssistant";
+import { useAssistant } from "../../packages/storefront/screens/assistant_screen/logic/useAssistant";
 vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
 const id = "00000000-0000-4000-8000-000000000001";
 const draft: AssistantReply = {

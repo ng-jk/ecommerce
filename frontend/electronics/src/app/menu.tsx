@@ -1,1 +1,1 @@
-export { MenuScreen as default } from "@portfolio/storefront/presentation/screens/MenuScreen";
+export { MenuScreen as default } from "@portfolio/storefront/screens/menu_screen";

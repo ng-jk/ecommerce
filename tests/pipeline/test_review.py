@@ -44,3 +44,19 @@ def test_missing_theorems_and_proof_holes_fail():
 )
 def test_size_limit_excludes_non_authored_logic(path):
     assert inspect_text(path, "\n" * 1001) == []
+
+
+def test_review_runs_graph_boundary_gate_and_fails_closed(tmp_path, monkeypatch):
+    from tools.pipeline import review
+
+    calls = []
+
+    def reject(command, **kwargs):
+        calls.append((command, kwargs))
+        raise RuntimeError("architecture violation")
+
+    monkeypatch.setattr(review, "run", reject)
+    with pytest.raises(RuntimeError, match="architecture violation"):
+        review.review(tmp_path)
+    assert calls[0][0][-2:] == ["run", "architecture"]
+    assert calls[0][1]["cwd"] == tmp_path

@@ -2,20 +2,18 @@
 import { act, createElement, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { beforeEach, expect, it, vi } from "vitest";
-import type { useAssistant } from "../../packages/storefront/presentation/view-models/useAssistant";
-import type { AssistantReply } from "../../packages/api-client/domain/assistant";
+import type { useAssistant } from "../../packages/storefront/screens/assistant_screen/logic/useAssistant";
+import type { AssistantReply } from "../../packages/api-client/services/assistant/logic/types";
 const scope = vi.hoisted(() => ({
   shop: "fashion",
   user: { id: 1, role: "customer" } as { id: number; role: string } | null,
 }));
-vi.mock("../../packages/storefront/presentation/view-models/context", () => ({
-  useStore: () => scope,
-}));
 vi.mock(
-  "../../packages/storefront/presentation/view-models/useAssistant",
+  "../../packages/storefront/screens/assistant_screen/logic/useAssistant",
   () => ({ useAssistant: () => model }),
 );
-vi.mock("../../packages/storefront/presentation/components/ui", () => ({
+vi.mock("../../packages/storefront/screens/store_shell_screen", () => ({
+  useStore: () => scope,
   Page: ({
     children,
     navigationTitle,
@@ -68,7 +66,7 @@ vi.mock("expo-router", () => ({
   Link: ({ href, children }: { href: string; children: ReactNode }) =>
     createElement("a", { href }, children),
 }));
-import { AssistantScreen } from "../../packages/storefront/presentation/screens/AssistantScreen";
+import { AssistantScreen } from "../../packages/storefront/screens/assistant_screen/interface/AssistantScreen";
 import AdminAssistant from "../../frontend/admin/src/app/assistant";
 const reply: AssistantReply = {
   status: "needs_input",

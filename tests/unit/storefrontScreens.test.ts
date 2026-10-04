@@ -6,7 +6,7 @@ import type {
   CartLine,
   Product,
   User,
-} from "../../packages/api-client/domain/types";
+} from "../../packages/api-client/services/contracts/logic/types";
 
 vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
 const platform = vi.hoisted(() => ({ OS: "web", width: 1000 }));
@@ -26,33 +26,43 @@ vi.mock("expo-router", () => ({
     createElement("a", { href }, children),
   useLocalSearchParams: () => ({ id: "1" }),
 }));
-vi.mock("../../packages/storefront/presentation/view-models/context", () => ({
-  useStore: () => state,
-}));
-vi.mock("../../packages/storefront/presentation/view-models/useCart", () => ({
+vi.mock(
+  "../../packages/storefront/screens/store_shell_screen/interface/context",
+  () => ({
+    useStore: () => state,
+  }),
+);
+vi.mock("../../packages/storefront/screens/cart_screen/logic/useCart", () => ({
   useCart: () => state,
 }));
 vi.mock(
-  "../../packages/storefront/presentation/view-models/useCheckout",
+  "../../packages/storefront/screens/checkout_screen/logic/useCheckout",
   () => ({ useCheckout: () => state }),
 );
-vi.mock("../../packages/storefront/presentation/view-models/useOrders", () => ({
-  useOrders: () => state,
-}));
 vi.mock(
-  "../../packages/storefront/presentation/view-models/useProduct",
+  "../../packages/storefront/screens/orders_screen/logic/useOrders",
+  () => ({
+    useOrders: () => state,
+  }),
+);
+vi.mock(
+  "../../packages/storefront/screens/product_screen/logic/useProduct",
   () => ({ useProduct: () => state }),
 );
-vi.mock("../../packages/storefront/presentation/view-models/useHome", () => ({
+vi.mock("../../packages/storefront/screens/home_screen/logic/useHome", () => ({
   useHome: () => state,
 }));
-import { AccountScreen } from "../../packages/storefront/presentation/screens/AccountScreen";
-import { CartScreen } from "../../packages/storefront/presentation/screens/CartScreen";
-import { CheckoutScreen } from "../../packages/storefront/presentation/screens/CheckoutScreen";
-import { OrdersScreen } from "../../packages/storefront/presentation/screens/OrdersScreen";
-import { MenuScreen } from "../../packages/storefront/presentation/screens/MenuScreen";
-import { HomeScreen } from "../../packages/storefront/presentation/screens/HomeScreen";
-import { ProductScreen } from "../../packages/storefront/presentation/screens/ProductScreen";
+vi.mock("../../packages/storefront/screens/store_shell_screen", async () => ({
+  ...(await import("../../packages/storefront/screens/store_shell_screen/interface/ui")),
+  useStore: () => state,
+}));
+import { AccountScreen } from "../../packages/storefront/screens/account_screen/interface/AccountScreen";
+import { CartScreen } from "../../packages/storefront/screens/cart_screen/interface/CartScreen";
+import { CheckoutScreen } from "../../packages/storefront/screens/checkout_screen/interface/CheckoutScreen";
+import { OrdersScreen } from "../../packages/storefront/screens/orders_screen/interface/OrdersScreen";
+import { MenuScreen } from "../../packages/storefront/screens/menu_screen/interface/MenuScreen";
+import { HomeScreen } from "../../packages/storefront/screens/home_screen/interface/HomeScreen";
+import { ProductScreen } from "../../packages/storefront/screens/product_screen/interface/ProductScreen";
 
 const product: Product = {
   id: 1,

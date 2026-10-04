@@ -1,12 +1,12 @@
 import { describe, it, expect, vi } from "vitest";
 import { z } from "zod";
-import { Cache, memoryStorage } from "../../packages/api-client/data/cache";
+import { Cache, memoryStorage } from "../../packages/api-client/services/cache";
 import {
   classify,
   retryDelay,
   responseError,
   createTransport,
-} from "../../packages/api-client/data/transport";
+} from "../../packages/api-client/services/transport";
 const uuid = "00000000-0000-4000-8000-000000000001";
 const json = (value: unknown, status = 200) =>
   new Response(JSON.stringify(value), {

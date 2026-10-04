@@ -33,12 +33,13 @@ The requested `Pages/<Module>/Create.jsx`, `Edit.jsx`, and `Form.jsx` convention
 to this strict-TypeScript Expo project as:
 
 ```text
-presentation/screens/<Module>/Create.tsx
-presentation/screens/<Module>/Edit.tsx
-presentation/screens/<Module>/Form.tsx
+screens/<module>_create_screen/interface/Create.tsx
+screens/<module>_edit_screen/interface/Edit.tsx
+screens/<module>_form_screen/interface/Form.tsx
 ```
 
-Thin `src/app/` route adapters render these pages. The form accepts typed values,
+Each module exposes its component via `index.ts`. Create/Edit import the shared
+non-routable Form module through its public index. Thin `src/app/` route adapters render these pages. The form accepts typed values,
 model-provided options, field errors, and submit state; use cases own business
 logic and data adapters own persistence. Declare each page main/temp under R04;
 standalone full-page rendering does not exempt a temp page from the Back rule.

@@ -2,7 +2,7 @@
 import { act, createElement, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { expect, it, vi } from "vitest";
-import { memoryStorage } from "../../packages/api-client/data/cache";
+import { memoryStorage } from "../../packages/api-client/services/cache";
 vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
 const state = vi.hoisted(() => ({
   OS: "web",
@@ -12,6 +12,17 @@ const state = vi.hoisted(() => ({
   replace: vi.fn(),
 }));
 vi.mock("react-native", () => ({ Platform: state }));
+vi.mock("react-native-safe-area-context", () => ({
+  SafeAreaView: ({ children }: { children: ReactNode }) =>
+    createElement("div", {}, children),
+}));
+vi.mock(
+  "../../frontend/admin/node_modules/react-native-safe-area-context",
+  () => ({
+    SafeAreaView: ({ children }: { children: ReactNode }) =>
+      createElement("div", {}, children),
+  }),
+);
 vi.mock("expo-crypto", () => ({
   randomUUID: state.uuid,
   digestStringAsync: state.digest,
@@ -21,16 +32,19 @@ vi.mock("expo-router", () => ({
   Stack: () => createElement("span", {}, "Stack"),
   router: { replace: state.replace },
 }));
-vi.mock("../../packages/api-client/data/repository", () => ({
+vi.mock("../../packages/api-client/services/commerce/data/repository", () => ({
   createClient: state.create,
 }));
-vi.mock("../../packages/storefront/data/storage", () => ({
+vi.mock("../../packages/storefront/services/store/data/storage", () => ({
   localStorageAdapter: () => storage,
 }));
-vi.mock("../../packages/storefront/presentation/view-models/context", () => ({
-  StoreStateProvider: ({ children }: { children: ReactNode }) =>
-    createElement("div", {}, children),
-}));
+vi.mock(
+  "../../packages/storefront/screens/store_shell_screen/interface/context",
+  () => ({
+    StoreStateProvider: ({ children }: { children: ReactNode }) =>
+      createElement("div", {}, children),
+  }),
+);
 vi.mock("@portfolio/storefront", () => ({
   StoreProvider: ({ shop, children }: { shop: string; children: ReactNode }) =>
     createElement("div", { "data-shop": shop }, children),
@@ -41,9 +55,13 @@ vi.mock("@portfolio/storefront", () => ({
   Button: ({ title, onPress }: { title: string; onPress: () => void }) =>
     createElement("button", { onClick: onPress }, title),
 }));
-import { StoreProvider } from "../../packages/storefront/composition/StoreProvider";
-import { AdminProvider } from "../../frontend/admin/src/composition/AdminProvider";
-import { useAdminShop } from "../../frontend/admin/src/presentation/view-models/adminShop";
+vi.mock(
+  "@portfolio/storefront/screens/store_shell_screen",
+  async () => await vi.importMock("@portfolio/storefront"),
+);
+import { StoreProvider } from "../../packages/storefront/screens/store_shell_screen/interface/StoreProvider";
+import { AdminProvider } from "../../frontend/admin/src/screens/admin_shell_screen/interface/AdminProvider";
+import { useAdminShop } from "../../frontend/admin/src/screens/admin_shell_screen/logic/useAdminShop";
 import FashionLayout from "../../frontend/fashion/src/app/_layout";
 import ElectronicsLayout from "../../frontend/electronics/src/app/_layout";
 import AdminLayout from "../../frontend/admin/src/app/_layout";

@@ -7,5 +7,14 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "zod": "3.25.76"
+  },
+  "exports": {
+    ".": "./index.ts",
+    "./services/contracts": "./services/contracts/index.ts",
+    "./services/payments": "./services/payments/index.ts",
+    "./services/cache": "./services/cache/index.ts",
+    "./services/transport": "./services/transport/index.ts",
+    "./services/assistant": "./services/assistant/index.ts",
+    "./services/commerce": "./services/commerce/index.ts"
   }
 }

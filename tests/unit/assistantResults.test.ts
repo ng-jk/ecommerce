@@ -2,7 +2,7 @@ import { expect, it } from "vitest";
 import {
   assistantPaymentLinks,
   assistantResultRows,
-} from "../../packages/storefront/domain/assistantResults";
+} from "../../packages/storefront/services/assistant/logic/assistantResults";
 
 const product = {
   id: 7,

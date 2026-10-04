@@ -4,12 +4,12 @@ import {
   backDestination,
   durableHistory,
   type Screen,
-} from "../../packages/storefront/domain/navigation";
+} from "../../packages/storefront/services/navigation/logic/navigation";
 import {
   changeQuantity,
   subtotal,
-} from "../../packages/storefront/domain/cart";
-import { productValues } from "../../frontend/admin/src/domain/productForm";
+} from "../../packages/storefront/services/cart/logic/cart";
+import { productValues } from "../../frontend/admin/src/services/admin_products/logic/productValues";
 const main: Screen = { id: "home", kind: "main", fallback: "/", controls: [] };
 const temp: Screen = {
   id: "pending",

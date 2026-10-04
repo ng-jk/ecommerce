@@ -4,7 +4,8 @@ import json
 import re
 from pathlib import Path
 
-from .runner import ROOT, run
+from .frontend_structure import inspect_structure
+from .runner import ROOT, npm, run
 
 
 def inspect_text(path: str, content: str) -> list[str]:
@@ -44,6 +45,7 @@ def inspect_text(path: str, content: str) -> list[str]:
 
 
 def review(root: Path = ROOT) -> list[str]:
+    run(npm("run", "architecture"), cwd=root)
     paths = run(
         [
             "git",
@@ -66,6 +68,9 @@ def review(root: Path = ROOT) -> list[str]:
         except UnicodeError:
             continue
         findings.extend(inspect_text(path, content))
+    findings.extend(
+        inspect_structure([path for path in paths if (root / path).is_file()])
+    )
     screens = json.loads((root / "frontend/screens.json").read_text(encoding="utf-8"))
     for app in ("fashion", "electronics", "admin"):
         config = json.loads(
