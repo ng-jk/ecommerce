@@ -15,21 +15,21 @@ services:
       dockerfile: docker/web/Dockerfile.development
     command: [npm, run, web, --workspace=@portfolio/fashion, --, --host, lan]
     volumes: *expo-volumes
-    environment: {EXPO_NO_TELEMETRY: "1"}
+    environment: {EXPO_NO_TELEMETRY: "1", EXPO_PUBLIC_MINIAPP_ASSET_ORIGIN: "${MINIAPP_ASSET_ORIGIN:-http://miniapps.localhost:8080}"}
     ports: ["8081:8081"]
   electronics:
     build:
       dockerfile: docker/web/Dockerfile.development
     command: [npm, run, web, --workspace=@portfolio/electronics, --, --host, lan]
     volumes: *expo-volumes
-    environment: {EXPO_NO_TELEMETRY: "1"}
+    environment: {EXPO_NO_TELEMETRY: "1", EXPO_PUBLIC_MINIAPP_ASSET_ORIGIN: "${MINIAPP_ASSET_ORIGIN:-http://miniapps.localhost:8080}"}
     ports: ["8082:8082"]
   admin:
     build:
       dockerfile: docker/web/Dockerfile.development
     command: [npm, run, web, --workspace=@portfolio/admin, --, --host, lan]
     volumes: *expo-volumes
-    environment: {EXPO_NO_TELEMETRY: "1"}
+    environment: {EXPO_NO_TELEMETRY: "1", EXPO_PUBLIC_MINIAPP_ASSET_ORIGIN: "${MINIAPP_ASSET_ORIGIN:-http://miniapps.localhost:8080}"}
     ports: ["8083:8083"]
   gateway:
     volumes:

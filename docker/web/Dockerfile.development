@@ -7,6 +7,7 @@ COPY frontend/admin/package.json ./frontend/admin/package.json
 COPY packages/api-client/package.json ./packages/api-client/package.json
 COPY packages/storefront/package.json ./packages/storefront/package.json
 COPY packages/merchant-plugins/package.json ./packages/merchant-plugins/package.json
+COPY packages/miniapps/package.json ./packages/miniapps/package.json
 RUN npm ci
 COPY frontend/ ./frontend/
 COPY packages/ ./packages/

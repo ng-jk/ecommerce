@@ -2,421 +2,507 @@
 import type { operations } from "./operations";
 import type { components } from "./components";
 export interface paths {
-    "/api/v1/shops/{shop}/products": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
-        get: operations["catalog"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+  "/api/v1/shops/{shop}/products": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/shops/{shop}/products/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
-        get: operations["product"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
+    get: operations["catalog"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/products/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/shops/{shop}/auth/login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
-        post: operations["login"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
+    get: operations["product"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/auth/login": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/shops/{shop}/auth/register": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
-        post: operations["register"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
+    post: operations["login"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/auth/register": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/shops/{shop}/auth/me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["me"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
+    post: operations["register"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/auth/me": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/shops/{shop}/auth/logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
-        post: operations["logout"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get: operations["me"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/auth/logout": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/shops/{shop}/cart": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
-        get: operations["cart"];
-        /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
-        put: operations["updateCart"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
+    post: operations["logout"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/cart": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/shops/{shop}/checkout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
-        post: operations["checkout"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
+    get: operations["cart"];
+    /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
+    put: operations["updateCart"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/checkout": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/shops/{shop}/orders": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
-        get: operations["orders"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
+    post: operations["checkout"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/orders": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/shops/{shop}/admin/products": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
-        get: operations["adminProducts"];
-        put?: never;
-        /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
-        post: operations["createProduct"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
+    get: operations["orders"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/admin/products": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/shops/{shop}/admin/products/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["adminProduct"];
-        put?: never;
-        post?: never;
-        delete: operations["deleteProduct"];
-        options?: never;
-        head?: never;
-        /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
-        patch: operations["updateProduct"];
-        trace?: never;
+    /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
+    get: operations["adminProducts"];
+    put?: never;
+    /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
+    post: operations["createProduct"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/admin/products/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/shops/{shop}/admin/orders": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
-        get: operations["adminOrders"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get: operations["adminProduct"];
+    put?: never;
+    post?: never;
+    delete: operations["deleteProduct"];
+    options?: never;
+    head?: never;
+    /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
+    patch: operations["updateProduct"];
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/admin/orders": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/shops/{shop}/admin/orders/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
-        patch: operations["updateOrder"];
-        trace?: never;
+    /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
+    get: operations["adminOrders"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/admin/orders/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/shops/{shop}/operations/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: {
-            parameters: {
-                query?: never;
-                header: {
-                    "X-Operation-Token": string;
-                };
-                path: {
-                    shop: string;
-                    id: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Current operation state; HTTP 200 does not imply business success. */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["schema-Operation"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** @description Business execution is asynchronous; mutations of existing records require expected_version. */
+    patch: operations["updateOrder"];
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/operations/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/shops/{shop}/assistant": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    get: {
+      parameters: {
+        query?: never;
+        header: {
+          "X-Operation-Token": string;
         };
-        get?: never;
-        put?: never;
-        /** @description Natural-language action selection, collection and execution. Durable 202 response; poll using X-Operation-Token. Reuse the same receipt across conversation turns, new idempotency key per turn. Every write requires a separate confirm:true turn and the returned conversation_version. discover:true returns caller-authorized tools. Credentials must be supplied as data, not message. Infrastructure operations are registered but cannot be model-invoked. Natural-language reads also require confirmation. Discovery includes role, effective allowed_roles and natural_language_confirmation_required. Configuration in backend/config/commerce.php restricts REST and AI execution; disabling a tool invalidates pending confirmation. */
-        post: operations["assistant"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/payments/billplz/{reference}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+        path: {
+          shop: string;
+          id: string;
         };
-        get?: never;
-        put?: never;
-        /** Provider-only signed callback; never callable by AI or customer tools */
-        post: operations["billplzWebhook"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/payments/stripe": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Current operation state; HTTP 200 does not imply business success. */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["schema-Operation"];
+          };
         };
-        get?: never;
-        put?: never;
-        /** Stripe-signed webhook; machine-only and never callable by an assistant */
-        post: operations["stripeWebhook"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+      };
     };
-    "/api/v1/payment-integrations/{integration}/confirm": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Machine-only custom payment confirmation; never callable by an assistant */
-        post: operations["customPaymentConfirm"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/assistant": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/payment-integrations/{integration}/{event}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Machine-only custom payment event status; never callable by an assistant */
-        get: operations["customPaymentStatus"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** @description Natural-language action selection, collection and execution. Durable 202 response; poll using X-Operation-Token. Reuse the same receipt across conversation turns, new idempotency key per turn. Every write requires a separate confirm:true turn and the returned conversation_version. discover:true returns caller-authorized tools. Credentials must be supplied as data, not message. Infrastructure operations are registered but cannot be model-invoked. Natural-language reads also require confirmation. Discovery includes role, effective allowed_roles and natural_language_confirmation_required. Configuration in backend/config/commerce.php restricts REST and AI execution; disabling a tool invalidates pending confirmation. */
+    post: operations["assistant"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/payments/billplz/{reference}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/shops/{shop}/admin/plugins": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result. */
-        get: operations["adminPlugins"];
-        put?: never;
-        /** @description Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result. */
-        post: operations["installPlugin"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** Provider-only signed callback; never callable by AI or customer tools */
+    post: operations["billplzWebhook"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/payments/stripe": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/shops/{shop}/admin/plugins/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result. */
-        get: operations["adminPlugin"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /** @description Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result. */
-        patch: operations["updatePlugin"];
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** Stripe-signed webhook; machine-only and never callable by an assistant */
+    post: operations["stripeWebhook"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/payment-integrations/{integration}/confirm": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/shops/{shop}/plugins/loyalty/balance": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result. */
-        get: operations["loyaltyBalance"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** Machine-only custom payment confirmation; never callable by an assistant */
+    post: operations["customPaymentConfirm"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/payment-integrations/{integration}/{event}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/shops/{shop}/admin/plugins/loyalty/credit": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** @description Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result. */
-        post: operations["creditLoyalty"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** Machine-only custom payment event status; never callable by an assistant */
+    get: operations["customPaymentStatus"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/admin/plugins": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    /** @description Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result. */
+    get: operations["adminPlugins"];
+    put?: never;
+    /** @description Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result. */
+    post: operations["installPlugin"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/admin/plugins/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result. */
+    get: operations["adminPlugin"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** @description Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result. */
+    patch: operations["updatePlugin"];
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/plugins/loyalty/balance": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result. */
+    get: operations["loyaltyBalance"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/admin/plugins/loyalty/credit": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Merchant-scoped durable command. Authorizations and plugin configuration are rechecked by the worker. Poll the accepted operation for the business result. */
+    post: operations["creditLoyalty"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/miniapps": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Durable Mini App command. Worker rechecks approval, installation, actor and capability grants. Poll the operation for its result. */
+    get: operations["miniapps"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/miniapps/{id}/launch": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Durable Mini App command. Worker rechecks approval, installation, actor and capability grants. Poll the operation for its result. */
+    post: operations["launchMiniapp"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/miniapps/{id}/invoke": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Durable Mini App command. Worker rechecks approval, installation, actor and capability grants. Poll the operation for its result. */
+    post: operations["invokeMiniapp"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/admin/miniapps": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Durable Mini App command. Worker rechecks approval, installation, actor and capability grants. Poll the operation for its result. */
+    get: operations["adminMiniapps"];
+    put?: never;
+    /** @description Durable Mini App command. Worker rechecks approval, installation, actor and capability grants. Poll the operation for its result. */
+    post: operations["installMiniapp"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/admin/miniapps/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** @description Durable Mini App command. Worker rechecks approval, installation, actor and capability grants. Poll the operation for its result. */
+    patch: operations["updateMiniapp"];
+    trace?: never;
+  };
 }

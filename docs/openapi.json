@@ -74,6 +74,21 @@
     },
     "/api/v1/shops/{shop}/admin/plugins/loyalty/credit": {
       "$ref": "./openapi/path-admin-plugins-loyalty-credit.json"
+    },
+    "/api/v1/shops/{shop}/miniapps": {
+      "$ref": "./openapi/path-miniapps.json"
+    },
+    "/api/v1/shops/{shop}/miniapps/{id}/launch": {
+      "$ref": "./openapi/path-miniapps-id-launch.json"
+    },
+    "/api/v1/shops/{shop}/miniapps/{id}/invoke": {
+      "$ref": "./openapi/path-miniapps-id-invoke.json"
+    },
+    "/api/v1/shops/{shop}/admin/miniapps": {
+      "$ref": "./openapi/path-admin-miniapps.json"
+    },
+    "/api/v1/shops/{shop}/admin/miniapps/{id}": {
+      "$ref": "./openapi/path-admin-miniapps-id.json"
     }
   },
   "components": {

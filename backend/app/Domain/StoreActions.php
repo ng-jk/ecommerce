@@ -9,6 +9,7 @@ use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Shop;
 use App\Models\User;
+use App\Modules\Events\Interface\Events;
 use App\Support\PublicData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -112,12 +113,18 @@ class StoreActions extends Controller
                 $product->increment('version');
             }
             $order = Order::create(['shop_id' => $shop->id, 'user_id' => $user->id, 'checkout_key' => $data['checkout_key'], 'items' => $items, 'shipping_address' => $data['shipping_address'], 'subtotal' => $subtotal, 'shipping' => 800, 'total' => $subtotal + 800, 'status' => 'placed', 'payment_method' => $driver, 'currency' => 'MYR']);
+            app(Events::class)->publish('order.placed', 'order', $order->id,
+                ['order_id' => $order->id, 'shop_id' => $order->shop_id, 'status' => Order::Placed, 'version' => $order->version],
+                'order:'.$order->id.':placed');
             if ($driver !== 'simulated') {
-                Payment::create(['public_id' => (string) Str::uuid(),
+                $payment = Payment::create(['public_id' => (string) Str::uuid(),
                     'order_id' => $order->id, 'status' => Payment::Queued,
                     'provider' => $selection['provider'], 'integration' => $selection['integration'],
                     'sandbox' => $driver === 'stripe' ? config('payments.stripe.sandbox') : config('payments.sandbox'),
                     'collection_id' => $driver === 'billplz' ? config('payments.collections.'.$shop->slug) : $driver]);
+                app(Events::class)->publish('payment.queued', 'payment', $payment->id,
+                    ['payment_id' => $payment->public_id, 'status' => Payment::Queued, 'order_id' => $order->id],
+                    'payment:'.$payment->id.':queued');
             }
             $user->forceFill(['cart' => [], 'version' => $user->version + 1])->save();
 

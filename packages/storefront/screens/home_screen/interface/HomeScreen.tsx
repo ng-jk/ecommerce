@@ -79,15 +79,8 @@ export function HomeScreen() {
           <Copy muted>{theme.subtitle}</Copy>
           <View style={{ alignSelf: "flex-start" }}>
             <Button
-              title="Explore the collection ↓"
-              onPress={() => {
-                setCategory("");
-                setSearch("");
-                scrollRef.current?.scrollTo({
-                  y: contentYRef.current + collectionYRef.current,
-                  animated: true,
-                });
-              }}
+              title="Explore MiniApps"
+              onPress={() => router.push("/miniapps")}
             />
           </View>
         </View>

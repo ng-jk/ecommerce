@@ -1,7 +1,9 @@
 """Explicit, manual SSH release; never invoked by hosted CI or import."""
 
 import argparse
+import hashlib
 import json
+import os
 import re
 import shlex
 import subprocess
@@ -16,6 +18,15 @@ BRANCHES = {"production": "deployment", "testing": "testing"}
 
 
 def run(args, *, cwd=ROOT, input=None):
+    environment = os.environ.copy()
+    if args[0] == "git":
+        environment.update(
+            {
+                "GIT_CONFIG_COUNT": "1",
+                "GIT_CONFIG_KEY_0": "safe.directory",
+                "GIT_CONFIG_VALUE_0": ROOT.as_posix(),
+            }
+        )
     result = subprocess.run(
         args,
         cwd=cwd,
@@ -24,6 +35,7 @@ def run(args, *, cwd=ROOT, input=None):
         text=False,
         timeout=3600,
         check=False,
+        env=environment,
     )
     if result.returncode:
         # Remote commands can include operational configuration; never print stdout/stderr.
@@ -79,6 +91,10 @@ def configuration(path, environment):
             raise ValueError("Only the assistant Compose profile is supported")
         if type(value.get("sudo_docker", False)) is not bool:
             raise ValueError("sudo_docker must be a boolean")
+        if not isinstance(value.get("image_prefix", "shop3i"), str) or not re.fullmatch(
+            r"[a-z][a-z0-9_-]{0,47}", value.get("image_prefix", "shop3i")
+        ):
+            raise ValueError("Invalid image_prefix")
         worker_url = urlsplit(value.get("worker_readiness_url", ""))
         if (
             worker_url.scheme != "https"
@@ -114,6 +130,8 @@ def configuration(path, environment):
         )
     if prod["database"] == test["database"]:
         raise ValueError("Testing must use a separate database")
+    if prod.get("image_prefix", "shop3i") != test.get("image_prefix", "shop3i"):
+        raise ValueError("Testing and production must use the same image_prefix")
     if {urlsplit(url).netloc for url in prod["readiness_urls"]} & {
         urlsplit(url).netloc for url in test["readiness_urls"]
     }:
@@ -121,13 +139,12 @@ def configuration(path, environment):
     return raw[environment]
 
 
-def verified_commit(environment, runner=run):
+def verified_commit(environment, runner=run, *, expected_branch=None):
     if environment not in BRANCHES:
         raise ValueError("Choose production or testing explicitly")
-    if runner(["git", "branch", "--show-current"]) != BRANCHES[environment]:
-        raise ValueError(
-            f"Check out {BRANCHES[environment]} before deploying {environment}"
-        )
+    branch = expected_branch or BRANCHES[environment]
+    if runner(["git", "branch", "--show-current"]) != branch:
+        raise ValueError(f"Check out {branch} before deploying {environment}")
     if runner(["git", "status", "--porcelain"]):
         raise ValueError("Deployment requires a clean committed checkout")
     commit = runner(["git", "rev-parse", "HEAD"])
@@ -179,7 +196,11 @@ def archive(commit, target, runner=run):
                 raise ValueError("Unsafe archive path")
 
 
-def remote_script(config, commit):
+def remote_script(config, commit, *, image_mode="build", bundle_sha256=None):
+    if image_mode not in {"build", "save", "load"}:
+        raise ValueError("Invalid image mode")
+    if image_mode == "load" and not re.fullmatch(r"[a-f0-9]{64}", bundle_sha256 or ""):
+        raise ValueError("Image bundle digest is required")
     q = shlex.quote
     directory = config["directory"]
     release = directory + "/releases/" + commit
@@ -206,6 +227,46 @@ def remote_script(config, commit):
         for url in config["readiness_urls"]
     )
     docker = "sudo -n docker" if config.get("sudo_docker", False) else "docker"
+    image_prefix = config.get("image_prefix", "shop3i")
+    images = [
+        f"{image_prefix}/{service}:{commit}"
+        for service in ("backend", "fashion", "electronics", "admin")
+    ]
+    if "assistant" in config.get("profiles", []):
+        images.append(f"{image_prefix}/functiongemma:{commit}")
+    bundle = directory + "/images-" + commit + ".tar"
+    if image_mode == "load":
+        image_step = (
+            'test "$(sha256sum '
+            + q(bundle)
+            + " | cut -d ' ' -f1)\" = "
+            + q(bundle_sha256)
+            + "\n"
+            + docker
+            + " load -i "
+            + q(bundle)
+        )
+    else:
+        image_step = compose + " build"
+        if image_mode == "save":
+            image_step += (
+                "\n"
+                + docker
+                + " save "
+                + " ".join(q(image) for image in images)
+                + " > "
+                + q(bundle)
+            )
+            image_step += "\ntest -s " + q(bundle)
+    image_audit = "\n".join(
+        "printf 'IMAGE_ID "
+        + image
+        + " '; "
+        + docker
+        + " image inspect --format '{{.Id}}' "
+        + q(image)
+        for image in images
+    )
     backup_directory = directory + "/backups"
     rollback = ""
     if config.get("backward_compatible_migrations", False):
@@ -220,10 +281,11 @@ mkdir -p {q(release)}
 (umask 022; tar -xf {q(directory + "/upload-" + commit + ".tar")} -C {q(release)})
 cd {q(release)}
 export RELEASE_ID={q(commit)}
+export APP_IMAGE_PREFIX={q(image_prefix)}
 export COMPOSE_PARALLEL_LIMIT=1
 {compose} config --quiet
 {compose} config --format json | python3 tools/release_guard.py {q(config["database"])} {q(config["database_user"])} {q(config["worker_readiness_url"])} {" ".join(q(url) for url in config["readiness_urls"])}
-{compose} build
+{image_step}
 {compose} run --rm --no-deps -T --interactive=false backend php artisan --version </dev/null
 mkdir -p {q(backup_directory)}
 backup={q(backup_directory + "/" + commit)}-$(date +%Y%m%dT%H%M%S).dump
@@ -240,6 +302,7 @@ python3 tools/release_probe.py {q(config["worker_readiness_url"])}
 {rollback or 'echo "Deployment failed; migration compatibility unconfirmed, retaining state for operator recovery." >&2'}
 exit 1
 fi
+{image_audit}
 ln -sfn {q(release)} {q(directory + "/current")}
 printf '%s\\n' {q(commit)}
 """
@@ -291,49 +354,147 @@ def promote(commit, runner=run):
                 raise
 
 
-def deploy(config_path, environment, runner=run):
+def _scp(config, source, destination):
+    return [
+        "scp",
+        "-F",
+        "none",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "-o",
+        "IdentitiesOnly=yes",
+        "-o",
+        "UserKnownHostsFile=" + str(Path(config["known_hosts"]).resolve()),
+        "-i",
+        str(Path(config["identity_file"]).resolve()),
+        "-P",
+        str(config.get("port", 22)),
+        source,
+        destination,
+    ]
+
+
+def _image_ids(output, commit, config):
+    prefix = config.get("image_prefix", "shop3i")
+    expected = {
+        f"{prefix}/{service}:{commit}"
+        for service in ("backend", "fashion", "electronics", "admin")
+    }
+    if "assistant" in config.get("profiles", []):
+        expected.add(f"{prefix}/functiongemma:{commit}")
+    found = {}
+    for line in output.splitlines():
+        if line.startswith("IMAGE_ID "):
+            match = re.fullmatch(
+                r"IMAGE_ID ([a-z0-9_/-]+:[a-f0-9]{40}) (sha256:[a-f0-9]{64})", line
+            )
+            if not match or match.group(1) in found:
+                raise RuntimeError("Invalid or duplicate remote image evidence")
+            found[match.group(1)] = match.group(2)
+    if found != {name: found.get(name) for name in expected} or any(
+        value is None for value in found.values()
+    ):
+        raise RuntimeError("Remote image evidence is incomplete")
+    return found
+
+
+def _file_digest(path):
+    with Path(path).open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def _deploy_commit(
+    config_path,
+    environment,
+    commit,
+    runner=run,
+    *,
+    bundle_path=None,
+    image_mode="build",
+):
     config = configuration(config_path, environment)
-    commit = verified_commit(environment, runner)
     connection = ssh(config)
     with tempfile.TemporaryDirectory(prefix="commerce-release-") as temp:
         tar = Path(temp) / "source.tar"
         archive(commit, tar, runner)
         runner([*connection, "mkdir -p " + shlex.quote(config["directory"])])
-        scp = [
-            "scp",
-            "-F",
-            "none",
-            "-o",
-            "BatchMode=yes",
-            "-o",
-            "StrictHostKeyChecking=yes",
-            "-o",
-            "IdentitiesOnly=yes",
-            "-o",
-            "UserKnownHostsFile=" + str(Path(config["known_hosts"]).resolve()),
-            "-i",
-            str(Path(config["identity_file"]).resolve()),
-            "-P",
-            str(config.get("port", 22)),
-            str(tar),
-            config["user"]
-            + "@"
-            + config["host"]
-            + ":"
-            + config["directory"]
-            + "/upload-"
-            + commit
-            + ".tar",
-        ]
-        runner(scp)
-        result = runner([*connection, "sh -s"], input=remote_script(config, commit))
+        remote = config["user"] + "@" + config["host"] + ":" + config["directory"]
+        runner(_scp(config, str(tar), remote + "/upload-" + commit + ".tar"))
+        bundle_hash = None
+        if image_mode == "load":
+            if bundle_path is None or not Path(bundle_path).is_file():
+                raise ValueError("Verified image bundle is required")
+            bundle_hash = _file_digest(bundle_path)
+            runner(
+                _scp(config, str(bundle_path), remote + "/images-" + commit + ".tar")
+            )
+        result = runner(
+            [*connection, "sh -s"],
+            input=remote_script(
+                config, commit, image_mode=image_mode, bundle_sha256=bundle_hash
+            ),
+        )
         if result.splitlines()[-1:] != [commit]:
             raise RuntimeError(
                 "Remote release did not acknowledge readiness for this commit"
             )
+        if image_mode in {"save", "load"}:
+            images = _image_ids(result, commit, config)
+            if image_mode == "save":
+                if bundle_path is None:
+                    raise ValueError("Image bundle destination is required")
+                runner(
+                    _scp(
+                        config, remote + "/images-" + commit + ".tar", str(bundle_path)
+                    )
+                )
+                if (
+                    not Path(bundle_path).is_file()
+                    or not Path(bundle_path).stat().st_size
+                ):
+                    raise RuntimeError("Image bundle was not transferred")
+                bundle_hash = _file_digest(bundle_path)
+            return {"commit": commit, "images": images, "bundle_sha256": bundle_hash}
+    return commit
+
+
+def deploy(config_path, environment, runner=run):
+    commit = verified_commit(environment, runner)
+    _deploy_commit(config_path, environment, commit, runner)
     if environment == "production":
         promote(commit, runner)
     return commit
+
+
+def deploy_verified_revision(
+    config_path,
+    environment,
+    commit,
+    runner=run,
+    *,
+    bundle_path=None,
+    image_mode="build",
+):
+    """Stage the verified deployment-branch revision without promoting main.
+
+    Used only by the one-launch lifecycle. The public manual CLI keeps its
+    environment-specific branch checks and production promotion behavior.
+    """
+    if environment not in BRANCHES:
+        raise ValueError("Choose production or testing explicitly")
+    verified = verified_commit("production", runner)
+    if verified != commit:
+        raise ValueError("Lifecycle commit differs from verified checkout")
+    return _deploy_commit(
+        config_path,
+        environment,
+        commit,
+        runner,
+        bundle_path=bundle_path,
+        image_mode=image_mode,
+    )
 
 
 def main():

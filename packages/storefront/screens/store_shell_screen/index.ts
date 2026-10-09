@@ -1,4 +1,5 @@
 export { StoreProvider } from "./interface/StoreProvider";
+export { ProfiledStoreProvider } from "./interface/ProfiledStoreProvider";
 export { StoreStateProvider, themes, useStore } from "./interface/context";
 export {
   Button,

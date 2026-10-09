@@ -25,6 +25,8 @@ services:
       AUTH_RATE_LIMIT: "240"
       ASSISTANT_RATE_LIMIT: "240"
       APP_ENV: testing
+      MINIAPP_ASSET_ORIGIN: http://miniapps.localhost:8088
+      MINIAPP_PARENT_ORIGINS: http://fashion.localhost:8088,http://electronics.localhost:8088,http://admin.localhost:8088
       DB_DATABASE: commerce_test
       SANCTUM_STATEFUL_DOMAINS: fashion.localhost:8088,electronics.localhost:8088,admin.localhost:8088
   worker:
@@ -35,12 +37,20 @@ services:
       AUTH_RATE_LIMIT: "240"
       ASSISTANT_RATE_LIMIT: "240"
       APP_ENV: testing
+      MINIAPP_ASSET_ORIGIN: http://miniapps.localhost:8088
+      MINIAPP_PARENT_ORIGINS: http://fashion.localhost:8088,http://electronics.localhost:8088,http://admin.localhost:8088
       DB_DATABASE: commerce_test
   fashion:
+    build:
+      args: {EXPO_PUBLIC_MINIAPP_ASSET_ORIGIN: "http://miniapps.localhost:8088"}
     image: ecommerce-portfolio-fashion
   electronics:
+    build:
+      args: {EXPO_PUBLIC_MINIAPP_ASSET_ORIGIN: "http://miniapps.localhost:8088"}
     image: ecommerce-portfolio-electronics
   admin:
+    build:
+      args: {EXPO_PUBLIC_MINIAPP_ASSET_ORIGIN: "http://miniapps.localhost:8088"}
     image: ecommerce-portfolio-admin
   gateway:
     ports: !override ["8088:8080"]

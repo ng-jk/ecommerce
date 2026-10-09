@@ -5,6 +5,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ACTION = {
+    "miniapps": ("miniapps.list", "List enabled Mini Apps installed for this merchant"),
+    "launchMiniapp": ("miniapps.launch", "Create a short-lived authorized Mini App launch"),
+    "invokeMiniapp": ("miniapps.invoke", "Invoke an approved read capability through a current Mini App launch"),
+    "adminMiniapps": ("admin.miniapps", "Administrator: list Mini App installations and approved packages"),
+    "installMiniapp": ("admin.miniapp.install", "Administrator: install an approved Mini App version for this merchant"),
+    "updateMiniapp": ("admin.miniapp.update", "Administrator: enable or disable a Mini App and change its capability grants"),
     "adminPlugins": ("admin.plugins", "Administrator: list this merchant's plugin installations"),
     "adminPlugin": ("admin.plugin", "Administrator: view this merchant's plugin configuration"),
     "installPlugin": ("admin.plugin.install", "Administrator: install an approved plugin for this merchant only"),

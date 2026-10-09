@@ -76,9 +76,10 @@ for (const [shop, product] of [
       () => document.documentElement.scrollWidth > window.innerWidth,
     );
     expect(overflow).toBe(false);
-    await page
-      .getByRole("button", { name: "Explore the collection ↓", exact: true })
-      .click();
+    await page.getByRole("heading", {
+      name: shop === "fashion" ? "The everyday edit" : "Find your next upgrade",
+      exact: true,
+    }).scrollIntoViewIfNeeded();
     await expect(
       page.getByRole("heading", {
         name:

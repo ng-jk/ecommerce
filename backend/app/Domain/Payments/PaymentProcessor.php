@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\PaymentEvent;
 use App\Models\Product;
+use App\Modules\Events\Interface\Events;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -38,6 +39,8 @@ class PaymentProcessor
             if ($payment->status === Payment::Creating && ! $event) {
                 // A crashed POST may have created a bill. Never send it again.
                 $payment->update(['status' => Payment::Review, 'lease' => null, 'lease_until' => null]);
+                app(Events::class)->publish('payment.review', 'payment', $payment->id,
+                    ['payment_id' => $payment->public_id, 'status' => Payment::Review], 'payment:'.$payment->id.':review');
 
                 return ['recovered' => true];
             }
@@ -72,6 +75,10 @@ class PaymentProcessor
                 $locked->update(['lease' => null, 'lease_until' => null, 'attempts' => $attempts,
                     'status' => $terminal ? $locked->status : ($claim['create'] || $attempts >= 12 ? Payment::Review : $locked->status),
                     'next_check_at' => now()->addMinutes(5)]);
+                if ($locked->status === Payment::Review) {
+                    app(Events::class)->publish('payment.review', 'payment', $locked->id,
+                        ['payment_id' => $locked->public_id, 'status' => Payment::Review], 'payment:'.$locked->id.':review');
+                }
                 if ($event) {
                     $event->increment('attempts');
                     $event->update(['available_at' => now()->addMinutes(5)]);
@@ -92,6 +99,7 @@ class PaymentProcessor
                 return;
             }
             $order = Order::lockForUpdate()->findOrFail($payment->order_id);
+            $previousStatus = $payment->status;
             $id = $bill['id'] ?? null;
             $valid = is_string($id) && preg_match('/^[a-zA-Z0-9_-]{1,240}$/D', $id)
                 && ($payment->bill_id === null || $payment->bill_id === $id)
@@ -130,6 +138,11 @@ class PaymentProcessor
                 'next_check_at' => $payment->status === Payment::Pending && $payment->provider !== 'custom' ? now()->addMinutes(5) : null])->save();
             if ($event) {
                 $event->update(['processed_at' => now()]);
+            }
+            if ($payment->status !== $previousStatus) {
+                app(Events::class)->publish('payment.'.$payment->status, 'payment', $payment->id,
+                    ['payment_id' => $payment->public_id, 'status' => $payment->status, 'order_id' => $order->id],
+                    'payment:'.$payment->id.':'.$payment->status);
             }
         });
     }

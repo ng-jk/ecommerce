@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { AssistantPort } from "../logic/types";
 import type { StoragePort } from "../../contracts";
-import { ApiError , user } from "../../contracts";
+import { ApiError, user } from "../../contracts";
 import type { createTransport } from "../../transport";
 
 type Parameter = {

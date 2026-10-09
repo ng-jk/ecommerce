@@ -7,8 +7,11 @@ and [implementation plan](docs/implementation-plan.md): manually invoked Python 
 worker-driven stateful APIs, comprehensive logic tests, and Lean proof obligations.
 These are target requirements; the current demo has not yet completed this migration.
 Every CRUD must follow the [mandatory CRUD rules](docs/crud-rules.md).
+Browse the [Shop3i documentation index](docs/INDEX.md) and [machine-readable requirement registry](docs/registry.json) for the product target, amendments, document catalog and evidence-aware status.
 See [development dependencies](docs/dependencies.md) for the installed review,
 test, mutation, and proof tools and reproducible installation commands.
+See [Mini Apps](docs/miniapps.md) for the independent ZIP package format, SDK,
+merchant installations, operator approval, isolation boundary and hosting setup.
 
 - **Maison** — an editorial fashion storefront in warm neutral colours.
 - **Volt** — a dark electronics storefront with product specifications.
@@ -58,6 +61,7 @@ frontend/electronics/    Volt Expo app and platform configuration
 frontend/admin/          Commerce Studio Expo web app
 packages/api-client/     Shared client and generated API types
 packages/storefront/     Shopping screens and per-shop themes
+packages/miniapps/       Sandboxed Mini App host, SDK and management screens
 docker/                  Runtime images, web server, gateway
 docs/                    API specification and deployment guide
 tests/browser/           Browser shopping and admin tests

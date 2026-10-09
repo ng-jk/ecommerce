@@ -1,0 +1,1226 @@
+{
+  "schema_version": 1,
+  "amendment": "SHOP3I-2026-10-09",
+  "documents": [
+    {
+      "id": "ai-sdk-and-payments",
+      "path": "docs/ai-sdk-and-payments.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "architecture-target",
+      "path": "docs/architecture/target.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "assistant-access-audit",
+      "path": "docs/assistant-access-audit.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "commerce-capability-inventory-data",
+      "path": "docs/commerce-capability-inventory.json",
+      "kind": "inventory",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "commerce-capability-inventory",
+      "path": "docs/commerce-capability-inventory.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "crud-rules",
+      "path": "docs/crud-rules.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "decisions-2026-10-09-shop3i-amendment",
+      "path": "docs/decisions/2026-10-09-shop3i-amendment.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "dependencies",
+      "path": "docs/dependencies.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "deployment",
+      "path": "docs/deployment.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "engineering-spec",
+      "path": "docs/engineering-spec.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "frontend-module-spec",
+      "path": "docs/frontend-module-spec.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "implementation-plan",
+      "path": "docs/implementation-plan.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "index",
+      "path": "docs/INDEX.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "merchant-plugins",
+      "path": "docs/merchant-plugins.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "miniapp-formal-model",
+      "path": "docs/miniapp-formal-model.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "miniapps",
+      "path": "docs/miniapps.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi",
+      "path": "docs/openapi.json",
+      "kind": "api-contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-admin-miniapps-id",
+      "path": "docs/openapi/path-admin-miniapps-id.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-admin-miniapps",
+      "path": "docs/openapi/path-admin-miniapps.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-admin-plugins-id",
+      "path": "docs/openapi/path-admin-plugins-id.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-admin-plugins-loyalty-credit",
+      "path": "docs/openapi/path-admin-plugins-loyalty-credit.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-admin-plugins",
+      "path": "docs/openapi/path-admin-plugins.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-api-v1-shops-shop-admin-orders-id",
+      "path": "docs/openapi/path-api-v1-shops-shop-admin-orders-id.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-api-v1-shops-shop-admin-orders",
+      "path": "docs/openapi/path-api-v1-shops-shop-admin-orders.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-api-v1-shops-shop-admin-products-id",
+      "path": "docs/openapi/path-api-v1-shops-shop-admin-products-id.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-api-v1-shops-shop-admin-products",
+      "path": "docs/openapi/path-api-v1-shops-shop-admin-products.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-api-v1-shops-shop-auth-login",
+      "path": "docs/openapi/path-api-v1-shops-shop-auth-login.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-api-v1-shops-shop-auth-logout",
+      "path": "docs/openapi/path-api-v1-shops-shop-auth-logout.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-api-v1-shops-shop-auth-me",
+      "path": "docs/openapi/path-api-v1-shops-shop-auth-me.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-api-v1-shops-shop-auth-register",
+      "path": "docs/openapi/path-api-v1-shops-shop-auth-register.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-api-v1-shops-shop-cart",
+      "path": "docs/openapi/path-api-v1-shops-shop-cart.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-api-v1-shops-shop-checkout",
+      "path": "docs/openapi/path-api-v1-shops-shop-checkout.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-api-v1-shops-shop-operations-id",
+      "path": "docs/openapi/path-api-v1-shops-shop-operations-id.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-api-v1-shops-shop-orders",
+      "path": "docs/openapi/path-api-v1-shops-shop-orders.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-api-v1-shops-shop-products-id",
+      "path": "docs/openapi/path-api-v1-shops-shop-products-id.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-api-v1-shops-shop-products",
+      "path": "docs/openapi/path-api-v1-shops-shop-products.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-assistant",
+      "path": "docs/openapi/path-assistant.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-billplz-webhook",
+      "path": "docs/openapi/path-billplz-webhook.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-miniapps-id-invoke",
+      "path": "docs/openapi/path-miniapps-id-invoke.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-miniapps-id-launch",
+      "path": "docs/openapi/path-miniapps-id-launch.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-miniapps",
+      "path": "docs/openapi/path-miniapps.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-payment-integration-confirm",
+      "path": "docs/openapi/path-payment-integration-confirm.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-payment-integration-status",
+      "path": "docs/openapi/path-payment-integration-status.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-plugins-loyalty-balance",
+      "path": "docs/openapi/path-plugins-loyalty-balance.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-stripe-webhook",
+      "path": "docs/openapi/path-stripe-webhook.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-schema-accepted",
+      "path": "docs/openapi/schema-Accepted.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-schema-address",
+      "path": "docs/openapi/schema-Address.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-schema-auth",
+      "path": "docs/openapi/schema-Auth.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-schema-cart",
+      "path": "docs/openapi/schema-Cart.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-schema-cartinput",
+      "path": "docs/openapi/schema-CartInput.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-schema-cartline",
+      "path": "docs/openapi/schema-CartLine.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-schema-catalog",
+      "path": "docs/openapi/schema-Catalog.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-schema-error",
+      "path": "docs/openapi/schema-Error.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-schema-operation",
+      "path": "docs/openapi/schema-Operation.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-schema-order",
+      "path": "docs/openapi/schema-Order.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-schema-orderitem",
+      "path": "docs/openapi/schema-OrderItem.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-schema-orderpage",
+      "path": "docs/openapi/schema-OrderPage.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-schema-product",
+      "path": "docs/openapi/schema-Product.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-schema-productpage",
+      "path": "docs/openapi/schema-ProductPage.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-schema-user",
+      "path": "docs/openapi/schema-User.json",
+      "kind": "openapi-module",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "product-overview",
+      "path": "docs/product/overview.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "refactor-status",
+      "path": "docs/refactor-status.md",
+      "kind": "guide",
+      "status": "historical",
+      "supersedes": []
+    },
+    {
+      "id": "shopify-expansion-plan",
+      "path": "docs/shopify-expansion-plan.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "standards-extensions-and-quality",
+      "path": "docs/standards/extensions-and-quality.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "status-requirements",
+      "path": "docs/status/requirements.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "testing-acceptance",
+      "path": "docs/testing-acceptance.md",
+      "kind": "guide",
+      "status": "historical",
+      "supersedes": []
+    },
+    {
+      "id": "repository-instructions",
+      "path": "AGENTS.md",
+      "kind": "instructions",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "backend-instructions",
+      "path": "backend/AGENTS.md",
+      "kind": "instructions",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "fashion-frontend-instructions",
+      "path": "frontend/fashion/AGENTS.md",
+      "kind": "instructions",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "registry",
+      "path": "docs/registry.json",
+      "kind": "index",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "implementation-checkpoint-20261009",
+      "path": "docs/status/2026-10-09-implementation.md",
+      "kind": "status",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "company-deployment-profiles",
+      "path": "docs/company-deployment-profiles.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "event-runtime-contract",
+      "path": "backend/app/Modules/Events/README.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "plugin-runtime-contract",
+      "path": "extensions/runtime/README.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "python-interfaces",
+      "path": "interfaces/python/shop3i/README.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    }
+  ],
+  "requirements": [
+    {
+      "id": "R01",
+      "title": "File size and maintainability",
+      "document": "engineering-spec",
+      "anchor": "r01--file-size-and-maintainability",
+      "status": "partial",
+      "implementation": [
+        "tools/pipeline/review.py"
+      ],
+      "tests": [
+        "tests/pipeline/test_guards.py"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "R02",
+      "title": "Strict TypeScript and code review",
+      "document": "engineering-spec",
+      "anchor": "r02--strict-typescript-and-code-review",
+      "status": "partial",
+      "implementation": [
+        "tools/pipeline/review.py",
+        "tools/lifecycle/reviews.py"
+      ],
+      "tests": [
+        "tests/pipeline/test_guards.py"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "R03",
+      "title": "Frontend dependency layers",
+      "document": "engineering-spec",
+      "anchor": "r03--frontend-dependency-layers",
+      "status": "partial",
+      "implementation": [
+        "tools/pipeline/frontend_structure.py"
+      ],
+      "tests": [
+        "tests/unit/architecture.test.ts"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "R04",
+      "title": "Screens and navigation",
+      "document": "engineering-spec",
+      "anchor": "r04--screens-and-navigation",
+      "status": "partial",
+      "implementation": [
+        "frontend/screens.json"
+      ],
+      "tests": [
+        "tests/unit/domain.test.ts"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "R05",
+      "title": "Data layer contracts, cache, and retries",
+      "document": "engineering-spec",
+      "anchor": "r05--data-layer-contracts-cache-and-retries",
+      "status": "partial",
+      "implementation": [
+        "packages/api-client/services/transport/index.ts",
+        "packages/api-client/services/cache/index.ts"
+      ],
+      "tests": [
+        "tests/unit/data.test.ts",
+        "tests/unit/storage.test.ts"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "R06",
+      "title": "Stateful API and authority",
+      "document": "engineering-spec",
+      "anchor": "r06--stateful-api-and-authority",
+      "status": "partial",
+      "implementation": [
+        "backend/app/Domain/OperationProcessor.php"
+      ],
+      "tests": [
+        "backend/tests/Feature/OperationTest.php",
+        "backend/tests/Feature/WorkerBoundaryTest.php"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "R07",
+      "title": "Database-first asynchronous processing",
+      "document": "engineering-spec",
+      "anchor": "r07--database-first-asynchronous-processing",
+      "status": "partial",
+      "implementation": [
+        "backend/app/Modules/Events/Data/EventStore.php",
+        "backend/app/Modules/Events/Logic/EventWorker.php"
+      ],
+      "tests": [
+        "backend/tests/Feature/EventFlowTest.php"
+      ],
+      "proofs": [],
+      "evidence": [
+        "docs/status/2026-10-09-implementation.md"
+      ],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "R08",
+      "title": "PostgreSQL storage interpretation",
+      "document": "engineering-spec",
+      "anchor": "r08--postgresql-storage-interpretation",
+      "status": "partial",
+      "implementation": [
+        "compose.yaml"
+      ],
+      "tests": [
+        "backend/tests/Feature/WorkerBoundaryTest.php"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "R09",
+      "title": "Tests and logic coverage",
+      "document": "engineering-spec",
+      "anchor": "r09--tests-and-logic-coverage",
+      "status": "partial",
+      "implementation": [
+        "tools/pipeline/stages.py",
+        "vitest.config.mts"
+      ],
+      "tests": [
+        "tests/pipeline/test_stages.py"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "R10",
+      "title": "Lean proof obligations",
+      "document": "engineering-spec",
+      "anchor": "r10--lean-proof-obligations",
+      "status": "partial",
+      "implementation": [
+        "formal/Commerce.lean",
+        "tools/pipeline/proofs.py"
+      ],
+      "tests": [
+        "tests/pipeline/test_cli_proofs.py"
+      ],
+      "proofs": [
+        "purchase_preserves_shop",
+        "unauthorized_unchanged",
+        "foreign_shop_unchanged",
+        "replay_unchanged",
+        "purchase_conserves_stock",
+        "purchase_idempotent",
+        "all_sequences_conserve_stock",
+        "all_sequences_preserve_shop",
+        "stock_nonnegative",
+        "money_total_correct",
+        "back_never_temp",
+        "order_advance_valid",
+        "assistant_unauthorized_no_execution",
+        "assistant_incomplete_no_execution",
+        "assistant_write_requires_confirmation",
+        "payment_paid_is_terminal",
+        "payment_unverified_unchanged",
+        "payment_release_is_idempotent",
+        "plugin_invalid_unchanged",
+        "plugin_unauthorized_unchanged",
+        "plugin_disabled_blocks_execution",
+        "plugin_revoked_blocks_execution",
+        "plugin_foreign_target_unchanged",
+        "plugin_other_shop_unchanged",
+        "plugin_other_configuration_unchanged",
+        "plugin_sequences_preserve_other_shop",
+        "plugin_sequences_preserve_other_configuration",
+        "plugin_customer_revoked_blocks_execution",
+        "plugin_configuration_requires_admin",
+        "plugin_customer_revoked_not_allowed",
+        "plugin_credit_requires_admin",
+        "plugin_balance_preserves_business_state",
+        "plugin_disabled_balance_not_allowed",
+        "plugin_credit_overflow_unchanged",
+        "mini_denied_unchanged",
+        "mini_unauthenticated_denied",
+        "mini_foreign_target_denied",
+        "mini_uninstalled_denied",
+        "mini_disabled_denied",
+        "mini_unapproved_denied",
+        "mini_package_mismatch_denied",
+        "mini_stale_generation_denied",
+        "mini_revoked_denied",
+        "mini_accepted_then_revoked_unchanged",
+        "mini_authorization_noninterference",
+        "mini_other_installation_unchanged",
+        "mini_other_dispatch_preserves_authorization",
+        "mini_sequences_preserve_other_installation",
+        "mini_accepted_adds_effect",
+        "mini_stale_approval_denied"
+      ],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "R11",
+      "title": "Python-orchestrated manual release pipeline",
+      "document": "engineering-spec",
+      "anchor": "r11--python-orchestrated-manual-release-pipeline",
+      "status": "partial",
+      "implementation": [
+        "tools/lifecycle/__main__.py",
+        "tools/manual_release.py"
+      ],
+      "tests": [
+        "tests/deployment/test_lifecycle.py",
+        "tests/deployment/test_manual_release.py"
+      ],
+      "proofs": [],
+      "evidence": [
+        "docs/status/2026-10-09-implementation.md"
+      ],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "R12",
+      "title": "Conversational API and FunctionGemma",
+      "document": "engineering-spec",
+      "anchor": "r12--conversational-api-and-functiongemma",
+      "status": "partial",
+      "implementation": [
+        "backend/app/Domain/Assistant/AssistantActions.php"
+      ],
+      "tests": [
+        "backend/tests/Feature/AssistantTest.php",
+        "tests/api/test_assistant_matrix.py"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "R13",
+      "title": "Configured business permissions and assistant parity",
+      "document": "engineering-spec",
+      "anchor": "r13--configured-business-permissions-and-assistant-parity",
+      "status": "partial",
+      "implementation": [
+        "interfaces/python/shop3i/shop3i/logic.py",
+        "packages/storefront/services/profile/index.ts"
+      ],
+      "tests": [
+        "tests/interfaces/test_shop3i.py",
+        "tests/api/test_interfaces.py",
+        "tests/unit/deploymentProfile.test.ts"
+      ],
+      "proofs": [],
+      "evidence": [
+        "docs/status/2026-10-09-implementation.md"
+      ],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "R14",
+      "title": "Multi-agent implementation and model selection",
+      "document": "engineering-spec",
+      "anchor": "r14--multi-agent-implementation-and-model-selection",
+      "status": "planned",
+      "implementation": [],
+      "tests": [],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "R15",
+      "title": "Expansion parity and payment authority",
+      "document": "engineering-spec",
+      "anchor": "r15--expansion-parity-and-payment-authority",
+      "status": "partial",
+      "implementation": [
+        "backend/app/Domain/Payments/PaymentProcessor.php"
+      ],
+      "tests": [
+        "backend/tests/Feature/MultiProviderPaymentTest.php"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "C01",
+      "title": "Pagination",
+      "document": "crud-rules",
+      "anchor": "c01--pagination",
+      "status": "partial",
+      "implementation": [
+        "backend/app/Domain/StoreActions.php"
+      ],
+      "tests": [
+        "backend/tests/Feature/CommerceTest.php"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "C02",
+      "title": "Indexed filters",
+      "document": "crud-rules",
+      "anchor": "c02--indexed-filters",
+      "status": "partial",
+      "implementation": [
+        "backend/app/Domain/StoreActions.php"
+      ],
+      "tests": [
+        "backend/tests/Feature/CommerceTest.php"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "C03",
+      "title": "Shared standalone Create/Edit pages",
+      "document": "crud-rules",
+      "anchor": "c03--shared-standalone-createedit-pages",
+      "status": "planned",
+      "implementation": [],
+      "tests": [],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "C04",
+      "title": "Transactions, locks, and immutable records",
+      "document": "crud-rules",
+      "anchor": "c04--transactions-locks-and-immutable-records",
+      "status": "partial",
+      "implementation": [
+        "backend/app/Domain/OperationProcessor.php"
+      ],
+      "tests": [
+        "backend/tests/Feature/CommerceTest.php"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "C05",
+      "title": "Database uniqueness",
+      "document": "crud-rules",
+      "anchor": "c05--database-uniqueness",
+      "status": "partial",
+      "implementation": [
+        "backend/app/Models/Order.php"
+      ],
+      "tests": [
+        "backend/tests/Feature/CommerceTest.php"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "C06",
+      "title": "Model-owned enum options",
+      "document": "crud-rules",
+      "anchor": "c06--model-owned-enum-options",
+      "status": "partial",
+      "implementation": [
+        "backend/app/Models/Operation.php"
+      ],
+      "tests": [
+        "backend/tests/Feature/CommerceTest.php"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "C07",
+      "title": "Timestamps and soft deletion",
+      "document": "crud-rules",
+      "anchor": "c07--timestamps-and-soft-deletion",
+      "status": "partial",
+      "implementation": [
+        "backend/app/Models/Operation.php"
+      ],
+      "tests": [
+        "backend/tests/Feature/CommerceTest.php"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "C08",
+      "title": "One validation error contract",
+      "document": "crud-rules",
+      "anchor": "c08--one-validation-error-contract",
+      "status": "partial",
+      "implementation": [
+        "backend/bootstrap/app.php"
+      ],
+      "tests": [
+        "backend/tests/Feature/CommerceTest.php"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "C09",
+      "title": "Centralized uploads",
+      "document": "crud-rules",
+      "anchor": "c09--centralized-uploads",
+      "status": "partial",
+      "implementation": [
+        "backend/app/Support/FileUploader.php"
+      ],
+      "tests": [
+        "backend/tests/Feature/CommerceTest.php"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "C10",
+      "title": "Visible data and metadata",
+      "document": "crud-rules",
+      "anchor": "c10--visible-data-and-metadata",
+      "status": "partial",
+      "implementation": [
+        "backend/app/Models/Operation.php"
+      ],
+      "tests": [
+        "backend/tests/Feature/CommerceTest.php"
+      ],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "SHOP3I-PRODUCT",
+      "title": "Shop3i product scope and interfaces",
+      "document": "product-overview",
+      "anchor": "shop3i-product-overview",
+      "status": "partial",
+      "implementation": [],
+      "tests": [],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "SHOP3I-DURABLE-WORK",
+      "title": "Durable PostgreSQL work acceptance and worker wakeups",
+      "document": "architecture-target",
+      "anchor": "durable-asynchronous-work",
+      "status": "partial",
+      "implementation": [
+        "backend/app/Modules/Events/Data/EventStore.php",
+        "backend/app/Modules/Events/Logic/EventWorker.php"
+      ],
+      "tests": [
+        "backend/tests/Feature/EventFlowTest.php"
+      ],
+      "proofs": [],
+      "evidence": [
+        "docs/status/2026-10-09-implementation.md"
+      ],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "SHOP3I-PLUGIN-BOUNDARY",
+      "title": "Plugin service data and credential isolation",
+      "document": "standards-extensions-and-quality",
+      "anchor": "plugin-model",
+      "status": "partial",
+      "implementation": [
+        "extensions/runtime/service.py",
+        "extensions/runtime/sandbox.py",
+        "extensions/runtime/storage.py"
+      ],
+      "tests": [
+        "tests/extensions/test_runtime.py",
+        "tests/extensions/test_runtime_functional.py"
+      ],
+      "proofs": [],
+      "evidence": [
+        "docs/status/2026-10-09-implementation.md"
+      ],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "SHOP3I-REVIEWS",
+      "title": "Five independent proposal review gates",
+      "document": "standards-extensions-and-quality",
+      "anchor": "review-gates-and-tests",
+      "status": "partial",
+      "implementation": [
+        "tools/lifecycle/reviews.py",
+        "tools/context_index.py"
+      ],
+      "tests": [
+        "tests/deployment/test_lifecycle_units.py"
+      ],
+      "proofs": [],
+      "evidence": [
+        "docs/status/2026-10-09-implementation.md"
+      ],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "SHOP3I-INTERFACES",
+      "title": "Shared Shop behavior and interfaces",
+      "document": "product-overview",
+      "anchor": "shop3i-product-overview",
+      "status": "partial",
+      "implementation": [
+        "interfaces/python/shop3i/shop3i/logic.py",
+        "packages/storefront/services/profile/index.ts"
+      ],
+      "tests": [
+        "tests/interfaces/test_shop3i.py",
+        "tests/api/test_interfaces.py",
+        "tests/unit/deploymentProfile.test.ts"
+      ],
+      "proofs": [],
+      "evidence": [
+        "docs/status/2026-10-09-implementation.md"
+      ],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "SHOP3I-EXTENSION-COMPAT",
+      "title": "Configured plugins and semantic compatibility",
+      "document": "standards-extensions-and-quality",
+      "anchor": "plugin-model",
+      "status": "planned",
+      "implementation": [],
+      "tests": [],
+      "proofs": [],
+      "evidence": [],
+      "reviews": []
+    },
+    {
+      "id": "SHOP3I-RELEASE",
+      "title": "Single-run manually triggered release orchestration",
+      "document": "engineering-spec",
+      "anchor": "r11--python-orchestrated-manual-release-pipeline",
+      "status": "partial",
+      "implementation": [
+        "tools/lifecycle/__main__.py",
+        "tools/manual_release.py"
+      ],
+      "tests": [
+        "tests/deployment/test_lifecycle.py",
+        "tests/deployment/test_manual_release.py"
+      ],
+      "proofs": [],
+      "evidence": [
+        "docs/status/2026-10-09-implementation.md"
+      ],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "id": "requirement",
+      "title": "Requirement review",
+      "standard": "SHOP3I-REVIEWS"
+    },
+    {
+      "id": "architecture",
+      "title": "Architecture review",
+      "standard": "SHOP3I-REVIEWS"
+    },
+    {
+      "id": "code",
+      "title": "Code review",
+      "standard": "R02"
+    },
+    {
+      "id": "security",
+      "title": "Security review",
+      "standard": "R02"
+    },
+    {
+      "id": "compatibility",
+      "title": "Compatibility review",
+      "standard": "R02"
+    }
+  ],
+  "test_standards": [
+    {
+      "id": "unit",
+      "title": "Unit tests",
+      "required": true,
+      "standard": "R09"
+    },
+    {
+      "id": "api-functional",
+      "title": "API functional tests",
+      "required": true,
+      "standard": "R09"
+    },
+    {
+      "id": "browser",
+      "title": "Browser tests",
+      "required": false,
+      "standard": "R09"
+    },
+    {
+      "id": "native",
+      "title": "Native device tests",
+      "required": false,
+      "standard": "R09"
+    },
+    {
+      "id": "mutation",
+      "title": "Mutation tests",
+      "required": false,
+      "standard": "R09"
+    }
+  ]
+}

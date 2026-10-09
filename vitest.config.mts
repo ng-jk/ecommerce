@@ -8,6 +8,7 @@ export default defineConfig({
       include: [
         "packages/**/*.ts",
         "packages/**/*.tsx",
+        "packages/**/*.js",
         "frontend/*/src/**/*.ts",
         "frontend/*/src/**/*.tsx",
       ],

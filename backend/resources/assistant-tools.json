@@ -2552,5 +2552,609 @@
         }
       }
     }
+  },
+  {
+    "name": "miniapps",
+    "action": "miniapps.list",
+    "description": "List enabled Mini Apps installed for this merchant",
+    "method": "GET",
+    "path": "/api/v1/shops/{shop}/miniapps",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "per_page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "role": "user",
+    "callable": true,
+    "confirmation": false,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "launchMiniapp",
+    "action": "miniapps.launch",
+    "description": "Create a short-lived authorized Mini App launch",
+    "method": "POST",
+    "path": "/api/v1/shops/{shop}/miniapps/{id}/launch",
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "role": "user",
+    "callable": true,
+    "confirmation": true,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "invokeMiniapp",
+    "action": "miniapps.invoke",
+    "description": "Invoke an approved read capability through a current Mini App launch",
+    "method": "POST",
+    "path": "/api/v1/shops/{shop}/miniapps/{id}/invoke",
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "launch_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "capability": {
+          "type": "string",
+          "enum": [
+            "catalog",
+            "product",
+            "cart.read",
+            "orders",
+            "plugin.loyalty.balance"
+          ]
+        },
+        "input": {
+          "type": "object",
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100000
+            },
+            "id": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "launch_id",
+        "capability",
+        "input",
+        "id"
+      ]
+    },
+    "role": "user",
+    "callable": true,
+    "confirmation": true,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "adminMiniapps",
+    "action": "admin.miniapps",
+    "description": "Administrator: list Mini App installations and approved packages",
+    "method": "GET",
+    "path": "/api/v1/shops/{shop}/admin/miniapps",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "per_page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "role": "admin",
+    "callable": true,
+    "confirmation": false,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "installMiniapp",
+    "action": "admin.miniapp.install",
+    "description": "Administrator: install an approved Mini App version for this merchant",
+    "method": "POST",
+    "path": "/api/v1/shops/{shop}/admin/miniapps",
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "package_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "version": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "grants": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 5,
+          "items": {
+            "type": "string",
+            "enum": [
+              "catalog",
+              "product",
+              "cart.read",
+              "orders",
+              "plugin.loyalty.balance"
+            ]
+          }
+        }
+      },
+      "required": [
+        "package_id",
+        "version",
+        "grants"
+      ]
+    },
+    "role": "admin",
+    "callable": true,
+    "confirmation": true,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "updateMiniapp",
+    "action": "admin.miniapp.update",
+    "description": "Administrator: enable or disable a Mini App and change its capability grants",
+    "method": "PATCH",
+    "path": "/api/v1/shops/{shop}/admin/miniapps/{id}",
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "expected_version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "version": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "grants": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 5,
+          "items": {
+            "type": "string",
+            "enum": [
+              "catalog",
+              "product",
+              "cart.read",
+              "orders",
+              "plugin.loyalty.balance"
+            ]
+          }
+        },
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "expected_version",
+        "id"
+      ]
+    },
+    "role": "admin",
+    "callable": true,
+    "confirmation": true,
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "validation_error": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      }
+    }
   }
 ]

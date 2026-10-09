@@ -6,6 +6,7 @@
     "directory": "/srv/shop3i-production",
     "env_file": "/srv/shop3i-secrets/production.env",
     "project": "shop3i-production",
+    "image_prefix": "shop3i",
     "identity_file": "/path/to/private-ssh-key",
     "known_hosts": "/path/to/pinned-known-hosts",
     "readiness_urls": [
@@ -31,6 +32,7 @@
     "directory": "/srv/shop3i-testing",
     "env_file": "/srv/shop3i-secrets/testing.env",
     "project": "shop3i-testing",
+    "image_prefix": "shop3i",
     "identity_file": "/path/to/private-ssh-key",
     "known_hosts": "/path/to/pinned-known-hosts",
     "readiness_urls": [

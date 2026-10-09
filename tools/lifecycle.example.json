@@ -1,0 +1,10 @@
+{
+  "release_config": "../.deploy/release.json",
+  "profiles": {
+    "shared-general": {
+      "kind": "shared-general",
+      "environment": "production",
+      "native": []
+    }
+  }
+}

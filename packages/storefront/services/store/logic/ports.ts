@@ -6,7 +6,8 @@ import type {
   Page,
   Product,
   User,
- AssistantPort } from "@portfolio/api-client";
+  AssistantPort,
+} from "@portfolio/api-client";
 export interface CommerceClient {
   assistant?: AssistantPort["assistant"];
   catalog(

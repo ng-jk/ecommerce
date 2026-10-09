@@ -7,6 +7,8 @@ import {
   type User,
 } from "@portfolio/api-client";
 import type { PluginClient } from "@portfolio/merchant-plugins";
+import type { MiniappClient } from "@portfolio/miniapps";
+import type { DeploymentProfile } from "../../../services/profile";
 import {
   createContext,
   useCallback,
@@ -36,9 +38,11 @@ export type StoreTheme = {
 };
 type Store = {
   shop: ShopSlug;
+  profile: DeploymentProfile | null;
   theme: StoreTheme;
   api: CommerceClient;
   plugins: PluginClient;
+  miniapps: MiniappClient;
   user: User | null;
   cart: CartLine[];
   paymentMethods: Record<string, string>;
@@ -64,16 +68,20 @@ export function useStoreState({
   shop,
   api,
   plugins,
+  miniapps,
   storage,
   randomUUID,
   theme,
+  profile = null,
 }: {
   shop: ShopSlug;
   api: CommerceClient;
   plugins: PluginClient;
+  miniapps: MiniappClient;
   storage: StoragePort;
   randomUUID: () => string;
   theme: StoreTheme;
+  profile?: DeploymentProfile | null | undefined;
 }) {
   const [user, setUser] = useState<User | null>(null),
     [cart, updateCart] = useState<CartLine[]>([]);
@@ -113,23 +121,27 @@ export function useStoreState({
       live = false;
     };
   }, [api]);
-  const run = useCallback(async (action: () => Promise<void>) => {
-    setBusy(true);
-    setMessage("");
-    try {
-      await action();
-      return true;
-    } catch (e) {
-      setMessage((e as Error).message);
-      if (e instanceof ApiError && e.status === 401) {
-        setUser(null);
-        updateCart([]);
+  const run = useCallback(
+    async (action: () => Promise<void>) => {
+      setBusy(true);
+      setMessage("");
+      try {
+        await action();
+        return true;
+      } catch (e) {
+        setMessage((e as Error).message);
+        if (e instanceof ApiError && e.status === 401) {
+          miniapps.reset();
+          setUser(null);
+          updateCart([]);
+        }
+        return false;
+      } finally {
+        setBusy(false);
       }
-      return false;
-    } finally {
-      setBusy(false);
-    }
-  }, []);
+    },
+    [miniapps],
+  );
   const authenticate = async (
     email: string,
     password: string,
@@ -140,6 +152,7 @@ export function useStoreState({
         ? await api.register(name, email, password)
         : await api.login(email, password);
     if (data.token) await storage.set("token", data.token);
+    miniapps.reset();
     setUser(data.user);
     await refreshCart();
   };
@@ -147,11 +160,13 @@ export function useStoreState({
     await api.logout();
     await storage.remove("token");
     await storage.clear?.();
+    miniapps.reset();
     setUser(null);
     updateCart([]);
   };
   const refreshSession = async () => {
     try {
+      miniapps.reset();
       setUser((await api.me()).user);
       await refreshCart();
     } catch (error) {
@@ -177,9 +192,11 @@ export function useStoreState({
     updateCart((await api.setCart(items)).items);
   return {
     shop,
+    profile,
     theme,
     api,
     plugins,
+    miniapps,
     user,
     cart,
     paymentMethods,

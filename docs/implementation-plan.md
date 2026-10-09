@@ -2,6 +2,9 @@
 
 Next expansion: [Shopify-style scope, payment design, delegation and completion gates](shopify-expansion-plan.md).
 Current change: [merchant-scoped bundled plugins](merchant-plugins.md), with a loyalty reference and UI/API/AI parity.
+New frontend extension: [independent Mini App packages and SDK host](miniapps.md).
+Backend sandboxed plugin execution and its persistent-storage API remain separate
+work; the frontend host must not be reported as implementing them.
 
 Current implementation evidence and remaining work: [refactor status](refactor-status.md).
 The baseline below describes the starting point, not the current code.
@@ -126,17 +129,22 @@ remaining model-to-implementation verification boundary.
    apps; smoke-test real operation completion and perform a rollback rehearsal.
 5. Add separately configured native build/distribution jobs and platform testing.
 
-Exit: an explicitly verified commit can be manually deployed to the isolated test
-host and, after separate operator promotion to `deployment/main`, manually deployed
-to production. Testing never promotes automatically. A failed rollout can recover
-without losing accepted operations or orders.
+Exit: an explicitly verified commit can be deployed to the isolated test host and,
+after the required operator promotion, deployed to production. The Python release
+orchestrator is manually invoked and runs its configured validation, publish,
+readiness probes, promotion and per-stage reporting without GitHub Actions or a
+Git-push trigger. Testing must pass before production promotion. A failed rollout
+can recover without losing accepted operations or orders. See the current
+[Shop3i amendment](decisions/2026-10-09-shop3i-amendment.md); a historical hold
+does not prevent a newly authorized release run and is not evidence of success.
 
 ## Configuration decisions needed before affected phases
 
 - Confirm PostgreSQL-backed caching as the intended “memory storage” behavior.
-- Deployment and release remain on hold until the manual Python gates pass and the
-  separate testing/production hosts, registry access, secrets and verified SSH
-  host identities are provisioned.
+- Deployment prerequisites still include passing Python gates, provisioned
+  testing/production hosts, secrets and verified SSH host identities. The former
+  blanket release hold is historical; each new release requires an explicit run
+  intent and current readiness evidence.
 - Review the primary-control counting convention, especially repeated list rows.
 - Do not put secret values in these docs. Domain and branch assignments are
   recorded in [deployment.md](deployment.md); host, registry, secret references,

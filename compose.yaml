@@ -5,6 +5,9 @@ x-backend-environment: &backend-environment
   APP_KEY: ${APP_KEY:?Run the setup instructions to generate APP_KEY}
   APP_DEBUG: "true"
   APP_URL: http://localhost:8080
+  MINIAPP_ASSET_ORIGIN: ${MINIAPP_ASSET_ORIGIN:-http://miniapps.localhost:8080}
+  MINIAPP_PARENT_ORIGINS: ${MINIAPP_PARENT_ORIGINS:-http://fashion.localhost:8080,http://electronics.localhost:8080,http://admin.localhost:8080}
+  MINIAPP_APPROVER_USER_IDS: ${MINIAPP_APPROVER_USER_IDS:-}
   DB_CONNECTION: pgsql
   DB_HOST: db
   DB_PORT: 5432
@@ -52,6 +55,7 @@ services:
     environment: *backend-environment
     volumes:
       - uploads:/var/www/html/storage/app/public
+      - miniapp_packages:/var/www/html/storage/app/private/miniapps
     depends_on:
       db: {condition: service_healthy}
     restart: unless-stopped
@@ -61,6 +65,7 @@ services:
     command: [php, artisan, 'commerce:work']
     volumes:
       - uploads:/var/www/html/storage/app/public
+      - miniapp_packages:/var/www/html/storage/app/private/miniapps
     depends_on:
       db: {condition: service_healthy}
     restart: unless-stopped
@@ -69,19 +74,19 @@ services:
     build:
       context: .
       dockerfile: docker/web/Dockerfile
-      args: {APP: fashion}
+      args: {APP: fashion, EXPO_PUBLIC_MINIAPP_ASSET_ORIGIN: "${MINIAPP_ASSET_ORIGIN:-http://miniapps.localhost:8080}"}
     restart: unless-stopped
   electronics:
     build:
       context: .
       dockerfile: docker/web/Dockerfile
-      args: {APP: electronics}
+      args: {APP: electronics, EXPO_PUBLIC_MINIAPP_ASSET_ORIGIN: "${MINIAPP_ASSET_ORIGIN:-http://miniapps.localhost:8080}"}
     restart: unless-stopped
   admin:
     build:
       context: .
       dockerfile: docker/web/Dockerfile
-      args: {APP: admin}
+      args: {APP: admin, EXPO_PUBLIC_MINIAPP_ASSET_ORIGIN: "${MINIAPP_ASSET_ORIGIN:-http://miniapps.localhost:8080}"}
     restart: unless-stopped
   gateway:
     image: caddy:2-alpine
@@ -95,3 +100,4 @@ services:
 volumes:
   database:
   uploads:
+  miniapp_packages:

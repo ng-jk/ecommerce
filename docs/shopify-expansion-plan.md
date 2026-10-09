@@ -2,7 +2,10 @@
 
 Status: implementation in progress, 2026-09-27. Completion is tracked per capability
 in [the inventory](commerce-capability-inventory.md), not implied by this plan. Existing engineering R01–R15, CRUD C01–C10 and
-testing-acceptance.md apply. Deployment and release remain on hold.
+testing-acceptance.md apply. This dated hold statement is superseded by the
+[2026-10-09 Shop3i amendment](decisions/2026-10-09-shop3i-amendment.md): a
+previous hold does not block a newly authorized manual Python release run, but
+no release may be claimed without current deployment and readiness evidence.
 
 ## Scope and traceability
 

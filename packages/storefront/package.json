@@ -9,6 +9,7 @@
     "./screens/assistant_screen": "./screens/assistant_screen/index.ts",
     "./screens/cart_screen": "./screens/cart_screen/index.ts",
     "./screens/checkout_screen": "./screens/checkout_screen/index.ts",
+    "./screens/company_home_screen": "./screens/company_home_screen/index.ts",
     "./screens/home_screen": "./screens/home_screen/index.ts",
     "./screens/loyalty_screen": "./screens/loyalty_screen/index.ts",
     "./screens/menu_screen": "./screens/menu_screen/index.ts",
@@ -21,6 +22,7 @@
     "./services/checkout": "./services/checkout/index.ts",
     "./services/navigation": "./services/navigation/index.ts",
     "./services/plugins": "./services/plugins/index.ts",
+    "./services/profile": "./services/profile/index.ts",
     "./services/store": "./services/store/index.ts"
   },
   "peerDependencies": {
@@ -29,9 +31,11 @@
     "expo-router": "*",
     "expo-secure-store": "*",
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-safe-area-context": "~5.7.0"
   },
   "dependencies": {
+    "@portfolio/miniapps": "*",
     "@portfolio/merchant-plugins": "*",
     "react": "*",
     "react-dom": "19.2.3",

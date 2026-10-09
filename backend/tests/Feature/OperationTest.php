@@ -67,7 +67,9 @@ class OperationTest extends TestCase
         $this->assertTrue(app(OperationProcessor::class)->processNext());
         $this->assertSame(Operation::Succeeded, $op->fresh()->status);
         $this->assertSame(2, $op->fresh()->attempts);
-        $op->refresh()->update(['status' => Operation::Processing, 'attempts' => 3, 'available_at' => now()->subSecond()]);
+        $exhausted = $this->getJson('/api/v1/shops/fashion/products')->assertAccepted();
+        $op = Operation::where('public_id', $exhausted->json('operation_id'))->firstOrFail();
+        $op->update(['status' => Operation::Processing, 'attempts' => 3, 'available_at' => now()->subSecond()]);
         app(OperationProcessor::class)->processNext();
         $this->assertSame(Operation::Failed, $op->fresh()->status);
         $this->assertSame(503, $op->fresh()->http_status);

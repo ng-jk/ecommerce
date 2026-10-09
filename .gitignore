@@ -22,6 +22,8 @@ coverage/
 playwright-report/
 test-results/
 .venv/
+*.egg-info/
+.vscode/
 .tools/
 __pycache__/
 .pytest_cache/

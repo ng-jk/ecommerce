@@ -1,0 +1,26 @@
+{
+  "name": "@portfolio/miniapps",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./services/miniapps": "./services/miniapps/index.ts",
+    "./screens/miniapps_screen": "./screens/miniapps_screen/index.ts",
+    "./screens/miniapp_host_screen": "./screens/miniapp_host_screen/index.ts",
+    "./screens/admin_miniapps_screen": "./screens/admin_miniapps_screen/index.ts",
+    "./screens/miniapp_form_screen": "./screens/miniapp_form_screen/index.ts",
+    "./screens/miniapp_create_screen": "./screens/miniapp_create_screen/index.ts",
+    "./screens/miniapp_edit_screen": "./screens/miniapp_edit_screen/index.ts"
+  },
+  "dependencies": {
+    "@portfolio/api-client": "*",
+    "zod": "3.25.76",
+    "react": "19.2.3",
+    "react-native": "0.86.3"
+  },
+  "peerDependencies": {
+    "expo-router": "*",
+    "react-native-webview": "*"
+  }
+}

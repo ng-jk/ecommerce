@@ -462,7 +462,8 @@ it("product renders unavailable/loading/stock states and responsive specificatio
 it("catalog renders responsive themes, filters, failures, pagination and product navigation", async () => {
   const screen = await render(createElement(HomeScreen));
   await screen.press("View Coat");
-  await screen.press("Explore the collection ↓");
+  await screen.press("Explore MiniApps");
+  expect(router.push).toHaveBeenLastCalledWith("/miniapps");
   await screen.fill("Search products", "coat");
   await screen.press("Coats");
   expect(state.setCategory).toHaveBeenCalledWith("Coats");

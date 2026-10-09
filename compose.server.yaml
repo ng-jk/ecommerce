@@ -4,6 +4,9 @@ x-environment: &environment
   APP_NAME: CommercePortfolio
   APP_ENV: production
   APP_DEBUG: "false"
+  MINIAPP_ASSET_ORIGIN: ${MINIAPP_ASSET_ORIGIN:-}
+  MINIAPP_PARENT_ORIGINS: ${MINIAPP_PARENT_ORIGINS:-}
+  MINIAPP_APPROVER_USER_IDS: ${MINIAPP_APPROVER_USER_IDS:-}
   APP_KEY: ${APP_KEY:?Set an environment-specific APP_KEY}
   APP_URL: https://${API_HOST:?Set API_HOST}
   DB_CONNECTION: pgsql
@@ -42,7 +45,7 @@ services:
     image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:-local}
     build: *backend-build
     environment: *environment
-    volumes: [uploads:/var/www/html/storage/app/public]
+    volumes: [uploads:/var/www/html/storage/app/public, miniapp_packages:/var/www/html/storage/app/private/miniapps]
     networks: [application, supabase]
     restart: unless-stopped
   worker:
@@ -50,7 +53,7 @@ services:
     build: *backend-build
     environment: *environment
     command: [php, artisan, commerce:work]
-    volumes: [uploads:/var/www/html/storage/app/public]
+    volumes: [uploads:/var/www/html/storage/app/public, miniapp_packages:/var/www/html/storage/app/private/miniapps]
     networks: [application, supabase]
     stop_grace_period: 40s
     restart: unless-stopped
@@ -60,6 +63,7 @@ services:
       context: .
       dockerfile: docker/web/Dockerfile
       args: {APP: fashion}
+    environment: {MINIAPP_ASSET_ORIGIN: "${MINIAPP_ASSET_ORIGIN:-}"}
     networks: [application]
     restart: unless-stopped
   electronics:
@@ -68,6 +72,7 @@ services:
       context: .
       dockerfile: docker/web/Dockerfile
       args: {APP: electronics}
+    environment: {MINIAPP_ASSET_ORIGIN: "${MINIAPP_ASSET_ORIGIN:-}"}
     networks: [application]
     restart: unless-stopped
   admin:
@@ -76,6 +81,7 @@ services:
       context: .
       dockerfile: docker/web/Dockerfile
       args: {APP: admin}
+    environment: {MINIAPP_ASSET_ORIGIN: "${MINIAPP_ASSET_ORIGIN:-}"}
     networks: [application]
     restart: unless-stopped
   gateway:
@@ -86,6 +92,7 @@ services:
       ELECTRONICS_HOST: ${ELECTRONICS_HOST}
       ADMIN_HOST: ${ADMIN_HOST}
       API_HOST: ${API_HOST}
+      MINIAPP_ASSET_HOST: ${MINIAPP_ASSET_HOST:-miniapps-disabled.invalid}
     volumes:
       - ./docker/Caddyfile.tunnel:/etc/caddy/Caddyfile:ro
       - ./backend/public:/var/www/html/public:ro
@@ -124,4 +131,5 @@ networks:
     name: ${SUPABASE_NETWORK:-shop3i-supabase_default}
 volumes:
   uploads:
+  miniapp_packages:
   functiongemma_models:

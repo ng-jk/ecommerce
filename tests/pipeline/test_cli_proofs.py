@@ -123,4 +123,5 @@ def test_lean_build_and_axiom_audit(tmp_path, monkeypatch, outcome, local):
     assert [call[1:] for call in calls[1:]] == [
         ["env", "lean", "Commerce/Invariants.lean"],
         ["env", "lean", "Commerce/Plugins.lean"],
+        ["env", "lean", "Commerce/MiniApps.lean"],
     ]

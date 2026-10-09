@@ -2,6 +2,13 @@
 
 This repository has no GitHub Actions workflow. A push, pull request, or branch update does not run verification or deploy an environment. The supported deployment interface is `tools/manual_release.py`, invoked by an operator from a clean local checkout after the exact commit passes the verification gates. This guide documents the current interface; it does not claim that a host is provisioned or a release has succeeded.
 
+The current interface below is the per-environment baseline. The authoritative
+release target is one manually triggered Python run that validates the exact
+commit, publishes testing, probes readiness, promotes only after its gates pass,
+publishes production, probes again, and writes a report for every stage. The
+single-run orchestration is not evidence of a completed deployment; retain the
+per-stage reports and readiness results for each run. See [R11](engineering-spec.md#r11--python-orchestrated-manual-release-pipeline).
+
 ## Branches and environments
 
 `deployment` is the production deployment branch. `testing` is the isolated testing deployment branch. `main` is the production promotion record: after the production deployment passes public HTTP readiness and worker readiness, the release tool fast-forwards and pushes that same commit to `main`. It does not deploy `main` separately. Testing deployments never promote to production. `developement` (spelling intentional) remains local-only.

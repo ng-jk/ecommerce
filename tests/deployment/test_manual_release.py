@@ -402,3 +402,119 @@ def test_source_permissions_are_scoped_and_artisan_never_reads_ssh_script(setup)
         "--no-deps -T --interactive=false" in line and "</dev/null" in line
         for line in artisan
     )
+
+
+def test_image_prefix_must_be_safe_and_shared(setup):
+    path, config, _, _ = setup
+    config["production"]["image_prefix"] = "unsafe;command"
+    path.write_text(json.dumps(config))
+    with pytest.raises(ValueError, match="image_prefix"):
+        release.configuration(path, "production")
+    config["production"]["image_prefix"] = "shop3i"
+    config["testing"]["image_prefix"] = "other"
+    path.write_text(json.dumps(config))
+    with pytest.raises(ValueError, match="same image_prefix"):
+        release.configuration(path, "testing")
+
+
+def test_image_bundle_build_once_and_verified_load(setup, tmp_path):
+    path, _, calls, base = setup
+    bundle = tmp_path / "images.tar"
+    image_lines = [
+        f"IMAGE_ID shop3i/{service}:{SHA} sha256:{'b' * 64}"
+        for service in ("backend", "fashion", "electronics", "admin")
+    ]
+
+    def runner(args, **kwargs):
+        if args[0] == "scp" and args[-1] == str(bundle):
+            bundle.write_bytes(b"image archive")
+        if args[0] == "ssh" and args[-1] == "sh -s":
+            calls.append((args, kwargs))
+            return "\n".join([*image_lines, SHA])
+        return base(args, **kwargs)
+
+    testing = release._deploy_commit(
+        path, "testing", SHA, runner, bundle_path=bundle, image_mode="save"
+    )
+    assert testing["images"] and testing["bundle_sha256"]
+    production = release._deploy_commit(
+        path, "production", SHA, runner, bundle_path=bundle, image_mode="load"
+    )
+    assert production == testing
+    scripts = [
+        kw["input"] for args, kw in calls if args[0] == "ssh" and args[-1] == "sh -s"
+    ]
+    assert "docker save" in scripts[0]
+    assert "docker load -i" in scripts[1]
+    assert (
+        " compose --project-name shop3i-production --env-file /srv/secrets/production.env -f compose.server.yaml build"
+        not in scripts[1]
+    )
+
+
+def test_image_bundle_missing_or_untransferred_refused(setup, tmp_path):
+    path, _, _, base = setup
+    missing = tmp_path / "missing.tar"
+    with pytest.raises(ValueError, match="bundle"):
+        release._deploy_commit(
+            path, "production", SHA, base, bundle_path=missing, image_mode="load"
+        )
+    output = "\n".join(
+        [
+            *(
+                f"IMAGE_ID shop3i/{service}:{SHA} sha256:{'b' * 64}"
+                for service in ("backend", "fashion", "electronics", "admin")
+            ),
+            SHA,
+        ]
+    )
+
+    def runner(args, **kwargs):
+        if args[0] == "ssh" and args[-1] == "sh -s":
+            return output
+        return base(args, **kwargs)
+
+    with pytest.raises(ValueError, match="destination"):
+        release._deploy_commit(path, "testing", SHA, runner, image_mode="save")
+    with pytest.raises(RuntimeError, match="not transferred"):
+        release._deploy_commit(
+            path, "testing", SHA, runner, bundle_path=missing, image_mode="save"
+        )
+
+
+def test_internal_lifecycle_deploy_refuses_wrong_revision_or_environment(
+    setup, monkeypatch
+):
+    path, _, _, runner = setup
+    with pytest.raises(ValueError, match="explicitly"):
+        release.deploy_verified_revision(path, "main", SHA, runner)
+    with pytest.raises(ValueError, match="differs"):
+        release.deploy_verified_revision(path, "testing", "b" * 40, runner)
+    monkeypatch.setattr(release, "_deploy_commit", lambda *a, **k: {"commit": SHA})
+    assert release.deploy_verified_revision(path, "testing", SHA, runner) == {
+        "commit": SHA
+    }
+
+
+def test_remote_bundle_modes_and_manifest_parser():
+    config = {
+        "directory": "/srv/testing",
+        "project": "shop3i-testing",
+        "env_file": "/srv/secrets/testing.env",
+        "database": "commerce_testing",
+        "database_user": "commerce_testing",
+        "worker_readiness_url": "https://api.example.test/products",
+        "readiness_urls": ["https://api.example.test/up"],
+        "profiles": ["assistant"],
+    }
+    script = release.remote_script(config, SHA, image_mode="save")
+    assert "docker save" in script and "functiongemma" in script
+    with pytest.raises(ValueError, match="mode"):
+        release.remote_script(config, SHA, image_mode="skip")
+    lines = [
+        f"IMAGE_ID shop3i/{service}:{SHA} sha256:{'b' * 64}"
+        for service in ("backend", "fashion", "electronics", "admin", "functiongemma")
+    ]
+    assert len(release._image_ids("ready\n" + "\n".join(lines), SHA, config)) == 5
+    with pytest.raises(RuntimeError, match="Invalid"):
+        release._image_ids("IMAGE_ID malformed", SHA, config)

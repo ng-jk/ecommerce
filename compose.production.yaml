@@ -5,6 +5,8 @@ services:
       APP_ENV: production
       APP_DEBUG: "false"
       APP_URL: https://${API_HOST}
+      MINIAPP_ASSET_ORIGIN: ${MINIAPP_ASSET_ORIGIN:-}
+      MINIAPP_PARENT_ORIGINS: ${MINIAPP_PARENT_ORIGINS:-}
       SESSION_SECURE_COOKIE: "true"
       SANCTUM_STATEFUL_DOMAINS: ${FASHION_HOST},${ELECTRONICS_HOST},${ADMIN_HOST}
   worker:
@@ -13,6 +15,8 @@ services:
       APP_ENV: production
       APP_DEBUG: "false"
       APP_URL: https://${API_HOST}
+      MINIAPP_ASSET_ORIGIN: ${MINIAPP_ASSET_ORIGIN:-}
+      MINIAPP_PARENT_ORIGINS: ${MINIAPP_PARENT_ORIGINS:-}
       SESSION_SECURE_COOKIE: "true"
   gateway:
     ports: !override ["80:80", "443:443", "443:443/udp"]
@@ -21,6 +25,7 @@ services:
       ELECTRONICS_HOST: ${ELECTRONICS_HOST:?Set ELECTRONICS_HOST}
       ADMIN_HOST: ${ADMIN_HOST:?Set ADMIN_HOST}
       API_HOST: ${API_HOST:?Set API_HOST}
+      MINIAPP_ASSET_HOST: ${MINIAPP_ASSET_HOST:-miniapps-disabled.invalid}
       TLS_EMAIL: ${TLS_EMAIL:?Set TLS_EMAIL}
     volumes:
       - ./docker/Caddyfile.production:/etc/caddy/Caddyfile:ro

@@ -4,7 +4,7 @@
     "fallback": "/",
     "controls": [
       "menu",
-      "explore",
+      "miniapps",
       "search",
       "category",
       "products",
@@ -74,7 +74,7 @@
     "fallback": "/",
     "controls": [
       "menu",
-      "explore",
+      "miniapps",
       "search",
       "category",
       "products",
@@ -150,6 +150,7 @@
           "products",
           "orders",
           "plugins",
+          "miniapps",
           "sign-out",
           "switch-shop",
           "assistant"
@@ -359,6 +360,63 @@
       "maximum credit",
       "save",
       "cancel"
+    ]
+  },
+  "frontend/fashion/src/app/miniapps/index.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": ["back", "miniapp collection", "previous", "next"]
+  },
+  "frontend/fashion/src/app/miniapps/[id].tsx": {
+    "kind": "main",
+    "fallback": "/miniapps",
+    "controls": ["back", "miniapp content"]
+  },
+  "frontend/electronics/src/app/miniapps/index.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": ["back", "miniapp collection", "previous", "next"]
+  },
+  "frontend/electronics/src/app/miniapps/[id].tsx": {
+    "kind": "main",
+    "fallback": "/miniapps",
+    "controls": ["back", "miniapp content"]
+  },
+  "frontend/admin/src/app/miniapps/index.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "dashboard",
+      "installed collection",
+      "available collection",
+      "previous",
+      "next"
+    ]
+  },
+  "frontend/admin/src/app/miniapps/create.tsx": {
+    "kind": "main",
+    "fallback": "/miniapps",
+    "controls": [
+      "enabled",
+      "catalog grant",
+      "product grant",
+      "cart grant",
+      "orders grant",
+      "loyalty grant",
+      "save"
+    ]
+  },
+  "frontend/admin/src/app/miniapps/[id]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/miniapps",
+    "controls": [
+      "enabled",
+      "catalog grant",
+      "product grant",
+      "cart grant",
+      "orders grant",
+      "loyalty grant",
+      "save"
     ]
   },
   "frontend/admin/src/app/plugins/credit.tsx": {

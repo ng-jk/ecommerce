@@ -1,0 +1,133 @@
+{
+  "post": {
+    "operationId": "invokeMiniapp",
+    "parameters": [
+      {
+        "name": "shop",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "fashion",
+            "electronics"
+          ]
+        }
+      },
+      {
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "in": "header",
+        "name": "X-Operation-Token",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    ],
+    "security": [
+      {
+        "cookieAuth": []
+      },
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "401": {
+        "description": "Unauthenticated"
+      },
+      "403": {
+        "description": "Wrong shop or role"
+      },
+      "404": {
+        "description": "Not found"
+      },
+      "422": {
+        "description": "Validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "202": {
+        "description": "Durably accepted. Poll the operation for its result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Accepted"
+            }
+          }
+        }
+      }
+    },
+    "description": "Durable Mini App command. Worker rechecks approval, installation, actor and capability grants. Poll the operation for its result.",
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "launch_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "capability": {
+                "type": "string",
+                "enum": [
+                  "catalog",
+                  "product",
+                  "cart.read",
+                  "orders",
+                  "plugin.loyalty.balance"
+                ]
+              },
+              "input": {
+                "type": "object",
+                "properties": {
+                  "page": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100000
+                  },
+                  "id": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "launch_id",
+              "capability",
+              "input"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

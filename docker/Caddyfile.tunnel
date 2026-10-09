@@ -16,7 +16,7 @@
 		root * /srv/uploads
 		file_server
 	}
-	@backend path /api/* /sanctum/* /up
+	@backend path /api/* /sanctum/* /up /miniapp-assets/*
 	handle @backend {
 		root * /var/www/html/public
 		php_fastcgi backend:9000 {
@@ -30,6 +30,22 @@
 	}
 }
 
+http://{$MINIAPP_ASSET_HOST:miniapps-disabled.invalid}:8080 {
+    @assets path /miniapp-assets/*
+    handle @assets {
+        root * /var/www/html/public
+        php_fastcgi backend:9000 {
+            try_files /index.php
+            env HTTPS on
+            env SERVER_PORT 443
+            header_up X-Forwarded-Proto https
+            header_up X-Forwarded-Port 443
+        }
+    }
+    handle {
+        respond "Not found" 404
+    }
+}
 http://{$FASHION_HOST}:8080 {
 	import api
 	handle {

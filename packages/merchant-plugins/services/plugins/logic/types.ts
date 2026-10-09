@@ -29,9 +29,7 @@ export type PluginClient = {
     };
     options: { plugin_id: Record<string, string> };
   }>;
-  detail(
-    id: number,
-  ): Promise<{
+  detail(id: number): Promise<{
     plugin: PluginInstallation;
     options: { plugin_id: Record<string, string> };
   }>;

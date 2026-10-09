@@ -10,15 +10,26 @@ def inspect_structure(paths: list[str]) -> list[str]:
         parts = PurePosixPath(path).parts
         if not parts or parts[0] not in {"frontend", "packages"}:
             continue
+        if (
+            len(parts) == 3
+            and parts[0] == "frontend"
+            and parts[1] in {"fashion", "electronics", "admin"}
+            and parts[2] == "app.config.ts"
+        ):
+            continue
         marker = next(
             (i for i, part in enumerate(parts) if part in {"services", "screens"}), None
         )
         if marker is not None and len(parts) > marker + 2:
             kind, name = parts[marker : marker + 2]
             root = "/".join(parts[: marker + 2])
+            if parts[marker + 2] == "README.md":
+                continue
             modules.setdefault(root, {"kind": kind, "children": set()})["children"].add(
                 parts[marker + 2]
             )
+            if path.endswith(".md"):
+                continue
             if kind == "screens" and not name.endswith("_screen"):
                 findings.append(f"R03 {root}: screen name must end in _screen")
             allowed = {"data", "logic", "index.ts"}
@@ -26,6 +37,8 @@ def inspect_structure(paths: list[str]) -> list[str]:
                 allowed.add("interface")
             if parts[marker + 2] not in allowed:
                 findings.append(f"R03 {path}: file outside module layers")
+            continue
+        if path.endswith(".md"):
             continue
         if not path.endswith((".ts", ".tsx")) or path.endswith(".d.ts"):
             continue

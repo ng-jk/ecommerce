@@ -1,0 +1,7 @@
+{
+  "id": "catalog-viewer",
+  "name": "Catalog viewer",
+  "version": "1.0.0",
+  "entry": "index.html",
+  "capabilities": ["catalog", "product"]
+}

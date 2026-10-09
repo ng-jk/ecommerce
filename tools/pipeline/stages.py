@@ -45,7 +45,39 @@ def integration() -> None:
     run([*COMPOSE, "exec", "-T", "backend", "php", "artisan", "db:seed", "--force"])
     run([*COMPOSE, "exec", "-T", "backend", "php", "artisan", "payments:test-seed"])
     run([*COMPOSE, "up", "-d", "--no-build", "--wait"], timeout=180)
-    run([sys.executable, "-m", "pytest", "tests/api", "-q"])
+    run(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--no-deps",
+            "-e",
+            "interfaces/python/shop3i",
+        ],
+        timeout=900,
+    )
+    run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "tests/extensions/test_runtime_functional.py",
+            "-q",
+            "--basetemp=test-results/pytest-plugin-functional",
+        ],
+        timeout=900,
+    )
+    run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "tests/api",
+            "-q",
+            "--basetemp=test-results/pytest-api",
+        ]
+    )
 
 
 def browser() -> None:
@@ -84,7 +116,10 @@ def test() -> None:
             "tests/pipeline",
             "tests/inference",
             "tests/deployment",
+            "tests/interfaces",
+            "tests/extensions/test_runtime.py",
             "-q",
+            "--basetemp=test-results/pytest-pipeline-unit",
         ]
     )
     run(npm("exec", "--", "vitest", "run"))
@@ -114,6 +149,7 @@ def coverage() -> None:
             "tests/deployment",
             "-q",
             "--cov=tools.manual_release",
+            "--basetemp=test-results/pytest-release-coverage",
             "--cov=tools.release_probe",
             "--cov=tools.release_guard",
             "--cov-branch",
@@ -140,7 +176,11 @@ def coverage() -> None:
             "-m",
             "pytest",
             "tests/pipeline",
+            "tests/deployment",
             "--cov=tools.pipeline",
+            "--basetemp=test-results/pytest-pipeline-coverage",
+            "--cov=tools.context_index",
+            "--cov=tools.lifecycle",
             "--cov-branch",
             "--cov-report=json:test-results/python-coverage.json",
             "--cov-fail-under=100",
@@ -153,6 +193,7 @@ def coverage() -> None:
             "pytest",
             "tests/inference",
             "--cov=backend/inference",
+            "--basetemp=test-results/pytest-inference-coverage",
             "--cov-branch",
             "--cov-report=json:test-results/inference-coverage.json",
             "--cov-fail-under=100",
@@ -183,6 +224,36 @@ def coverage() -> None:
     folder = ROOT / "test-results/php"
     require_complete_coverage(
         [folder / "sqlite.xml", folder / "pgsql.xml"], folder / "coverage.json"
+    )
+    run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "tests/interfaces",
+            "-q",
+            "--basetemp=test-results/pytest-interfaces-coverage",
+            "--cov=interfaces/python/shop3i/shop3i",
+            "--cov-branch",
+            "--cov-fail-under=100",
+            "--cov-report=json:test-results/interfaces-coverage.json",
+        ],
+        timeout=900,
+    )
+    run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "tests/extensions/test_runtime.py",
+            "-q",
+            "--basetemp=test-results/pytest-extensions-coverage",
+            "--cov=extensions/runtime",
+            "--cov-branch",
+            "--cov-fail-under=100",
+            "--cov-report=json:test-results/extensions-coverage.json",
+        ],
+        timeout=900,
     )
 
 
@@ -247,8 +318,14 @@ def lint() -> None:
             "tools/manual_release.py",
             "tools/release_probe.py",
             "tools/release_guard.py",
+            "tools/context_index.py",
+            "tools/lifecycle",
+            "interfaces/python/shop3i/shop3i",
+            "extensions/runtime",
             "tests/deployment",
             "tests/pipeline",
+            "tests/interfaces",
+            "tests/extensions",
             "tests/api",
             "tests/inference",
             "backend/inference",

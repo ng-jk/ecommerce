@@ -3,6 +3,7 @@
 Status: required target architecture; recorded requirements, not a claim of implementation.
 Companion: [implementation plan](implementation-plan.md).
 Merchant-scoped extensions: [bundled plugin contract and isolation](merchant-plugins.md).
+Independent custom Mini Apps: [package, SDK and deployment contract](miniapps.md).
 Mandatory CRUD requirements: [C01–C10](crud-rules.md), applicable to every module.
 Shopify-style expansion: [scope, delivery plan and acceptance](shopify-expansion-plan.md).
 
@@ -193,6 +194,13 @@ Bound queue depth, payload/result size, per-user outstanding operations, retenti
 poll frequency, and retries. If PostgreSQL is unavailable, return a recoverable
 service failure and never acknowledge an operation that was not durably stored.
 
+PostgreSQL `LISTEN/NOTIFY` may wake workers after the durable commit. Notifications
+are transient hints only: logged inbox/job/outbox tables remain authoritative, and
+workers recover missed notifications through polling or another durable scan. A
+notification channel or transient queue cannot be the sole record of accepted
+work. The current Shop3i amendment records replacing polling-only wakeups as in
+progress, not complete.
+
 ## R09 — Tests and logic coverage
 
 The latest user testing scope is recorded in [testing acceptance](testing-acceptance.md)
@@ -200,8 +208,10 @@ and supersedes earlier mandatory browser/native and mutation gates below.
 
 - Inventory every business rule, guard, error branch, retry rule, and navigation
   rule; map each to tests and, where applicable, a Lean theorem.
-- Target 100% statement/function/branch coverage for owned domain and data logic
-  in TypeScript, PHP, and Python. Presentation view-model logic is included.
+- Target 100% statement, branch, function, and line coverage for owned TypeScript
+  logic, 100% executable-line coverage for owned PHP logic, and 100% statement
+  and branch coverage for owned Python logic. Presentation view-model logic is
+  included in TypeScript coverage.
   Generated code and declarative markup are reported separately, not used to
   inflate the denominator. Unreachable branches need review and removal/proof.
 - Unit and API functional tests are the required test categories. Mutation and
@@ -258,7 +268,7 @@ requires a verified refinement link; tests alone do not supply that proof.
 
 ## R11 — Python-orchestrated manual release pipeline
 
-Python is the local verification and manual release orchestrator. GitHub Actions workflows are not used; pushes and pull requests do not schedule verification or deployment. The same pinned tools run locally. Use `python -m tools.pipeline verify` for the required verification gates and `python tools/manual_release.py {testing|production} --config .deploy/release.json` for deployment. The older `python -m tools.pipeline deploy` command describes a prior release design and is not the current EC2 deployment interface. The release script requires a clean checkout and a verification report tied to the exact commit.
+Python is the local verification and manually triggered release orchestrator. One explicit run intent starts a configured end-to-end workflow: validate and review the exact commit, publish to the isolated testing environment, probe HTTP and worker readiness, promote only after the configured gates pass, publish production, probe production, and emit a per-stage report. GitHub Actions workflows and Git-push triggers are not used. The same pinned tools run locally. The existing per-environment `python tools/manual_release.py {testing|production} --config .deploy/release.json` commands describe the current release baseline; the required single-run orchestration is the target to implement. The older `python -m tools.pipeline deploy` command is not the current EC2 deployment interface. Any run requires a clean checkout and verification evidence tied to the exact commit.
 
 Required gates, in order of dependency:
 
@@ -268,7 +278,7 @@ Required gates, in order of dependency:
 4. PostgreSQL/worker integration, model differential tests, adversarial API and concurrency/recovery tests; fail on unexpected skipped tests.
 5. API functional purchase/admin flows, API schema compatibility and generated-client drift checks. Browser/native and mutation suites remain optional.
 6. Build the backend/worker and all three frontend web apps on the target EC2 host through `compose.server.yaml`; this release path does not publish images to a registry.
-7. Manually deploy `testing` to its isolated environment and verify configured HTTPS and worker readiness. Production deploys only from `deployment`; after the production server passes HTTP and worker readiness, the script fast-forwards and pushes that same commit to `main`. `main` is a promotion record, not the production deploy branch. Testing never promotes or deploys to production.
+7. In the manually triggered release run, publish to `testing` and verify configured HTTPS and worker readiness. Only after all required gates pass may the orchestrator promote the same verified commit according to the configured branch policy, publish production, verify HTTP and worker readiness, and record every stage. Production deploys only from `deployment`; successful production readiness fast-forwards and pushes that commit to `main`. `main` is a promotion record, not the production deploy branch. A failed testing or production probe prevents later promotion steps.
 
 PR checks have no deployment secrets or production access. The operator explicitly invokes each deploy with a private local config and verified SSH host key. Never execute untrusted PR scripts in a privileged deployment job. `developement` is the exact spelling of a local-only branch and must not be pushed or deployed.
 
@@ -277,6 +287,7 @@ Deployment must include backend, workers, scheduler, fashion/electronics/admin w
 Drain workers safely and keep command/schema compatibility across rolling versions. Use expand/contract migrations and tested backups. On failure, restore previous compatible release images when explicitly enabled; do not assume database migrations can be reversed. Verify operation completion, tenant isolation, and frontend/API compatibility after deployment. Do not roll back data independently of its release schema.
 
 Docker deploys Expo web exports. Android/iOS require separate native build, signing, distribution, and platform test jobs; Docker web deployment does not install native apps. Signing and production credentials remain external secrets.
+
 ## R14 — Multi-agent implementation and model selection
 
 For the Shopify-style expansion, spawn multiple subagents for independent bounded
@@ -360,7 +371,6 @@ The same 17 business tools cover both shops, with tenant isolation preserved.
 API tests must invoke every tool through the assistant, assert business outcomes,
 and save redacted wire evidence. Real-model routing accuracy is a separate metric;
 passing structured dispatch cannot be described as perfect natural-language routing.
-
 
 ## Payment integration implementation (2026-09-26)
 

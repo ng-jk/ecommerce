@@ -1,0 +1,7 @@
+{
+  "id": "packaging-pricing",
+  "version": "1.0.0",
+  "contract": "shop3i.plugin/1",
+  "operations": [{"name": "quote.adjustments", "method": "POST", "path": "/quote"}],
+  "capabilities": ["quote.adjustments", "storage.read", "storage.write"]
+}

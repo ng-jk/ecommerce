@@ -1,7 +1,9 @@
 export { createClient } from "./services/commerce";
 export { ApiError, money, errorMessage } from "./services/contracts";
+export { createShopSlug } from "./services/contracts";
 export type {
   ShopSlug,
+  BuiltinShopSlug,
   Product,
   User,
   Address,

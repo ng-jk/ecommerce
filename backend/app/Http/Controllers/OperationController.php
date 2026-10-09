@@ -6,6 +6,7 @@ use App\Domain\AccessPolicy;
 use App\Models\Operation;
 use App\Models\Shop;
 use App\Models\User;
+use App\Modules\Events\Interface\Events;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -54,7 +55,10 @@ class OperationController extends Controller
             abort_if(Operation::where('scope', $scope)->whereIn('status', [Operation::Queued, Operation::Processing])->count() >= 50, 429, 'Too many pending operations.');
             $token = $user?->currentAccessToken();
 
-            return Operation::create(['public_id' => (string) Str::uuid(), 'shop_id' => $shop->id, 'user_id' => $user?->id, 'auth_version' => $user?->auth_version, 'token_id' => $token instanceof PersonalAccessToken ? $token->id : null, 'scope' => $scope, 'idempotency_key' => $key, 'payload_hash' => $hash, 'receipt_hash' => hash('sha256', $receipt), 'action' => $action, 'payload' => $payload, 'status' => Operation::Queued, 'available_at' => now()]);
+            $created = Operation::create(['public_id' => (string) Str::uuid(), 'shop_id' => $shop->id, 'user_id' => $user?->id, 'auth_version' => $user?->auth_version, 'token_id' => $token instanceof PersonalAccessToken ? $token->id : null, 'scope' => $scope, 'idempotency_key' => $key, 'payload_hash' => $hash, 'receipt_hash' => hash('sha256', $receipt), 'action' => $action, 'payload' => $payload, 'status' => Operation::Queued, 'available_at' => now()]);
+            app(Events::class)->wake();
+
+            return $created;
         });
 
         return response()->json(['operation_id' => $operation->public_id, 'status' => $operation->status, 'poll_url' => '/api/v1/shops/'.$shop->slug.'/operations/'.$operation->public_id], 202);

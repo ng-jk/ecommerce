@@ -9,6 +9,7 @@ COPY backend/ .
 FROM base AS development
 RUN composer install --no-interaction --prefer-dist \
     && touch .env \
+    && mkdir -p storage/app/private/miniapps \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R u+rwX storage bootstrap/cache
 CMD ["php-fpm"]
@@ -20,6 +21,7 @@ RUN apk add --no-cache --virtual .coverage-build-deps $PHPIZE_DEPS linux-headers
 ENV XDEBUG_MODE=coverage
 FROM base AS production
 RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader \
+    && mkdir -p storage/app/private/miniapps \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R u+rwX storage bootstrap/cache
 USER www-data

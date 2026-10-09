@@ -32,5 +32,21 @@
   "plugin_credit_requires_admin": "1dc22985c071389e4a643f8ff938486ee265ff68e5988489bf36c5bed7580218",
   "plugin_balance_preserves_business_state": "821cc5130d0b104073db377af5c8fb2e7997e55861a0d8f2e6bce5e7de0244c5",
   "plugin_disabled_balance_not_allowed": "4ea8a0d8b4a185809a0df725240fc10c54d16e49a6854a886f638085140fa122",
-  "plugin_credit_overflow_unchanged": "09dd8bafd3d81d761d7f5ca7bc6c528a162d37c445da850791e9ce0f79b78fe7"
+  "plugin_credit_overflow_unchanged": "09dd8bafd3d81d761d7f5ca7bc6c528a162d37c445da850791e9ce0f79b78fe7",
+  "mini_denied_unchanged": "11dfd1f0f226fa4b31e3d5294939c080449540a7b91b4d76b1846c87d587e115",
+  "mini_unauthenticated_denied": "ac56f65b600fa78f2841349bdc3b9c9c1ff9bbfb7b060e6396431fdc3d7cc690",
+  "mini_foreign_target_denied": "ff8e6501b43bd29ef37c6cf1ab286e9c5160d4b87a9c51564f83ae3043f763bc",
+  "mini_uninstalled_denied": "e43ff6cee3a926d0cf6ad456345401944b8421a2c7085cea24bdbc13590acfc5",
+  "mini_disabled_denied": "268ebdcf87eeaba5a25003c746044578b880cd0271f466eb2eb15b20c99a5f34",
+  "mini_unapproved_denied": "15110c93ffb41d3e663169ef829d1b8fb8e30a2f489ab13a9404bf92d6cd1273",
+  "mini_package_mismatch_denied": "ed53777abb307d32e1141d45282ccab60babc72d3616a9237a72ad9d364bacf1",
+  "mini_stale_generation_denied": "ebb1532be2c8fb4d11656584859e47c69fe3442185c7c6677a2165cf456aad04",
+  "mini_revoked_denied": "211f99e21fbd0147264515b6523cbfa4f8e2a4e64861b4eeb96abcd1fd175ed7",
+  "mini_accepted_then_revoked_unchanged": "2209f34466193fda305d9c5d767c5b6150d05c81cfce0b68aa0efc11a28e890f",
+  "mini_authorization_noninterference": "0efed90efd55bfbf6d4b647227334832f555909bcc4c3151399fb3b75ffe2185",
+  "mini_other_installation_unchanged": "f0292e9169645fd64fbdb6075233564a86d18f26cab3005d61aa626037a59e2c",
+  "mini_other_dispatch_preserves_authorization": "70dca6e5e7cd91c417945813f1d91f9717affe63503501aa1fdedc554888f505",
+  "mini_sequences_preserve_other_installation": "8d4825cc298a2241bb4b3bec02148983202d26c348596bff3a1e35331db0bef5",
+  "mini_accepted_adds_effect": "6249a33548a1bf168c52ba077267aeb07afc4fcb9ac222dd5e5d7e4b012486ee",
+  "mini_stale_approval_denied": "d8ea5546631635bbdc9dc5c52691c1ba4192bbf7ae04d0e6384db6cd096ded94"
 }

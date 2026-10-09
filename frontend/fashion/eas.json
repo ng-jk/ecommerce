@@ -12,6 +12,9 @@
     },
     "production": {
       "autoIncrement": true
+    },
+    "company": {
+      "extends": "production"
     }
   }
 }

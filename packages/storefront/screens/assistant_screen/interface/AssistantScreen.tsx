@@ -1,4 +1,6 @@
-import { displayRows, nextChoice ,
+import {
+  displayRows,
+  nextChoice,
   assistantPaymentLinks,
   assistantResultRows,
 } from "../../../services/assistant";
@@ -10,7 +12,8 @@ import {
   Heading,
   Page,
   Panel,
- useStore } from "../../store_shell_screen";
+  useStore,
+} from "../../store_shell_screen";
 import { useAssistant } from "../logic/useAssistant";
 
 export function AssistantScreen({ admin = false }: { admin?: boolean }) {

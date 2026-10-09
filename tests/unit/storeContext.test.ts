@@ -9,12 +9,16 @@ import {
 import { memoryStorage } from "../../packages/api-client/services/cache";
 import {
   StoreStateProvider,
+  themes,
   useStore,
 } from "../../packages/storefront/screens/store_shell_screen/interface/context";
 import type { CommerceClient } from "../../packages/storefront/services/store/logic/ports";
 import { AdminShopContext } from "../../frontend/admin/src/screens/admin_shell_screen/logic/shopContext";
 import { useAdminShop } from "../../frontend/admin/src/screens/admin_shell_screen/logic/useAdminShop";
 import { deferred, mountHook } from "./reactHarness";
+import { createShopSlug, type ShopSlug } from "../../packages/api-client";
+import { parseDeploymentProfile, type DeploymentProfile } from "../../packages/storefront/services/profile";
+import type { StoreTheme } from "../../packages/storefront/screens/store_shell_screen/logic/context";
 
 vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
 const user: User = {
@@ -53,7 +57,7 @@ function apiFixture() {
     advanceOrder: vi.fn(),
   } satisfies CommerceClient;
 }
-async function mount(api = apiFixture(), storage = memoryStorage()) {
+async function mount(api = apiFixture(), storage = memoryStorage(), options: { shop?: ShopSlug; profile?: DeploymentProfile; theme?: StoreTheme } = {}) {
   let current!: ReturnType<typeof useStore>;
   function Probe() {
     current = useStore();
@@ -63,11 +67,15 @@ async function mount(api = apiFixture(), storage = memoryStorage()) {
   await act(async () => {
     root.render(
       createElement(StoreStateProvider, {
-        shop: "fashion",
+        shop: options.shop ?? "fashion",
+        ...options,
         api,
         plugins: {
           list: vi.fn(), detail: vi.fn(), install: vi.fn(), update: vi.fn(),
           balance: vi.fn(), credit: vi.fn(),
+        },
+        miniapps: {
+          list: vi.fn(), launch: vi.fn(), invoke: vi.fn(), adminList: vi.fn(), install: vi.fn(), update: vi.fn(), reset: vi.fn(),
         },
         storage,
         randomUUID: () => "00000000-0000-4000-8000-000000000001",
@@ -88,6 +96,29 @@ async function mount(api = apiFixture(), storage = memoryStorage()) {
     },
   };
 }
+
+it("selects a validated company theme, built-in themes, and explicit overrides", async () => {
+  const electronics = await mount(apiFixture(), memoryStorage(), { shop: "electronics" });
+  expect(electronics.value.theme.brand).toBe("VOLT");
+  await electronics.unmount();
+  const profile = parseDeploymentProfile({
+    version: 1, shop: "company-one", themeBase: "fashion",
+    branding: { brand: "Company One", label: "Company", title: "Home", subtitle: "Explore",
+      accent: "#123456", bg: "#ffffff", ink: "#111111", hero: "#eeeeee", image: "https://example.test/a.jpg" },
+    home: { kind: "general" },
+  });
+  const company = await mount(apiFixture(), memoryStorage(), { shop: profile.shop, profile });
+  expect(company.value.theme.brand).toBe("Company One");
+  expect(company.value.profile?.shop).toBe("company-one");
+  await company.unmount();
+  const override = await mount(apiFixture(), memoryStorage(), { shop: "electronics", theme: themes.fashion });
+  expect(override.value.theme.brand).toBe("maison.");
+  await override.unmount();
+  expect(() => StoreStateProvider({
+    shop: createShopSlug("company-one"), api: apiFixture(), plugins: {} as never,
+    miniapps: {} as never, storage: memoryStorage(), randomUUID: () => "id", children: null,
+  })).toThrow("Company Shop requires a validated brand theme");
+});
 
 it("hydrates account and cart, authenticates both flows, persists token and clears logout data", async () => {
   const hook = await mount();
@@ -114,6 +145,7 @@ it("hydrates account and cart, authenticates both flows, persists token and clea
     await hook.value.logout();
   });
   expect(hook.value.user).toBeNull();
+  expect(hook.value.miniapps.reset).toHaveBeenCalledTimes(3);
   expect(hook.value.cart).toEqual([]);
   expect(await hook.storage.get("token")).toBeNull();
   await expect(hook.value.checkout(address)).rejects.toThrow("Sign in");

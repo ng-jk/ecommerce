@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\MiniAppOriginBoundary;
 use App\Http\Middleware\ShopAccess;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -15,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->prepend(MiniAppOriginBoundary::class);
         $middleware->statefulApi();
         $middleware->trustProxies(at: '*');
         $middleware->alias(['shop.access' => ShopAccess::class]);

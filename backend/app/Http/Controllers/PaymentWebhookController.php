@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Domain\Payments\Billplz;
 use App\Models\Payment;
 use App\Models\PaymentEvent;
+use App\Modules\Events\Interface\Events;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PaymentWebhookController extends Controller
 {
@@ -21,9 +23,12 @@ class PaymentWebhookController extends Controller
         $this->validate(new Request($data), ['id' => 'required|string|regex:/^[a-zA-Z0-9_-]{1,100}$/D']);
         $payment = Payment::where('public_id', $reference)->where('provider', 'billplz')->firstOrFail();
         // Durably acknowledge before doing any provider I/O or changing business state.
-        PaymentEvent::firstOrCreate(['digest' => hash('sha256', $reference.$signature)], [
-            'payment_id' => $payment->id, 'payload' => $data,
-        ]);
+        DB::transaction(function () use ($reference, $signature, $payment, $data): void {
+            PaymentEvent::firstOrCreate(['digest' => hash('sha256', $reference.$signature)], [
+                'payment_id' => $payment->id, 'payload' => $data,
+            ]);
+            app(Events::class)->wake();
+        });
 
         return response()->json(['received' => true]);
     }

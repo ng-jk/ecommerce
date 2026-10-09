@@ -1,0 +1,67 @@
+# Independent deployment. Requires approved digest-pinned images and private TLS ingress.
+x-plugin: &plugin
+  image: ${PLUGIN_SERVICE_IMAGE:?Set an approved digest-pinned plugin service image}
+  build:
+    context: .
+    dockerfile: docker/plugin/Dockerfile
+    args:
+      PYTHON_IMAGE: ${PLUGIN_PYTHON_IMAGE:?Set a digest-pinned Python image}
+      DOCKER_CLI_IMAGE: ${PLUGIN_DOCKER_CLI_IMAGE:?Set a digest-pinned Docker CLI image}
+  environment:
+    PLUGIN_DATABASE_URL: ${PLUGIN_DATABASE_URL:?Set the plugin-only PostgreSQL URL}
+    PLUGIN_REGISTRY: /approved/registry.json
+    PLUGIN_SANDBOX_IMAGE: ${PLUGIN_SANDBOX_IMAGE:?Set a preloaded digest-pinned Python sandbox image}
+  volumes:
+    - ${PLUGIN_APPROVED_DIRECTORY:?Set the operator-owned approved package directory}:/approved:ro
+  networks: [plugin_private]
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  tmpfs: [/tmp]
+  depends_on:
+    plugin-db:
+      condition: service_healthy
+
+services:
+  plugin-db:
+    image: ${PLUGIN_POSTGRES_IMAGE:?Set a digest-pinned PostgreSQL image}
+    environment:
+      POSTGRES_DB: plugin
+      POSTGRES_USER: plugin
+      POSTGRES_PASSWORD: ${PLUGIN_DATABASE_PASSWORD:?Set a unique plugin database password}
+    volumes: [plugin_data:/var/lib/postgresql/data]
+    networks: [plugin_private]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U plugin -d plugin"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  plugin-migrate:
+    <<: *plugin
+    command: [python, -m, extensions.runtime.service, migrate]
+    restart: "no"
+  plugin-api:
+    <<: *plugin
+    user: "65534:65534"
+    command: [python, -m, extensions.runtime.service, api]
+    ports: ["127.0.0.1:${PLUGIN_HTTP_PORT:-8090}:8090"]
+    depends_on:
+      plugin-migrate:
+        condition: service_completed_successfully
+  plugin-worker:
+    <<: *plugin
+    command: [python, -m, extensions.runtime.service, worker]
+    volumes:
+      - ${PLUGIN_APPROVED_DIRECTORY:?Set approved directory}:/approved:ro
+      # Only this trusted control plane has Docker authority. Scripts have none.
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      plugin-migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+networks:
+  plugin_private:
+    internal: true
+volumes:
+  plugin_data:

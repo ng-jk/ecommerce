@@ -8,6 +8,22 @@ import re
 from .runner import ROOT, run
 
 REQUIRED = (
+    "mini_denied_unchanged",
+    "mini_unauthenticated_denied",
+    "mini_foreign_target_denied",
+    "mini_uninstalled_denied",
+    "mini_disabled_denied",
+    "mini_unapproved_denied",
+    "mini_package_mismatch_denied",
+    "mini_stale_generation_denied",
+    "mini_stale_approval_denied",
+    "mini_revoked_denied",
+    "mini_accepted_then_revoked_unchanged",
+    "mini_authorization_noninterference",
+    "mini_other_installation_unchanged",
+    "mini_other_dispatch_preserves_authorization",
+    "mini_sequences_preserve_other_installation",
+    "mini_accepted_adds_effect",
     "plugin_invalid_unchanged",
     "plugin_unauthorized_unchanged",
     "plugin_disabled_blocks_execution",
@@ -74,7 +90,11 @@ def prove() -> None:
     run([lake, "build", "Commerce"], cwd=ROOT / "formal")
     output = "\n".join(
         run([lake, "env", "lean", module], cwd=ROOT / "formal")
-        for module in ("Commerce/Invariants.lean", "Commerce/Plugins.lean")
+        for module in (
+            "Commerce/Invariants.lean",
+            "Commerce/Plugins.lean",
+            "Commerce/MiniApps.lean",
+        )
     )
     if "sorryAx" in output:
         raise ValueError("Lean output contains an incomplete proof")

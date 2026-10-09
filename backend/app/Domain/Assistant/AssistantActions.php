@@ -5,6 +5,7 @@ namespace App\Domain\Assistant;
 use App\Domain\ActionExecutor;
 use App\Domain\StoreActions;
 use App\Models\AssistantConversation as Conversation;
+use App\Models\MiniAppInstallation;
 use App\Models\Operation;
 use App\Models\Order;
 use App\Models\PluginInstallation;
@@ -140,8 +141,11 @@ class AssistantActions
         if (in_array($action, ['cart.update', 'checkout'], true)) {
             $arguments['expected_version'] = $user->version;
         }
-        if (in_array($action, ['admin.update', 'admin.delete', 'admin.advance', 'admin.plugin.update'], true)) {
-            if ($action === 'admin.plugin.update') {
+        if (in_array($action, ['admin.update', 'admin.delete', 'admin.advance', 'admin.plugin.update', 'admin.miniapp.update'], true)) {
+            if ($action === 'admin.miniapp.update') {
+                $record = MiniAppInstallation::where('shop_id', $shop->id)->lockForUpdate()->findOrFail($id);
+                $arguments['expected_version'] = $record->version;
+            } elseif ($action === 'admin.plugin.update') {
                 $record = PluginInstallation::where('shop_id', $shop->id)->lockForUpdate()->findOrFail($id);
                 $arguments['expected_version'] = $record->version;
             } else {

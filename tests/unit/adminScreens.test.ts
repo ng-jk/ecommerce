@@ -218,6 +218,8 @@ it("authenticates on a standalone dashboard and handles every role and shop swit
   expect(router.push.mock.calls).toEqual([["/products"], ["/orders"]]);
   await screen.press("Plugins");
   expect(router.push).toHaveBeenLastCalledWith("/plugins");
+  await screen.press("MiniApps");
+  expect(router.push).toHaveBeenLastCalledWith("/miniapps");
   await screen.press("Assistant");
   expect(router.push).toHaveBeenLastCalledWith("/assistant");
   expect(switchShop).toHaveBeenCalledTimes(2);

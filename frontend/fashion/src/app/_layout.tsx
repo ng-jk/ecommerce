@@ -1,9 +1,12 @@
-import { StoreProvider } from "@portfolio/storefront/screens/store_shell_screen";
+import { ProfiledStoreProvider } from "@portfolio/storefront/screens/store_shell_screen";
 import { Stack } from "expo-router";
 export default function Layout() {
   return (
-    <StoreProvider shop="fashion">
+    <ProfiledStoreProvider
+      defaultShop="fashion"
+      required={process.env.EXPO_PUBLIC_COMPANY_PROFILE_REQUIRED === "true"}
+    >
       <Stack screenOptions={{ headerShown: false }} />
-    </StoreProvider>
+    </ProfiledStoreProvider>
   );
 }

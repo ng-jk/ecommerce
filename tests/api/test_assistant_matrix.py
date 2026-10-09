@@ -73,7 +73,7 @@ def test_all_business_functions_through_assistant(shop):
     customer = Assistant(shop, account["token"])
     customer_tools = customer.turn({"discover": True})
     assert customer_tools["role"] == "customer"
-    assert len(customer_tools["available_actions"]) == 10
+    assert len(customer_tools["available_actions"]) == 13
     assert customer.invoke("me")["user"]["email"] == email
     assert customer.invoke("cart")["items"] == []
     assert customer.invoke("logout")["logged_out"]
@@ -90,7 +90,7 @@ def test_all_business_functions_through_assistant(shop):
     )
     admin = Assistant(shop, admin_login["token"])
     tools = admin.turn({"discover": True})["available_actions"]
-    assert len(tools) == 21
+    assert len(tools) == 27
     installation = admin.invoke("installPlugin", {"plugin_id": "loyalty"})["plugin"]
     assert installation["enabled"] is False
     assert admin.invoke("adminPlugins", {"plugin_id": "loyalty"})["plugins"]["data"]
@@ -174,7 +174,17 @@ def test_all_business_functions_through_assistant(shop):
     executed = (
         guest.executed | customer.executed | admin.executed | earlier_customer_actions
     )
-    expected = {t["name"] for t in tools}
+    # Package lifecycle tools have their own approved-ZIP fixtures and complete
+    # structured AI round trips in test_miniapps.py.
+    miniapp_tools = {
+        "miniapps",
+        "launchMiniapp",
+        "invokeMiniapp",
+        "adminMiniapps",
+        "installMiniapp",
+        "updateMiniapp",
+    }
+    expected = {t["name"] for t in tools} - miniapp_tools
     assert executed == expected
     output = Path("test-results/assistant")
     output.mkdir(parents=True, exist_ok=True)

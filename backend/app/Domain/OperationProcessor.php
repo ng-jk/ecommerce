@@ -3,6 +3,7 @@
 namespace App\Domain;
 
 use App\Models\Operation;
+use App\Modules\Events\Interface\Events;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
@@ -39,6 +40,8 @@ class OperationProcessor
             }
             if ($op->attempts > 3) {
                 $op->update(['status' => Operation::Failed, 'http_status' => 503, 'result' => ['message' => 'Worker recovery retry limit reached.']]);
+                app(Events::class)->publish('operation.completed', 'operation', $op->id,
+                    ['operation_id' => $op->public_id, 'shop_id' => $op->shop_id, 'status' => $op->status, 'http_status' => $op->http_status], 'operation:'.$op->id.':completed');
 
                 return true;
             }
@@ -68,6 +71,12 @@ class OperationProcessor
                 $op->payload = [];
             }
             $op->save();
+            if ($op->status === Operation::Queued) {
+                app(Events::class)->wake();
+            } else {
+                app(Events::class)->publish('operation.completed', 'operation', $op->id,
+                    ['operation_id' => $op->public_id, 'shop_id' => $op->shop_id, 'status' => $op->status, 'http_status' => $op->http_status], 'operation:'.$op->id.':completed');
+            }
 
             return true;
         }, 3);

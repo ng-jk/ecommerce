@@ -12,8 +12,11 @@ class FileUploader
 {
     private const Extensions = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
 
-    public static function store(Model $model, UploadedFile $file): string
+    public static function store(Model $model, UploadedFile|string $file): string
     {
+        if (is_string($file)) {
+            return self::storeMiniAppArchive($model, $file);
+        }
         if (! $model->exists || DB::transactionLevel() < 1) {
             throw new \LogicException('Create the row inside a transaction before storing its upload.');
         }
@@ -54,5 +57,38 @@ class FileUploader
             }
             throw $error;
         }
+    }
+
+    public static function storeMiniAppArchive(Model $model, string $source): string
+    {
+        if (! $model->exists || DB::transactionLevel() < 1) {
+            throw new \LogicException('Create the version inside a transaction before storing its archive.');
+        }
+        $stream = @fopen($source, 'rb');
+        if ($stream === false) {
+            throw new \RuntimeException('The archive could not be read.');
+        }
+        try {
+            $size = fstat($stream)['size'] ?? 0;
+            $mime = (new \finfo(FILEINFO_MIME_TYPE))->buffer((string) fread($stream, 8192));
+            rewind($stream);
+            if ($size < 1 || $size > 5 * 1024 * 1024 || $mime !== 'application/zip') {
+                throw ValidationException::withMessages(['archive' => 'Upload a ZIP no larger than 5 MB.']);
+            }
+            for ($attempt = 0; $attempt < 3; $attempt++) {
+                $path = 'miniapps/archives/'.$model->getKey().'_'.uniqid().'.zip';
+                if (Storage::disk('local')->exists($path)) {
+                    continue;
+                }
+                if (! Storage::disk('local')->put($path, $stream)) {
+                    throw new \RuntimeException('The archive could not be stored.');
+                }
+
+                return $path;
+            }
+        } finally {
+            fclose($stream);
+        }
+        throw new \RuntimeException('Could not allocate an archive filename.');
     }
 }

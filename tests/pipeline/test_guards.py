@@ -69,9 +69,29 @@ def test_required_proof_source_is_accepted_but_weakened_statement_is_not():
         "plugin_credit_requires_admin",
         "plugin_customer_revoked_not_allowed",
         "plugin_balance_preserves_business_state",
+        "mini_accepted_then_revoked_unchanged",
+        "mini_stale_approval_denied",
+        "mini_authorization_noninterference",
+        "mini_sequences_preserve_other_installation",
     ):
         with pytest.raises(ValueError, match=f"Missing required theorem: {theorem}"):
             proofs.audit_source(source.replace(theorem, "removed_plugin_guard"))
+
+
+def test_miniapp_proofs_cannot_be_weakened_to_trivial_statements():
+    source = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (runner.ROOT / "formal/Commerce").glob("*.lean")
+    )
+    start = source.index("theorem mini_accepted_then_revoked_unchanged")
+    proof = source.index(":=", start)
+    weakened = (
+        source[:start]
+        + "theorem mini_accepted_then_revoked_unchanged : True "
+        + source[proof:]
+    )
+    with pytest.raises(ValueError, match="Required theorem statement changed"):
+        proofs.audit_source(weakened)
 
 
 def test_review_rejects_unregistered_routes_and_crowded_variants(tmp_path, monkeypatch):

@@ -1,4 +1,11 @@
-export type ShopSlug = "fashion" | "electronics";
+export type BuiltinShopSlug = "fashion" | "electronics";
+export type ShopSlug =
+  BuiltinShopSlug | (string & { readonly __shopSlug: unique symbol });
+export function createShopSlug(value: string): ShopSlug {
+  if (!/^[a-z][a-z0-9-]{1,62}$/.test(value))
+    throw new Error("Invalid Shop slug");
+  return value as ShopSlug;
+}
 export type Product = {
   id: number;
   shop_id: number;

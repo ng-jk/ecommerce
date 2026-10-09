@@ -1,0 +1,18 @@
+{
+  "company-a-pricing": {
+    "tenant": "company-a",
+    "enabled": false,
+    "package": "/approved/packaging-pricing.zip",
+    "sha256": "REPLACE_WITH_REVIEWED_ZIP_SHA256",
+    "callers_sha256": ["REPLACE_WITH_SHA256_OF_RANDOM_32_OR_MORE_CHARACTER_CALLER_TOKEN"],
+    "capabilities": ["quote.adjustments", "storage.read", "storage.write"]
+  },
+  "company-b-pricing": {
+    "tenant": "company-b",
+    "enabled": false,
+    "package": "/approved/packaging-pricing.zip",
+    "sha256": "REPLACE_WITH_SAME_REVIEWED_ZIP_SHA256",
+    "callers_sha256": ["REPLACE_WITH_DIFFERENT_CALLER_TOKEN_SHA256"],
+    "capabilities": ["quote.adjustments", "storage.read", "storage.write"]
+  }
+}

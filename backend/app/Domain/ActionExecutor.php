@@ -66,6 +66,7 @@ class ActionExecutor
         $store = app(StoreActions::class);
         $admin = app(AdminActions::class);
         $plugins = app(PluginActions::class);
+        $miniApps = app(MiniAppActions::class);
         $loyalty = app(LoyaltyPlugin::class);
         $id = (int) ($op->payload['id'] ?? 0);
         $result = match ($op->action) {
@@ -91,6 +92,12 @@ class ActionExecutor
             'admin.plugin' => $plugins->detail($shop, $id),
             'admin.plugin.install' => $plugins->install($request, $shop),
             'admin.plugin.update' => $plugins->update($request, $shop, $id),
+            'miniapps.list' => $miniApps->listing($request, $shop),
+            'miniapps.launch' => $miniApps->launch($request, $shop, $user, $id),
+            'miniapps.invoke' => $miniApps->invoke($request, $shop, $user, $id),
+            'admin.miniapps' => $miniApps->adminListing($request, $shop),
+            'admin.miniapp.install' => $miniApps->install($request, $shop),
+            'admin.miniapp.update' => $miniApps->update($request, $shop, $id),
             'plugin.loyalty.balance' => $loyalty->balance($request, $shop),
             'admin.plugin.loyalty.credit' => $loyalty->credit($request, $shop, $op),
             default => throw ValidationException::withMessages(['action' => 'Unknown command.']),

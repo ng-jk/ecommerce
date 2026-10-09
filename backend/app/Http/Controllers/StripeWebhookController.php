@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Payment;
 use App\Models\PaymentEvent;
+use App\Modules\Events\Interface\Events;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Stripe\Exception\SignatureVerificationException;
 use Stripe\Webhook;
 
@@ -26,9 +28,12 @@ class StripeWebhookController extends Controller
         }
         $session = $event->data->object;
         $payment = Payment::where('provider', 'stripe')->where('public_id', $session->client_reference_id)->firstOrFail();
-        PaymentEvent::firstOrCreate(['digest' => hash('sha256', 'stripe:'.$event->id)], [
-            'payment_id' => $payment->id, 'payload' => ['id' => $session->id],
-        ]);
+        DB::transaction(function () use ($event, $payment, $session): void {
+            PaymentEvent::firstOrCreate(['digest' => hash('sha256', 'stripe:'.$event->id)], [
+                'payment_id' => $payment->id, 'payload' => ['id' => $session->id],
+            ]);
+            app(Events::class)->wake();
+        });
 
         return response()->json(['received' => true]);
     }

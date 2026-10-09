@@ -6,11 +6,23 @@
         root * /srv/uploads
         file_server
     }
-    @backend path /api/* /sanctum/* /up
+    @backend path /api/* /sanctum/* /up /miniapp-assets/*
     handle @backend {
         root * /var/www/html/public
         php_fastcgi backend:9000
         file_server
+    }
+}
+http://miniapps.localhost:8080 {
+    @assets path /miniapp-assets/*
+    handle @assets {
+        root * /var/www/html/public
+        php_fastcgi backend:9000 {
+            try_files /index.php
+        }
+    }
+    handle {
+        respond "Not found" 404
     }
 }
 http://fashion.localhost:8080 {

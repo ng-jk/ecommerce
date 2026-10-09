@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shop3i-assistant"
+version = "0.1.0"
+description = "Shop3i assistant SDK, CLI and MCP stdio interface"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+shop3i = "shop3i.cli:main"
+shop3i-mcp = "shop3i.mcp:main"
+
+[tool.setuptools.packages.find]
+where = ["."]

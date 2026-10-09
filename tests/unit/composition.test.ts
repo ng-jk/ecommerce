@@ -8,6 +8,7 @@ const state = vi.hoisted(() => ({
   OS: "web",
   create: vi.fn(),
   createPlugins: vi.fn(),
+  createMiniapps: vi.fn(),
   uuid: vi.fn(() => "uuid"),
   digest: vi.fn(async () => "hash"),
   replace: vi.fn(),
@@ -39,6 +40,9 @@ vi.mock("../../packages/api-client/services/commerce/data/repository", () => ({
 vi.mock("@portfolio/merchant-plugins", () => ({
   createPluginClient: state.createPlugins,
 }));
+vi.mock("@portfolio/miniapps", () => ({
+  createMiniappClient: state.createMiniapps,
+}));
 vi.mock("../../packages/storefront/services/store/data/storage", () => ({
   localStorageAdapter: () => storage,
 }));
@@ -52,6 +56,8 @@ vi.mock(
 vi.mock("@portfolio/storefront", () => ({
   StoreProvider: ({ shop, children }: { shop: string; children: ReactNode }) =>
     createElement("div", { "data-shop": shop }, children),
+  ProfiledStoreProvider: ({ defaultShop, children }: { defaultShop: string; children: ReactNode }) =>
+    createElement("div", { "data-shop": defaultShop }, children),
   Page: ({ children }: { children: ReactNode }) =>
     createElement("div", {}, children),
   Heading: ({ children }: { children: ReactNode }) =>
@@ -111,6 +117,11 @@ it("composes browser/native clients with a shop-scoped token port and configured
     expect(pluginOptions.origin).toBe(options.origin);
     expect(await pluginOptions.getToken()).toBe("token-value");
     expect(await pluginOptions.digest("plugin operation identity")).toBe("hash");
+    const miniappOptions = state.createMiniapps.mock.lastCall?.[0] as typeof options;
+    expect(miniappOptions.native).toBe(options.native);
+    expect(miniappOptions.origin).toBe(options.origin);
+    expect(await miniappOptions.getToken()).toBe("token-value");
+    expect(await miniappOptions.digest("miniapp operation identity")).toBe("hash");
     expect(container.textContent).toBe("Content");
   }
   vi.unstubAllEnvs();

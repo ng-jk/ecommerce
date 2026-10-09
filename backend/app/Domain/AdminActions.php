@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Shop;
+use App\Modules\Events\Interface\Events;
 use App\Support\PublicData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -106,6 +107,9 @@ class AdminActions extends Controller
             }
             $order->update($data);
             $order->increment('version');
+            app(Events::class)->publish('order.'.$order->status, 'order', $order->id,
+                ['order_id' => $order->id, 'shop_id' => $order->shop_id, 'status' => $order->status, 'version' => $order->version],
+                'order:'.$order->id.':'.$order->status);
 
             return $order;
         });

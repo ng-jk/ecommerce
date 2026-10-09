@@ -4,6 +4,8 @@ import json
 import re
 from pathlib import Path
 
+from tools.context_index import validate as validate_context
+
 from .frontend_structure import inspect_structure
 from .runner import ROOT, npm, run
 
@@ -102,4 +104,6 @@ def review(root: Path = ROOT) -> list[str]:
                         findings.append(
                             f"R04 {name} ({variant}): invalid classification or more than seven controls"
                         )
+    if root.resolve() == ROOT.resolve():
+        findings.extend(validate_context(root))
     return findings

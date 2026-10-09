@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Payment;
 use App\Models\PaymentEvent;
 use App\Models\Shop;
+use App\Modules\Events\Interface\Events;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -43,8 +44,11 @@ class CustomPaymentController extends Controller
             }
             abort_unless(in_array($payment->status, [Payment::Queued, Payment::Pending, Payment::Paid], true), 409);
 
-            return PaymentEvent::create(['payment_id' => $payment->id, 'digest' => $digest,
+            $created = PaymentEvent::create(['payment_id' => $payment->id, 'digest' => $digest,
                 'payload' => ['invoice_id' => $payment->public_id, 'credential_hash' => $config['token_hash']]]);
+            app(Events::class)->wake();
+
+            return $created;
         });
 
         return response()->json(['received' => true, 'event_id' => $event->id, 'status' => $event->processed_at ? 'processed' : 'queued'], 202);
