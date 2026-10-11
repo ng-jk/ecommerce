@@ -9,9 +9,11 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import ClassVar
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "interfaces/python/shop3i"))
+sys.path.insert(
+    0, str(Path(__file__).resolve().parents[2] / "interfaces/python/shop3i")
+)
 
-from shop3i import AssistantClient
+from shop3i import AssistantClient, data
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -24,16 +26,35 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(202)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
-        self.wfile.write(json.dumps({"operation_id": self.operation_id, "status": "queued",
-                                    "poll_url": f"/api/v1/shops/fashion/operations/{self.operation_id}"}).encode())
+        self.wfile.write(
+            json.dumps(
+                {
+                    "operation_id": self.operation_id,
+                    "status": "queued",
+                    "poll_url": f"/api/v1/shops/fashion/operations/{self.operation_id}",
+                }
+            ).encode()
+        )
 
     def do_GET(self):
         self.calls.append((self.command, self.path, dict(self.headers), None))
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
-        self.wfile.write(json.dumps({"operation_id": self.operation_id, "status": "succeeded", "http_status": 200,
-                                    "result": {"status": "draft", "role": "guest", "available_actions": []}}).encode())
+        self.wfile.write(
+            json.dumps(
+                {
+                    "operation_id": self.operation_id,
+                    "status": "succeeded",
+                    "http_status": 200,
+                    "result": {
+                        "status": "draft",
+                        "role": "guest",
+                        "available_actions": [],
+                    },
+                }
+            ).encode()
+        )
 
     def log_message(self, *_):
         pass
@@ -46,13 +67,52 @@ class RawHTTPTests(unittest.TestCase):
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
-            client = AssistantClient(f"http://127.0.0.1:{server.server_port}", "fashion")
+            client = AssistantClient(
+                f"http://127.0.0.1:{server.server_port}", "fashion"
+            )
             self.assertEqual(client.discover()["role"], "guest")
             self.assertEqual([c[0] for c in Handler.calls], ["POST", "GET"])
             self.assertEqual(Handler.calls[0][3], {"discover": True})
-            self.assertEqual(Handler.calls[0][2]["X-Operation-Token"], Handler.calls[1][2]["X-Operation-Token"])
+            self.assertEqual(
+                Handler.calls[0][2]["X-Operation-Token"],
+                Handler.calls[1][2]["X-Operation-Token"],
+            )
+            self.assertEqual(Handler.calls[0][2]["User-Agent"], data.USER_AGENT)
+            self.assertEqual(Handler.calls[1][2]["User-Agent"], data.USER_AGENT)
             self.assertEqual(Handler.calls[0][1], "/api/v1/shops/fashion/assistant")
-            self.assertEqual(Handler.calls[1][1], f"/api/v1/shops/fashion/operations/{Handler.operation_id}")
+            self.assertEqual(
+                Handler.calls[1][1],
+                f"/api/v1/shops/fashion/operations/{Handler.operation_id}",
+            )
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=2)
+
+    def test_transport_identifies_sdk_without_mutating_headers(self):
+        Handler.calls = []
+        server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            headers = {
+                "Accept": "application/json",
+                "Authorization": "Bearer example",
+                "User-Agent": "caller-supplied",
+            }
+            original = headers.copy()
+            status, _, _ = data.request(
+                "POST",
+                f"http://127.0.0.1:{server.server_port}/assistant",
+                headers,
+                {"discover": True},
+            )
+            self.assertEqual(status, 202)
+            self.assertEqual(headers, original)
+            received = Handler.calls[0][2]
+            self.assertEqual(received["User-Agent"], "Shop3i-Python-SDK/0.1.0")
+            self.assertEqual(received["Accept"], "application/json")
+            self.assertEqual(received["Authorization"], "Bearer example")
         finally:
             server.shutdown()
             server.server_close()

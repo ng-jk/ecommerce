@@ -56,3 +56,10 @@ results and artifact digests; JSON is retained as machine evidence. Full testing
 GitHub publication and server activation are established only by the new
 commit-bound lifecycle HTML report, not this working-tree checkpoint. Cloudflare
 Mini App origin routing remains a separate live check.
+
+The first live testing deployment exposed Cloudflare error 1010 for the Python
+SDK's default urllib client signature. Promotion was stopped before production.
+The SDK now identifies itself as `Shop3i-Python-SDK/0.1.0`; its real HTTP transport
+regression checks POST and polling headers without changing caller input. This
+does not impersonate a browser or disable Cloudflare protection. The corrected
+source requires a fresh complete release run, including live SDK verification.

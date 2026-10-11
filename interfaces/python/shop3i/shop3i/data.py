@@ -7,6 +7,8 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+USER_AGENT = "Shop3i-Python-SDK/0.1.0"
+
 
 class TransportFailure(Exception):
     pass
@@ -22,12 +24,20 @@ def _is_posix():
 
 
 def _inside_git(target):
-    return any((parent / ".git").exists() for parent in (target.parent, *target.parents))
+    return any(
+        (parent / ".git").exists() for parent in (target.parent, *target.parents)
+    )
 
 
 def request(method, url, headers, payload=None, timeout=10):
-    body = None if payload is None else json.dumps(payload, separators=(",", ":")).encode()
-    req = urllib.request.Request(url, data=body, headers=headers, method=method)
+    body = (
+        None if payload is None else json.dumps(payload, separators=(",", ":")).encode()
+    )
+    request_headers = {
+        name: value for name, value in headers.items() if name.lower() != "user-agent"
+    }
+    request_headers["User-Agent"] = USER_AGENT
+    req = urllib.request.Request(url, data=body, headers=request_headers, method=method)
     opener = urllib.request.build_opener(_NoRedirect)
     try:
         with opener.open(req, timeout=timeout) as response:
