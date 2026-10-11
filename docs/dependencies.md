@@ -78,11 +78,34 @@ checks establish installation only, not completion of the planned proofs.
 
 ## Audit and scope
 
-Python audit is clean after updating its project-local pip to 26.2.1. Composer
-reported no known advisories on installation. npm retains three moderate findings
-in the existing Expo Router/query-string/decode-uri-component dependency chain;
-no incompatible major-version override was forced. Re-run audits as advisories
-and upstream fixes change.
+Audit results are release-specific evidence, not a permanent property of the
+lockfiles. The release security review runs fresh npm and Python audits. Preserve
+the raw results under `test-results`; never describe a historical audit as current.
+
+The npm installation applies narrowly scoped security fixes from
+`security/dependency-patches.json` through
+`scripts/apply-dependency-security-patches.mjs`. The manifest records upstream
+provenance, advisory identifiers, exact package versions, original and patched
+SHA-256 digests, and explicit replacements. Unknown source bytes or versions stop
+installation. Both web Docker build targets run the same postinstall step.
+
+The patches bound recursive braces AST traversal, reject additional RSA
+DigestAlgorithm elements in node-forge, and backport the upstream URI decoder fix
+while retaining the CommonJS contract needed by Expo Router. A scoped js-yaml
+upgrade removes the vulnerable sprintf-js dependency from the NYC configuration
+loader. This is maintained source remediation, not a claim that the upstream
+package versions have changed or that npm's advisory database reports zero.
+
+`tools/lifecycle/dependency_security.py` rejects unresolved advisories, verifies
+installed package identities and patched bytes for every affected installed copy,
+and runs `scripts/dependency-security.test.mjs`. Transitive audit findings can
+only be classified as locally remediated when every underlying advisory is
+verified. Missing packages, changed files, unknown advisories, malformed audit
+responses and audit network failures block publication. The raw audit,
+classification and regression results remain separate evidence files. Replace
+these patches with compatible upstream releases when available and repeat all
+compatibility and security tests; do not carry a patch to a different version
+without review.
 
 No Inertia runtime is installed: the applications use Expo and JSON APIs. The
 [CRUD rules](crud-rules.md) explicitly retain the Inertia adapter requirement for

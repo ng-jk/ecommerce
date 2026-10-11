@@ -164,9 +164,14 @@ def test_config_invalid_structures(tmp_path, mutation):
         load(path, "general")
 
 
-def test_review_commands_and_refusals(tmp_path):
+def test_review_commands_and_refusals(tmp_path, monkeypatch):
     calls = []
     command = lambda args, **kwargs: calls.append(args)
+    monkeypatch.setattr(
+        reviews.dependency_security,
+        "run",
+        lambda root, npm: calls.append([npm, "audit"]),
+    )
     reviews.architecture(command, "npm")
     reviews.quality(command, "npm")
     reviews.compatibility(command, lambda *a: "", "npm")
@@ -273,8 +278,13 @@ def test_cli_reports_success_and_failure(tmp_path, monkeypatch, capsys):
     assert error.value.code == 0
 
 
-def test_security_review_skips_binary_and_large_files(tmp_path):
+def test_security_review_skips_binary_and_large_files(tmp_path, monkeypatch):
     calls = []
+    monkeypatch.setattr(
+        reviews.dependency_security,
+        "run",
+        lambda root, npm: calls.append([npm, "audit"]),
+    )
     (tmp_path / "binary.bin").write_bytes(b"\xff")
     (tmp_path / "large.bin").write_bytes(b"x" * 2_000_001)
     reviews.security(
@@ -283,4 +293,4 @@ def test_security_review_skips_binary_and_large_files(tmp_path):
         lambda args, **k: calls.append(args),
         "npm",
     )
-    assert len(calls) == 2
+    assert len(calls) == 3

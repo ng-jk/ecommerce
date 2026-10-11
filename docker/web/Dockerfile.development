@@ -8,6 +8,8 @@ COPY packages/api-client/package.json ./packages/api-client/package.json
 COPY packages/storefront/package.json ./packages/storefront/package.json
 COPY packages/merchant-plugins/package.json ./packages/merchant-plugins/package.json
 COPY packages/miniapps/package.json ./packages/miniapps/package.json
+COPY scripts/apply-dependency-security-patches.mjs ./scripts/apply-dependency-security-patches.mjs
+COPY security/dependency-patches.json ./security/dependency-patches.json
 RUN npm ci
 COPY frontend/ ./frontend/
 COPY packages/ ./packages/

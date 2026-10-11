@@ -1,5 +1,11 @@
 # Manual Docker release
 
+The lifecycle CLI prints the path to a standalone HTML release report in
+`test-results/lifecycle/<run-id>.html`. Open it in a browser to review status,
+commit, stage results, skipped stages, artifact digests and full stage history.
+The report works offline. JSON and text sidecars remain internal automation
+evidence; HTML is the user-facing report.
+
 This repository has no GitHub Actions workflow. A push, pull request, or branch update does not run verification or deploy an environment. The supported deployment interface is `tools/manual_release.py`, invoked by an operator from a clean local checkout after the exact commit passes the verification gates. This guide documents the current interface; it does not claim that a host is provisioned or a release has succeeded.
 
 The current interface below is the per-environment baseline. The authoritative

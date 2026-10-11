@@ -7,6 +7,8 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+from tools.lifecycle.html_report import render
+
 STATUSES = {"passed", "failed", "blocked", "skipped", "running"}
 
 
@@ -20,7 +22,8 @@ class Report:
     ):
         self.directory = root / "test-results" / "lifecycle"
         self.directory.mkdir(parents=True, exist_ok=True)
-        self.path = self.directory / f"{run_id}.json"
+        self.path = self.directory / f"{run_id}.html"
+        self.json_path = self.directory / f"{run_id}.json"
         self.text_path = self.directory / f"{run_id}.txt"
         self.data = {
             "run_id": run_id,
@@ -65,7 +68,7 @@ class Report:
             attempt = 0
             while True:
                 try:
-                    os.replace(temporary, self.path)
+                    os.replace(temporary, self.json_path)
                     break
                 except PermissionError:
                     attempt += 1
@@ -86,3 +89,4 @@ class Report:
             for item in self.data["stages"]
         )
         self.text_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        self.path.write_text(render(self.data), encoding="utf-8")

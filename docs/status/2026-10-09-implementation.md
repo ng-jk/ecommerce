@@ -33,3 +33,26 @@ These results are working-tree checks. They are not a commit-bound release certi
 Run the complete pipeline against the final source revision. Resolve all coverage, lint and API failures; verify raw API terminal responses. Complete checkout integration for plugin proposals and merchant provisioning before claiming those features available. Exercise dedicated service deployment separately from the general platform. Configure company domains/signing only for distributions being published. Do not promote historical test reports into current release evidence.
 
 The resumed release audit identified vulnerable npm dependencies. Compatible fixes removed the critical finding; high-severity findings still prevent the security review from approving publication. Production and testing runtime files now contain separate public Mini App origins and parent-origin allowlists, with private backups retained. Cloudflare's dedicated Mini App route configuration still needs verification. A source push is not a successful deployment or permission to bypass these release gates.
+
+## Security remediation resumed — 2026-10-11
+
+This update supersedes the dependency blocker above, not the pending product scope.
+Three npm advisories now have exact-version, exact-hash source fixes, with targeted
+regressions and fail-closed verification of every affected installed copy. A scoped
+dependency upgrade removes the fourth vulnerable package. The fresh npm report
+still contains 52 version-based findings (49 high, three moderate); the release
+gate separately verifies their three underlying advisory fixes and transitive
+relationships. It does not suppress the raw audit or claim an upstream clean bill
+of health. See [dependency maintenance](../dependencies.md#audit-and-scope).
+
+The inference lock upgrades Transformers and setuptools and pins the newly
+required dependencies. Its fresh locked-package audit reports no known findings;
+the complete Composer lock audit also reports none. A real-weight FunctionGemma
+compatibility probe uses the public mirror and is not evidence of the deployed
+Google model's readiness. The release must still verify the deployed service.
+
+The release report is now an offline HTML document with escaped content, stage
+results and artifact digests; JSON is retained as machine evidence. Full testing,
+GitHub publication and server activation are established only by the new
+commit-bound lifecycle HTML report, not this working-tree checkpoint. Cloudflare
+Mini App origin routing remains a separate live check.

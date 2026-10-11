@@ -1,2 +1,2 @@
-transformers==4.57.3
+transformers==5.10.0
 safetensors==0.7.0

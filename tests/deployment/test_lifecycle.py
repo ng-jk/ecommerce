@@ -108,7 +108,7 @@ def test_one_launch_order_and_durable_report(setup):
         "promotion",
     ]
     assert report.path.is_file() and report.text_path.is_file()
-    assert json.loads(report.path.read_text())["commit"] == SHA
+    assert json.loads(report.json_path.read_text())["commit"] == SHA
 
 
 @pytest.mark.parametrize("stop", ["review", "testing", "production"])
@@ -386,7 +386,7 @@ def test_invalid_context_index_persists_failed_full_report(setup, monkeypatch):
     )
     monkeypatch.setattr(lifecycle, "context_gate", REAL_CONTEXT_GATE)
     report = lifecycle.lifecycle(config, "shared-general", True)
-    persisted = json.loads(report.path.read_text(encoding="utf-8"))
+    persisted = json.loads(report.json_path.read_text(encoding="utf-8"))
     assert persisted["status"] == "failed"
     assert any(
         s["name"] == "requirements_review" and s["status"] == "failed"

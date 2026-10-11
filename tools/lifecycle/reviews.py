@@ -4,6 +4,8 @@ import re
 import sys
 from pathlib import Path
 
+from tools.lifecycle import dependency_security
+
 SECRET_NAMES = re.compile(
     r"(^|/)(\.env($|\.(?!example$))|[^/]+\.(pem|p12|p8|key|jks))$", re.IGNORECASE
 )
@@ -48,7 +50,7 @@ def security(root: Path, git, command, npm: str) -> None:
             continue
         if SECRET_CONTENT.search(content):
             raise RuntimeError("Tracked credential-like content")
-    command([npm, "audit", "--audit-level=high", "--omit=dev"], timeout=900)
+    dependency_security.run(root, npm)
     command(
         [
             sys.executable,
@@ -56,6 +58,18 @@ def security(root: Path, git, command, npm: str) -> None:
             "pip_audit",
             "-r",
             "tools/pipeline/requirements.lock.txt",
+        ],
+        timeout=900,
+    )
+    command(
+        [
+            sys.executable,
+            "-m",
+            "pip_audit",
+            "--no-deps",
+            "--disable-pip",
+            "-r",
+            "backend/inference/requirements.lock.txt",
         ],
         timeout=900,
     )
