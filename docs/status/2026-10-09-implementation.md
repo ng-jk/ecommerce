@@ -46,8 +46,9 @@ relationships. It does not suppress the raw audit or claim an upstream clean bil
 of health. See [dependency maintenance](../dependencies.md#audit-and-scope).
 
 The inference lock upgrades Transformers and setuptools and pins the newly
-required dependencies. Its fresh locked-package audit reports no known findings;
-the complete Composer lock audit also reports none. A real-weight FunctionGemma
+required dependencies. The initial locked-package audit reported no findings but
+silently skipped the CPU-specific Torch version; that result was incomplete.
+The complete Composer lock audit reports no findings. A real-weight FunctionGemma
 compatibility probe uses the public mirror and is not evidence of the deployed
 Google model's readiness. The release must still verify the deployed service.
 
@@ -63,3 +64,20 @@ The SDK now identifies itself as `Shop3i-Python-SDK/0.1.0`; its real HTTP transp
 regression checks POST and polling headers without changing caller input. This
 does not impersonate a browser or disable Cloudflare protection. The corrected
 source requires a fresh complete release run, including live SDK verification.
+
+## Post-publication security cross-check — 2026-10-11
+
+Commit `f83f17c` passed the configured lifecycle and was published to production
+and testing. Independent checks passed for 28 web/isolation paths, 12 assistant
+cases and Python SDK discovery/catalog access for both shops in both environments.
+The deployed official Google FunctionGemma model was healthy. GitHub main,
+deployment and testing were verified at that revision.
+
+A subsequent audit cross-check exposed four Torch advisories hidden by the
+scanner's skipped `+cpu` version. The HTML release report now records this failure
+without erasing the successful deployment or earlier stage history. The follow-up
+upgrades Torch to the official 2.13.0 CPU release, explicitly requires safetensors
+without remote model code, and makes skipped dependency audits fail closed.
+Its normalized locked-package audit reports zero findings. A new complete
+commit-bound release and live verification are required before this follow-up is
+considered published; the previous report is not evidence for the new revision.

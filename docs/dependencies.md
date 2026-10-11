@@ -107,6 +107,19 @@ these patches with compatible upstream releases when available and repeat all
 compatibility and security tests; do not carry a patch to a different version
 without review.
 
+`tools/lifecycle/python_dependency_security.py` audits every exact inference lock
+entry and rejects missing, skipped, duplicated, malformed or unexpected results.
+The explicitly supported PyTorch CPU wheel versions are queried using their base
+upstream version because the advisory service does not index the `+cpu` suffix.
+The installed lock is unchanged by this query: evidence records both the installed
+and queried versions and the lock digest. Unknown local-version mappings fail
+closed. Raw audit output and classification are retained separately. A successful
+scanner exit alone is insufficient evidence when any package was skipped.
+
+The inference image uses the official PyTorch 2.13.0 CPU build. Model loading
+requires safetensors and disables remote model/tokenizer code; unavailable safe
+weights cause startup to fail instead of falling back to pickle checkpoints.
+
 No Inertia runtime is installed: the applications use Expo and JSON APIs. The
 [CRUD rules](crud-rules.md) explicitly retain the Inertia adapter requirement for
 any future Inertia flow and define the matching Expo API error/form contract.

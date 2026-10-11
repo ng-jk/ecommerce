@@ -765,6 +765,7 @@
         "tools/lifecycle/__main__.py",
         "tools/manual_release.py",
         "tools/lifecycle/dependency_security.py",
+        "tools/lifecycle/python_dependency_security.py",
         "tools/lifecycle/html_report.py",
         "security/dependency-patches.json",
         "scripts/apply-dependency-security-patches.mjs"
@@ -773,6 +774,7 @@
         "tests/deployment/test_lifecycle.py",
         "tests/deployment/test_manual_release.py",
         "tests/deployment/test_dependency_security.py",
+        "tests/deployment/test_python_dependency_security.py",
         "tests/deployment/test_html_report.py",
         "scripts/dependency-security.test.mjs"
       ],

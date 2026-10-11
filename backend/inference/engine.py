@@ -15,8 +15,14 @@ class Engine:
         self.torch = torch
         torch.set_num_threads(4)
         model = os.environ.get("FUNCTIONGEMMA_MODEL", "google/functiongemma-270m-it")
-        self.tokenizer = AutoTokenizer.from_pretrained(model)
-        self.model = AutoModelForCausalLM.from_pretrained(model, dtype=torch.float32)
+        self.tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=False)
+        self.model = AutoModelForCausalLM.from_pretrained(
+            model,
+            dtype=torch.float32,
+            use_safetensors=True,
+            trust_remote_code=False,
+            weights_only=True,
+        )
         self.model.eval()
         self.lock = Lock()
 

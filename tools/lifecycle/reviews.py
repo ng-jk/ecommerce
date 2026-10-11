@@ -4,7 +4,7 @@ import re
 import sys
 from pathlib import Path
 
-from tools.lifecycle import dependency_security
+from tools.lifecycle import dependency_security, python_dependency_security
 
 SECRET_NAMES = re.compile(
     r"(^|/)(\.env($|\.(?!example$))|[^/]+\.(pem|p12|p8|key|jks))$", re.IGNORECASE
@@ -61,18 +61,7 @@ def security(root: Path, git, command, npm: str) -> None:
         ],
         timeout=900,
     )
-    command(
-        [
-            sys.executable,
-            "-m",
-            "pip_audit",
-            "--no-deps",
-            "--disable-pip",
-            "-r",
-            "backend/inference/requirements.lock.txt",
-        ],
-        timeout=900,
-    )
+    python_dependency_security.run(root)
 
 
 def compatibility(command, git, npm: str) -> None:

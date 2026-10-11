@@ -172,6 +172,11 @@ def test_review_commands_and_refusals(tmp_path, monkeypatch):
         "run",
         lambda root, npm: calls.append([npm, "audit"]),
     )
+    monkeypatch.setattr(
+        reviews.python_dependency_security,
+        "run",
+        lambda root: calls.append(["pip_audit", "inference"]),
+    )
     reviews.architecture(command, "npm")
     reviews.quality(command, "npm")
     reviews.compatibility(command, lambda *a: "", "npm")
@@ -284,6 +289,11 @@ def test_security_review_skips_binary_and_large_files(tmp_path, monkeypatch):
         reviews.dependency_security,
         "run",
         lambda root, npm: calls.append([npm, "audit"]),
+    )
+    monkeypatch.setattr(
+        reviews.python_dependency_security,
+        "run",
+        lambda root: calls.append(["pip_audit", "inference"]),
     )
     (tmp_path / "binary.bin").write_bytes(b"\xff")
     (tmp_path / "large.bin").write_bytes(b"x" * 2_000_001)
