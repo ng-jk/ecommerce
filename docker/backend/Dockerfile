@@ -2,6 +2,8 @@ FROM php:8.5-fpm-alpine AS base
 RUN apk add --no-cache libpq icu-libs libzip oniguruma \
     && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS postgresql-dev icu-dev libzip-dev oniguruma-dev \
     && docker-php-ext-install -j4 pdo_pgsql intl zip mbstring \
+    && pecl install redis-6.3.0 \
+    && docker-php-ext-enable redis \
     && apk del .build-deps
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html

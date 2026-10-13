@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "amendment": "SHOP3I-2026-10-09",
+  "amendment": "SHOP3I-2026-10-13",
   "documents": [
     {
       "id": "ai-sdk-and-payments",
@@ -524,6 +524,41 @@
       "id": "python-interfaces",
       "path": "interfaces/python/shop3i/README.md",
       "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "decisions-2026-10-13-service-platform",
+      "path": "docs/decisions/2026-10-13-service-platform.md",
+      "kind": "guide",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-platform-organizations",
+      "path": "docs/openapi/path-platform-organizations.json",
+      "title": "Framework organization workspace API path-platform-organizations.json",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-platform-organization",
+      "path": "docs/openapi/path-platform-organization.json",
+      "title": "Framework organization workspace API path-platform-organization.json",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-platform-applications",
+      "path": "docs/openapi/path-platform-applications.json",
+      "title": "Framework organization workspace API path-platform-applications.json",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "service-platform-product-inventory",
+      "path": "docs/service-platform-product-inventory.md",
+      "title": "Nine-product reference and acceptance inventory",
       "status": "active",
       "supersedes": []
     }
@@ -1164,6 +1199,313 @@
       "evidence": [
         "docs/status/2026-10-09-implementation.md"
       ],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "PLATFORM-SCOPE",
+      "title": "Nine reference product families and solution commerce",
+      "document": "decisions-2026-10-13-service-platform",
+      "anchor": "product-scope",
+      "status": "planned",
+      "implementation": [],
+      "tests": [],
+      "proofs": [],
+      "evidence": [],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "PLATFORM-REUSE",
+      "title": "Recorded upstream or native implementation strategy",
+      "document": "decisions-2026-10-13-service-platform",
+      "anchor": "implementation-strategy",
+      "status": "planned",
+      "implementation": [],
+      "tests": [],
+      "proofs": [],
+      "evidence": [],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "PLATFORM-SOURCE",
+      "title": "Pinned source provenance and license obligations",
+      "document": "decisions-2026-10-13-service-platform",
+      "anchor": "reference-projects-and-source-reuse",
+      "status": "planned",
+      "implementation": [],
+      "tests": [],
+      "proofs": [],
+      "evidence": [],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "PLATFORM-BOUNDARIES",
+      "title": "Organization isolation, service authority and durable transport",
+      "document": "decisions-2026-10-13-service-platform",
+      "anchor": "service-boundaries-and-authority",
+      "status": "partial",
+      "implementation": [
+        "backend/app/Models/Organization.php",
+        "backend/app/Models/OrganizationMembership.php",
+        "backend/app/Models/OrganizationApplication.php",
+        "backend/app/Modules/Platform/OrganizationAccess.php",
+        "backend/config/platform.php",
+        "compose.redis.yaml",
+        "docker/backend/Dockerfile"
+      ],
+      "tests": [
+        "backend/tests/Feature/OrganizationFoundationTest.php",
+        "backend/tests/Integration/RedisCacheTest.php",
+        "tests/pipeline/test_cli_proofs.py",
+        "tests/pipeline/test_guards.py"
+      ],
+      "proofs": [
+        "formal/Commerce/OrganizationAccess.lean"
+      ],
+      "evidence": [
+        "test-results/organization-backend-coverage.json",
+        "test-results/organization-python-coverage.json",
+        "test-results/lifecycle/organization-foundation-20261013.html"
+      ],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "PLATFORM-DELIVERY",
+      "title": "Feature-level phased service delivery",
+      "document": "decisions-2026-10-13-service-platform",
+      "anchor": "delivery-phases",
+      "status": "planned",
+      "implementation": [],
+      "tests": [],
+      "proofs": [],
+      "evidence": [],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "PLATFORM-ACCEPTANCE",
+      "title": "UI API AI parity and release evidence",
+      "document": "decisions-2026-10-13-service-platform",
+      "anchor": "completion-criteria",
+      "status": "planned",
+      "implementation": [],
+      "tests": [],
+      "proofs": [],
+      "evidence": [],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "PRODUCT-ERP",
+      "title": "ERP capability expansion",
+      "document": "service-platform-product-inventory",
+      "anchor": "feature-backlog-and-acceptance",
+      "status": "planned",
+      "implementation": [],
+      "tests": [],
+      "proofs": [],
+      "evidence": [],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "PRODUCT-HR",
+      "title": "HR capability expansion",
+      "document": "service-platform-product-inventory",
+      "anchor": "feature-backlog-and-acceptance",
+      "status": "planned",
+      "implementation": [],
+      "tests": [],
+      "proofs": [],
+      "evidence": [],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "PRODUCT-LEARNING",
+      "title": "Learning capability expansion",
+      "document": "service-platform-product-inventory",
+      "anchor": "feature-backlog-and-acceptance",
+      "status": "planned",
+      "implementation": [],
+      "tests": [],
+      "proofs": [],
+      "evidence": [],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "PRODUCT-INSIGHTS",
+      "title": "Insights capability expansion",
+      "document": "service-platform-product-inventory",
+      "anchor": "feature-backlog-and-acceptance",
+      "status": "planned",
+      "implementation": [],
+      "tests": [],
+      "proofs": [],
+      "evidence": [],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "PRODUCT-CRM",
+      "title": "CRM capability expansion",
+      "document": "service-platform-product-inventory",
+      "anchor": "feature-backlog-and-acceptance",
+      "status": "planned",
+      "implementation": [],
+      "tests": [],
+      "proofs": [],
+      "evidence": [],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "PRODUCT-HELPDESK",
+      "title": "Helpdesk capability expansion",
+      "document": "service-platform-product-inventory",
+      "anchor": "feature-backlog-and-acceptance",
+      "status": "planned",
+      "implementation": [],
+      "tests": [],
+      "proofs": [],
+      "evidence": [],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "PRODUCT-LENDING",
+      "title": "Lending capability expansion",
+      "document": "service-platform-product-inventory",
+      "anchor": "feature-backlog-and-acceptance",
+      "status": "planned",
+      "implementation": [],
+      "tests": [],
+      "proofs": [],
+      "evidence": [],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "PRODUCT-FRAMEWORK",
+      "title": "Framework capability expansion",
+      "document": "service-platform-product-inventory",
+      "anchor": "feature-backlog-and-acceptance",
+      "status": "partial",
+      "implementation": [
+        "backend/app/Modules/Platform/OrganizationActions.php",
+        "frontend/admin/src/app/organizations/index.tsx",
+        "packages/api-client/services/platform_workspace/index.ts"
+      ],
+      "tests": [
+        "backend/tests/Feature/OrganizationWorkspaceTest.php",
+        "backend/tests/Feature/AssistantWorkspaceTest.php",
+        "tests/api/test_platform_workspace.py"
+      ],
+      "proofs": [
+        "formal/Commerce/OrganizationWorkspace.lean"
+      ],
+      "evidence": [
+        "test-results/lifecycle/workspace-20261013.html",
+        "test-results/workspace-backend-coverage.json",
+        "test-results/workspace-python-coverage.json",
+        "test-results/workspace-frontend-coverage/coverage-final.json",
+        "test-results/api/coverage.json",
+        "test-results/api/exchanges.json",
+        "test-results/workspace-proof-build.log"
+      ],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "PRODUCT-BUILDER",
+      "title": "Builder capability expansion",
+      "document": "service-platform-product-inventory",
+      "anchor": "feature-backlog-and-acceptance",
+      "status": "planned",
+      "implementation": [],
+      "tests": [],
+      "proofs": [],
+      "evidence": [],
       "reviews": [
         "requirement",
         "architecture",

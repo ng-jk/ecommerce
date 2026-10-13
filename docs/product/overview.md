@@ -1,6 +1,8 @@
 # Shop3i product overview
 
-Shop3i means ecommerce through three interfaces: user, AI and application interfaces. A Shop is a merchant's independently configured commerce experience. The product target is a general Shopify-style commerce platform spanning the 42 categories in the [capability inventory](../commerce-capability-inventory.md); that scope is a roadmap and does not mean every category is implemented.
+Shop3i is a general-purpose business service platform through three interfaces: user, AI and application interfaces. The [2026-10-13 scope amendment](../decisions/2026-10-13-service-platform.md) adds ERP, HR, Learning, Insights, CRM, Helpdesk, Lending, Framework and Builder capabilities. E-commerce showcases and sells general and customized product solutions and remains one platform application. This expanded scope is a roadmap, not a claim that the new products are implemented.
+
+An organization is the platform customer and can use multiple applications without opening a shop. A Shop is an organization's independently configured commerce experience. The existing Shopify-style 42-category [commerce inventory](../commerce-capability-inventory.md) remains the commerce application's roadmap.
 
 Each Shop is available through responsive web interfaces for mobile, tablet and desktop, native mobile applications, an AI chat interface, MCP and CLI integrations, and an application API over HTTPS with an SDK. The customer storefronts and admin interface are distinct products that use the same Shop services, contracts and authoritative data. They adapt presentation and interaction to their interface; they do not create separate business rules.
 

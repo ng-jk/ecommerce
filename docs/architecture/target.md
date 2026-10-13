@@ -1,5 +1,12 @@
 # Shop3i target architecture
 
+The [2026-10-13 service platform amendment](../decisions/2026-10-13-service-platform.md)
+extends this architecture to organizations and independently owned business
+application services. Shops remain commerce scopes within organizations. Each
+service retains its own database and authoritative business rules; shared
+platform identity and capability contracts connect UI, AI and application clients.
+This is a target architecture; organization/service migration is not yet implemented.
+
 ## Shared business behavior
 
 Every interface for a Shop uses the same business logic and Shop data within its runtime. Web and native applications share TypeScript contracts and domain behavior where practical. Interfaces call the versioned application API over HTTPS through supported SDKs. The API and worker layer owns authentication, authorization, validation, workflow transitions, pricing, persistence and results. Client state is a presentation aid and never business authority.
@@ -14,7 +21,7 @@ PostgreSQL is authoritative for durable Shop state. Cache entries are disposable
 
 ## Extension boundaries
 
-Reusable frontend Mini Apps are a shared host for approved extensions, with Shop-specific installation, grants and configuration. A company that needs independent products may operate a separate single-app deployment with its own domain and signing profile while following the same API contract. These are deployment choices, not grounds to fork shared business logic for ordinary branding, configuration or feature enablement.
+Reusable frontend Mini Apps are a shared host for approved extensions, with organization-scoped installation, grants and configuration and optional shop scope for commerce. Migrating the current shop-based host to organization scope requires implementation and isolation tests. A company that needs independent products may operate a separate single-app deployment with its own domain and signing profile while following the same API contract. These are deployment choices, not grounds to fork shared business logic for ordinary branding, configuration or feature enablement.
 
 Backend plugin business behavior is shipped as reviewed code and is configured by profiles and versioned settings. Configuration cannot become a growing collection of company-name conditionals. Platform-managed plugin APIs own persistent plugin data. Each independently deployed plugin service owns its own schema, migrations and data. Contracts use semantic versions and compatibility rules so core updates can support multiple plugin integrations in one codebase. Forks are not required for normal customization.
 

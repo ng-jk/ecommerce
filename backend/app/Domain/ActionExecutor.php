@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Shop;
 use App\Models\User;
+use App\Modules\Platform\OrganizationActions;
 use App\Plugins\Loyalty\LoyaltyPlugin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -68,6 +69,7 @@ class ActionExecutor
         $plugins = app(PluginActions::class);
         $miniApps = app(MiniAppActions::class);
         $loyalty = app(LoyaltyPlugin::class);
+        $organizations = app(OrganizationActions::class);
         $id = (int) ($op->payload['id'] ?? 0);
         $result = match ($op->action) {
             'auth.login' => app(AuthActions::class)->login($request, $shop),
@@ -100,6 +102,11 @@ class ActionExecutor
             'admin.miniapp.update' => $miniApps->update($request, $shop, $id),
             'plugin.loyalty.balance' => $loyalty->balance($request, $shop),
             'admin.plugin.loyalty.credit' => $loyalty->credit($request, $shop, $op),
+            'platform.organizations' => $organizations->listing($request, $user),
+            'platform.organization.create' => $organizations->create($request, $user),
+            'platform.organization' => $organizations->detail($user, $id),
+            'platform.organization.update' => $organizations->update($request, $user, $id),
+            'platform.applications' => $organizations->applications($request, $user, $id),
             default => throw ValidationException::withMessages(['action' => 'Unknown command.']),
         };
         $actor = $op->action === 'auth.logout' ? null : ($result['user'] ?? $user?->fresh());

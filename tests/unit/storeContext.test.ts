@@ -39,6 +39,13 @@ const address = {
 };
 function apiFixture() {
   return {
+    platformWorkspace: {
+      organizations: vi.fn(),
+      createOrganization: vi.fn(),
+      organization: vi.fn(),
+      updateOrganization: vi.fn(),
+      applications: vi.fn(),
+    },
     me: vi.fn().mockResolvedValue({ user }),
     cart: vi.fn().mockResolvedValue({ items: [] }),
     login: vi.fn().mockResolvedValue({ user, token: "native-token" }),

@@ -124,4 +124,6 @@ def test_lean_build_and_axiom_audit(tmp_path, monkeypatch, outcome, local):
         ["env", "lean", "Commerce/Invariants.lean"],
         ["env", "lean", "Commerce/Plugins.lean"],
         ["env", "lean", "Commerce/MiniApps.lean"],
+        ["env", "lean", "Commerce/OrganizationAccess.lean"],
+        ["env", "lean", "Commerce/OrganizationWorkspace.lean"],
     ]

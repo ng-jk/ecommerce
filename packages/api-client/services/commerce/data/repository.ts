@@ -10,6 +10,7 @@ import { Cache, memoryStorage } from "../../cache";
 import { schemas } from "../../contracts";
 import { createTransport } from "../../transport";
 import { assistantAdapter } from "../../assistant";
+import { createPlatformWorkspace } from "../../platform_workspace";
 export function createClient(options: {
   shop: ShopSlug;
   origin: string;
@@ -32,6 +33,7 @@ export function createClient(options: {
   const idValue = (id: string | number) =>
     z.coerce.number().int().positive().parse(id);
   return {
+    platformWorkspace: createPlatformWorkspace(request),
     assistant: assistantAdapter(
       request,
       options.native ? storage : memoryStorage(),

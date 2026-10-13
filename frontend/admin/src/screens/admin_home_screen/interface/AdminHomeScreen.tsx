@@ -40,8 +40,7 @@ export function AdminHomeScreen() {
         <>
           <Button title="Products" onPress={() => router.push("/products")} />
           <Button title="Orders" onPress={() => router.push("/orders")} />
-          <Button title="Plugins" onPress={() => router.push("/plugins")} />
-          <Button title="MiniApps" onPress={() => router.push("/miniapps")} />
+          <Button title="Workspace" onPress={() => router.push("/workspace")} />
           <Button
             title="Sign out"
             onPress={() => {
@@ -51,7 +50,7 @@ export function AdminHomeScreen() {
         </>
       ) : (
         <>
-          <Copy>Administrator access is required.</Copy>
+          <Button title="Workspace" onPress={() => router.push("/workspace")} />
           <Button
             title="Sign out"
             onPress={() => {

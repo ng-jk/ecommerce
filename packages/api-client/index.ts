@@ -16,3 +16,4 @@ export type {
 } from "./services/contracts";
 export type * from "./services/assistant";
 export { hostedPaymentUrlPattern } from "./services/payments";
+export type { Organization } from "./services/platform_workspace";

@@ -73,7 +73,7 @@ def test_all_business_functions_through_assistant(shop):
     customer = Assistant(shop, account["token"])
     customer_tools = customer.turn({"discover": True})
     assert customer_tools["role"] == "customer"
-    assert len(customer_tools["available_actions"]) == 13
+    assert len(customer_tools["available_actions"]) == 18
     assert customer.invoke("me")["user"]["email"] == email
     assert customer.invoke("cart")["items"] == []
     assert customer.invoke("logout")["logged_out"]
@@ -90,7 +90,17 @@ def test_all_business_functions_through_assistant(shop):
     )
     admin = Assistant(shop, admin_login["token"])
     tools = admin.turn({"discover": True})["available_actions"]
-    assert len(tools) == 27
+    assert len(tools) == 32
+    organization = customer.invoke("createOrganization", {
+        "code": "matrix-" + uuid.uuid4().hex, "name": "Matrix workspace",
+    })["organization"]
+    identifier = organization["id"]
+    assert customer.invoke("organization", {"id": identifier})["can_update"]
+    assert customer.invoke("organizations", {"page": 1})["data"]
+    assert [app["application_key"] for app in customer.invoke("organizationApplications", {"id": identifier})["data"]] == ["framework"]
+    renamed = customer.invoke("updateOrganization", {"id": identifier, "name": "Matrix renamed"})
+    assert renamed["organization"]["version"] == organization["version"] + 1
+    admin.turn({"action": "organization", "data": {"id": identifier}}, 404)
     installation = admin.invoke("installPlugin", {"plugin_id": "loyalty"})["plugin"]
     assert installation["enabled"] is False
     assert admin.invoke("adminPlugins", {"plugin_id": "loyalty"})["plugins"]["data"]

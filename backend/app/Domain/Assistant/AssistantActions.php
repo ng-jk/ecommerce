@@ -12,6 +12,7 @@ use App\Models\PluginInstallation;
 use App\Models\Product;
 use App\Models\Shop;
 use App\Models\User;
+use App\Modules\Platform\OrganizationActions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -140,6 +141,11 @@ class AssistantActions
         }
         if (in_array($action, ['cart.update', 'checkout'], true)) {
             $arguments['expected_version'] = $user->version;
+        }
+        if ($action === 'platform.organization.update') {
+            $detail = app(OrganizationActions::class)->detail($user, (int) $id);
+            abort_unless($detail['can_update'], 403, 'Only the organization owner can rename it.');
+            $arguments['expected_version'] = $detail['organization']['version'];
         }
         if (in_array($action, ['admin.update', 'admin.delete', 'admin.advance', 'admin.plugin.update', 'admin.miniapp.update'], true)) {
             if ($action === 'admin.miniapp.update') {

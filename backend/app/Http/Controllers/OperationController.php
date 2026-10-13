@@ -7,6 +7,7 @@ use App\Models\Operation;
 use App\Models\Shop;
 use App\Models\User;
 use App\Modules\Events\Interface\Events;
+use App\Modules\Platform\OrganizationActions;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -75,6 +76,13 @@ class OperationController extends Controller
         if ($op->user_id && ! ($effectiveAction === 'auth.logout' && $op->status === Operation::Succeeded)) {
             abort_unless($viewer?->id === $op->user_id && $viewer?->shop_id === $shop->id, 404);
             abort_unless($viewer->account_status === 'active', 403);
+        }
+        if (is_string($effectiveAction) && str_starts_with($effectiveAction, 'platform.')) {
+            abort_unless($viewer, 404);
+            app(AccessPolicy::class)->enforce($effectiveAction, $viewer);
+            if ($op->status === Operation::Succeeded) {
+                app(OrganizationActions::class)->authorizeResult($viewer, $effectiveAction, $op->payload, $effectiveResult ?? []);
+            }
         }
 
         if ($op->status === Operation::Succeeded && in_array($effectiveAction, ['auth.login', 'auth.register'], true)) {

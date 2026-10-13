@@ -17,6 +17,11 @@ Route::prefix('v1/shops/{shop:slug}')->middleware('throttle:'.config('commerce.r
     Route::middleware(['auth:sanctum', 'shop.access'])->group(function (): void {
         Route::get('auth/me', [AuthController::class, 'me']);
         Route::post('auth/logout', [OperationController::class, 'submit'])->name('auth.logout');
+        Route::get('platform/organizations', [OperationController::class, 'submit'])->name('platform.organizations');
+        Route::post('platform/organizations', [OperationController::class, 'submit'])->name('platform.organization.create');
+        Route::get('platform/organizations/{id}', [OperationController::class, 'submit'])->name('platform.organization')->whereNumber('id');
+        Route::patch('platform/organizations/{id}', [OperationController::class, 'submit'])->name('platform.organization.update')->whereNumber('id');
+        Route::get('platform/organizations/{id}/applications', [OperationController::class, 'submit'])->name('platform.applications')->whereNumber('id');
         foreach ([['get', 'cart', 'cart.read'], ['put', 'cart', 'cart.update'], ['post', 'checkout', 'checkout'], ['get', 'orders', 'orders'], ['get', 'admin/products', 'admin.products'], ['get', 'admin/products/{id}', 'admin.product'], ['post', 'admin/products', 'admin.create'], ['patch', 'admin/products/{id}', 'admin.update'], ['delete', 'admin/products/{id}', 'admin.delete'], ['get', 'admin/orders', 'admin.orders'], ['patch', 'admin/orders/{id}', 'admin.advance'], ['get', 'admin/plugins', 'admin.plugins'], ['get', 'admin/plugins/{id}', 'admin.plugin'], ['post', 'admin/plugins', 'admin.plugin.install'], ['patch', 'admin/plugins/{id}', 'admin.plugin.update'], ['get', 'miniapps', 'miniapps.list'], ['post', 'miniapps/{id}/launch', 'miniapps.launch'], ['post', 'miniapps/{id}/invoke', 'miniapps.invoke'], ['get', 'admin/miniapps', 'admin.miniapps'], ['post', 'admin/miniapps', 'admin.miniapp.install'], ['patch', 'admin/miniapps/{id}', 'admin.miniapp.update'], ['get', 'plugins/loyalty/balance', 'plugin.loyalty.balance'], ['post', 'admin/plugins/loyalty/credit', 'admin.plugin.loyalty.credit']] as [$method,$path,$action]) {
             Route::$method($path, [OperationController::class, 'submit'])->name($action);
         }

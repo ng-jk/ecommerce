@@ -149,12 +149,15 @@
         "controls": [
           "products",
           "orders",
-          "plugins",
-          "miniapps",
+          "workspace",
           "sign-out",
           "switch-shop",
           "assistant"
         ]
+      },
+      "customer": {
+        "kind": "main",
+        "controls": ["workspace", "sign-out", "switch-shop", "assistant"]
       }
     }
   },
@@ -423,5 +426,35 @@
     "kind": "main",
     "fallback": "/plugins",
     "controls": ["plugins", "customer id", "points", "reason", "credit"]
+  },
+  "frontend/admin/src/app/workspace.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": ["dashboard", "organizations", "plugins", "miniapps"]
+  },
+  "frontend/admin/src/app/organizations/index.tsx": {
+    "kind": "main",
+    "fallback": "/workspace",
+    "controls": ["dashboard", "create", "status filter", "organization collection (one view pattern)", "previous", "next"]
+  },
+  "frontend/admin/src/app/organizations/create.tsx": {
+    "kind": "main",
+    "fallback": "/organizations",
+    "controls": ["code", "name", "create", "cancel"]
+  },
+  "frontend/admin/src/app/organizations/[id]/index.tsx": {
+    "kind": "main",
+    "fallback": "/organizations",
+    "controls": ["organizations", "edit when owner", "applications"]
+  },
+  "frontend/admin/src/app/organizations/[id]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/organizations",
+    "controls": ["name", "save", "cancel"]
+  },
+  "frontend/admin/src/app/organizations/[id]/applications.tsx": {
+    "kind": "main",
+    "fallback": "/organizations",
+    "controls": ["organization", "previous", "next"]
   }
 }

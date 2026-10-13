@@ -73,6 +73,16 @@ def test_required_proof_source_is_accepted_but_weakened_statement_is_not():
         "mini_stale_approval_denied",
         "mini_authorization_noninterference",
         "mini_sequences_preserve_other_installation",
+        "organization_guard_iff",
+        "organization_revoked_membership_denied",
+        "organization_accepted_then_revoked_denied",
+        "organization_disabled_principal_denied",
+        "organization_disabled_installation_denied",
+        "organization_unknown_tenant_denied",
+        "organization_cross_tenant_denied",
+        "organization_unknown_application_denied",
+        "organization_claimed_role_cannot_escalate",
+        "organization_guard_isolated",
     ):
         with pytest.raises(ValueError, match=f"Missing required theorem: {theorem}"):
             proofs.audit_source(source.replace(theorem, "removed_plugin_guard"))

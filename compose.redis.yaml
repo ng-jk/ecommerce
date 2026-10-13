@@ -1,0 +1,35 @@
+# Opt in with: docker compose -f compose.yaml -f compose.redis.yaml up -d
+# Disposable cache only; PostgreSQL remains authoritative.
+services:
+  redis:
+    image: redis:8.2.10-alpine3.22
+    user: redis
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set a separate REDIS_PASSWORD for optional cache}
+    command:
+      - sh
+      - -ec
+      - |
+        umask 077
+        password_hash=$$(printf '%s' "$$REDIS_PASSWORD" | sha256sum | cut -d ' ' -f 1)
+        printf 'user default on #%s ~* &* +@all\n' "$$password_hash" > /tmp/users.acl
+        exec redis-server --aclfile /tmp/users.acl --save '' --appendonly no --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: [CMD-SHELL, 'REDISCLI_AUTH="$$REDIS_PASSWORD" redis-cli --no-auth-warning ping 2>/dev/null | grep -qx PONG']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=1m
+      - /data:rw,noexec,nosuid,size=1m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 384m
+    restart: unless-stopped
+  backend:
+    depends_on:
+      redis: {condition: service_healthy}
+  worker:
+    depends_on:
+      redis: {condition: service_healthy}

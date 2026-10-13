@@ -5,6 +5,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 ACTION = {
+    "organizations": ("platform.organizations", "List my organization workspaces with an optional indexed status filter"),
+    "createOrganization": ("platform.organization.create", "Create an organization workspace with a unique code and become its owner"),
+    "organization": ("platform.organization", "View an organization workspace that I belong to"),
+    "updateOrganization": ("platform.organization.update", "Owner: rename an organization workspace by ID"),
+    "organizationApplications": ("platform.applications", "List available installed applications in an organization workspace"),
     "miniapps": ("miniapps.list", "List enabled Mini Apps installed for this merchant"),
     "launchMiniapp": ("miniapps.launch", "Create a short-lived authorized Mini App launch"),
     "invokeMiniapp": ("miniapps.invoke", "Invoke an approved read capability through a current Mini App launch"),

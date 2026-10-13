@@ -9,6 +9,9 @@ class AccessPolicy
 {
     public function roles(string $action): array
     {
+        if (str_starts_with($action, 'platform.') && config('platform.applications.framework.available') !== true) {
+            return [];
+        }
         $rule = config('commerce.actions', [])[$action] ?? [];
         if (($rule['enabled'] ?? false) !== true || ! is_array($rule['roles'] ?? null)) {
             return [];

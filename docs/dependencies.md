@@ -78,6 +78,28 @@ checks establish installation only, not completion of the planned proofs.
 
 ## Audit and scope
 
+### Optional Redis cache
+
+The native service-platform expansion permits Redis as disposable cache
+infrastructure. The base stack continues to use PostgreSQL database caching;
+accepted operations, events, leases, sessions and business state remain durable
+PostgreSQL data. Redis is not the application command/event broker.
+
+Set a separate strong `REDIS_PASSWORD` locally, then use
+`docker compose -f compose.yaml -f compose.redis.yaml up -d --build`.
+Set `CACHE_STORE=redis` only when explicitly selecting Redis as the default cache.
+Laravel can also use its named `redis` cache store with the database default.
+Keep testing and production credentials/instances separate. Redis has no published
+host port, requires authentication and has bounded memory with eviction; it must
+never store irreplaceable work. The PHP image includes the pinned phpredis client.
+Merchant plugins receive scoped SDK APIs, not Redis credentials.
+
+Redis cache keys for future organization-aware adapters must include organization,
+principal and capability version, with bounded expiry. Permission grants must be
+rechecked against PostgreSQL when workers execute; cached grants are not authority.
+
+### Release dependency audits
+
 Audit results are release-specific evidence, not a permanent property of the
 lockfiles. The release security review runs fresh npm and Python audits. Preserve
 the raw results under `test-results`; never describe a historical audit as current.

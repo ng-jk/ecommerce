@@ -3156,5 +3156,361 @@
         }
       }
     }
+  },
+  {
+    "name": "organizations",
+    "action": "platform.organizations",
+    "description": "List my organization workspaces with an optional indexed status filter",
+    "method": "GET",
+    "path": "/api/v1/shops/{shop}/platform/organizations",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "per_page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "role": "user",
+    "callable": true,
+    "confirmation": false,
+    "responses": {
+      "202": {
+        "description": "Committed operation accepted; poll the private receipt for the business result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current account, organization or capability access denied"
+      },
+      "409": {
+        "description": "Idempotency or version conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      }
+    }
+  },
+  {
+    "name": "createOrganization",
+    "action": "platform.organization.create",
+    "description": "Create an organization workspace with a unique code and become its owner",
+    "method": "POST",
+    "path": "/api/v1/shops/{shop}/platform/organizations",
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "name"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 80,
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      }
+    },
+    "role": "user",
+    "callable": true,
+    "confirmation": true,
+    "responses": {
+      "202": {
+        "description": "Committed operation accepted; poll the private receipt for the business result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current account, organization or capability access denied"
+      },
+      "409": {
+        "description": "Idempotency or version conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      }
+    }
+  },
+  {
+    "name": "organization",
+    "action": "platform.organization",
+    "description": "View an organization workspace that I belong to",
+    "method": "GET",
+    "path": "/api/v1/shops/{shop}/platform/organizations/{id}",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "role": "user",
+    "callable": true,
+    "confirmation": false,
+    "responses": {
+      "202": {
+        "description": "Committed operation accepted; poll the private receipt for the business result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current account, organization or capability access denied"
+      },
+      "409": {
+        "description": "Idempotency or version conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      }
+    }
+  },
+  {
+    "name": "updateOrganization",
+    "action": "platform.organization.update",
+    "description": "Owner: rename an organization workspace by ID",
+    "method": "PATCH",
+    "path": "/api/v1/shops/{shop}/platform/organizations/{id}",
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "expected_version",
+        "id"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "role": "user",
+    "callable": true,
+    "confirmation": true,
+    "responses": {
+      "202": {
+        "description": "Committed operation accepted; poll the private receipt for the business result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current account, organization or capability access denied"
+      },
+      "409": {
+        "description": "Idempotency or version conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      }
+    }
+  },
+  {
+    "name": "organizationApplications",
+    "action": "platform.applications",
+    "description": "List available installed applications in an organization workspace",
+    "method": "GET",
+    "path": "/api/v1/shops/{shop}/platform/organizations/{id}/applications",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "per_page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "role": "user",
+    "callable": true,
+    "confirmation": false,
+    "responses": {
+      "202": {
+        "description": "Committed operation accepted; poll the private receipt for the business result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "operation_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "poll_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "operation_id",
+                "status",
+                "poll_url"
+              ]
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current account, organization or capability access denied"
+      },
+      "409": {
+        "description": "Idempotency or version conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      }
+    }
   }
 ]

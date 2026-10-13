@@ -505,4 +505,57 @@ export interface paths {
     patch: operations["updateMiniapp"];
     trace?: never;
   };
+  "/api/v1/shops/{shop}/platform/organizations": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Framework organization workspace. Uses the current shop identity transport bridge; business authority is organization membership and is rechecked by the worker. */
+    get: operations["organizations"];
+    put?: never;
+    /** @description Framework organization workspace. Uses the current shop identity transport bridge; business authority is organization membership and is rechecked by the worker. */
+    post: operations["createOrganization"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/platform/organizations/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Framework organization workspace. Uses the current shop identity transport bridge; business authority is organization membership and is rechecked by the worker. */
+    get: operations["organization"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** @description Framework organization workspace. Uses the current shop identity transport bridge; business authority is organization membership and is rechecked by the worker. */
+    patch: operations["updateOrganization"];
+    trace?: never;
+  };
+  "/api/v1/shops/{shop}/platform/organizations/{id}/applications": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Framework organization workspace. Uses the current shop identity transport bridge; business authority is organization membership and is rechecked by the worker. */
+    get: operations["organizationApplications"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }

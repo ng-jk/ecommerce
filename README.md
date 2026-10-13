@@ -1,6 +1,13 @@
-# Commerce Portfolio
+# Shop3i service platform
 
 Two independent shops. One Laravel API. Three Expo applications.
+
+The [current product scope](docs/decisions/2026-10-13-service-platform.md) expands
+Shop3i into a general business service platform with ERP, HR, Learning, Insights,
+CRM, Helpdesk, Lending, Framework and Builder. These capabilities are being rebuilt
+in Laravel/Expo with upstream projects as references. Commerce remains the solution
+showcase and sales application; the new product families are a roadmap. Optional
+Redis caching supplements PostgreSQL durable state and workers.
 
 The next architecture is recorded in the [engineering and code review specification](docs/engineering-spec.md)
 and [implementation plan](docs/implementation-plan.md): manually invoked Python release gates, layered frontends,

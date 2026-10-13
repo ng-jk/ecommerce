@@ -34,5 +34,10 @@ return [
         'admin.miniapp.update' => ['enabled' => true, 'roles' => ['admin']],
         'plugin.loyalty.balance' => ['enabled' => true, 'roles' => ['customer', 'admin']],
         'admin.plugin.loyalty.credit' => ['enabled' => true, 'roles' => ['admin']],
+        'platform.organizations' => ['enabled' => true, 'roles' => ['customer', 'admin']],
+        'platform.organization.create' => ['enabled' => true, 'roles' => ['customer', 'admin']],
+        'platform.organization' => ['enabled' => true, 'roles' => ['customer', 'admin']],
+        'platform.organization.update' => ['enabled' => true, 'roles' => ['customer', 'admin']],
+        'platform.applications' => ['enabled' => true, 'roles' => ['customer', 'admin']],
     ],
 ];

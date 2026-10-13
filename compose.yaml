@@ -19,7 +19,12 @@ x-backend-environment: &backend-environment
   SESSION_COOKIE: commerce_session
   SANCTUM_STATEFUL_DOMAINS: fashion.localhost:8080,electronics.localhost:8080,admin.localhost:8080
   LOG_CHANNEL: stderr
-  CACHE_STORE: database
+  CACHE_STORE: ${CACHE_STORE:-database}
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
+  REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+  REDIS_DB: 0
+  REDIS_CACHE_DB: 1
   PAYMENT_DRIVER: ${PAYMENT_DRIVER:-stripe}
   STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
   STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}

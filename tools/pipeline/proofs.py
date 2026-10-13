@@ -8,6 +8,33 @@ import re
 from .runner import ROOT, run
 
 REQUIRED = (
+    "workspace_rename_rejected_unchanged",
+    "workspace_rename_unauthorized_unchanged",
+    "workspace_rename_nonowner_unchanged",
+    "workspace_rename_revoked_unchanged",
+    "workspace_rename_inactive_unchanged",
+    "workspace_rename_uninstalled_unchanged",
+    "workspace_rename_stale_unchanged",
+    "workspace_rename_success",
+    "workspace_rename_replay_unchanged",
+    "workspace_rename_preserves_identity",
+    "workspace_rename_sequences_preserve_identity",
+    "workspace_unauthorized_sequences_unchanged",
+    "workspace_create_denied_no_result",
+    "workspace_create_success_bundle",
+    "workspace_create_duplicate_denied",
+    "organization_guard_iff",
+    "organization_revoked_membership_denied",
+    "organization_accepted_then_revoked_denied",
+    "organization_disabled_principal_denied",
+    "organization_disabled_installation_denied",
+    "organization_unknown_tenant_denied",
+    "organization_cross_tenant_denied",
+    "organization_unavailable_application_denied",
+    "organization_unknown_application_denied",
+    "organization_claimed_role_cannot_escalate",
+    "organization_claimed_role_irrelevant",
+    "organization_guard_isolated",
     "mini_denied_unchanged",
     "mini_unauthenticated_denied",
     "mini_foreign_target_denied",
@@ -94,6 +121,8 @@ def prove() -> None:
             "Commerce/Invariants.lean",
             "Commerce/Plugins.lean",
             "Commerce/MiniApps.lean",
+            "Commerce/OrganizationAccess.lean",
+            "Commerce/OrganizationWorkspace.lean",
         )
     )
     if "sorryAx" in output:

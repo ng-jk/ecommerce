@@ -4,6 +4,7 @@ namespace App\Domain\Assistant;
 
 use App\Domain\AccessPolicy;
 use App\Models\Order;
+use App\Models\Organization;
 use App\Models\PluginInstallation;
 use App\Models\Shop;
 use App\Models\User;
@@ -19,8 +20,9 @@ class ToolRegistry
                 $tool['parameters']['required'] = array_values(array_diff($tool['parameters']['required'], [$field]));
             }
             if (isset($tool['parameters']['properties']['status'])) {
-                $tool['parameters']['properties']['status']['enum'] = array_keys(Order::options());
-                $tool['parameters']['properties']['status']['options'] = Order::options();
+                $options = $tool['action'] === 'platform.organizations' ? Organization::options() : Order::options();
+                $tool['parameters']['properties']['status']['enum'] = array_keys($options);
+                $tool['parameters']['properties']['status']['options'] = $options;
             }
             if ($tool['action'] === 'cart.update') {
                 $tool['description'] = 'Add a product to my cart by product name and quantity, or replace the complete cart using items.';

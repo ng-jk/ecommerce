@@ -89,6 +89,15 @@
     },
     "/api/v1/shops/{shop}/admin/miniapps/{id}": {
       "$ref": "./openapi/path-admin-miniapps-id.json"
+    },
+    "/api/v1/shops/{shop}/platform/organizations": {
+      "$ref": "./openapi/path-platform-organizations.json"
+    },
+    "/api/v1/shops/{shop}/platform/organizations/{id}": {
+      "$ref": "./openapi/path-platform-organization.json"
+    },
+    "/api/v1/shops/{shop}/platform/organizations/{id}/applications": {
+      "$ref": "./openapi/path-platform-applications.json"
     }
   },
   "components": {
@@ -137,6 +146,211 @@
       },
       "Operation": {
         "$ref": "./openapi/schema-Operation.json"
+      },
+      "OrganizationWorkspace": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "code",
+          "name",
+          "status",
+          "version"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "status": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "OrganizationWorkspacePage": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrganizationWorkspace"
+            }
+          },
+          "meta": {
+            "type": "object",
+            "required": [
+              "current_page",
+              "last_page",
+              "total",
+              "per_page",
+              "options"
+            ],
+            "properties": {
+              "current_page": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "last_page": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "per_page": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "OrganizationWorkspaceDetail": {
+        "type": "object",
+        "required": [
+          "organization",
+          "options",
+          "can_update"
+        ],
+        "properties": {
+          "organization": {
+            "$ref": "#/components/schemas/OrganizationWorkspace"
+          },
+          "options": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "can_update": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OrganizationApplicationsPage": {
+        "type": "object",
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "application_key",
+                "name",
+                "state",
+                "contract_version"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "application_key": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "contract_version": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "meta": {
+            "type": "object",
+            "required": [
+              "current_page",
+              "last_page",
+              "total",
+              "per_page",
+              "options",
+              "organization_id"
+            ],
+            "properties": {
+              "current_page": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "last_page": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "per_page": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "options": {
+                "type": "object",
+                "required": [
+                  "state"
+                ],
+                "properties": {
+                  "state": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "organization_id": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          }
+        }
       }
     },
     "securitySchemes": {

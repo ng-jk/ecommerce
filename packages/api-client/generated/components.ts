@@ -17,6 +17,57 @@ export interface components {
     Auth: components["schemas"]["schema-Auth"];
     Accepted: components["schemas"]["schema-Accepted"];
     Operation: components["schemas"]["schema-Operation"];
+    OrganizationWorkspace: {
+      id: number;
+      code: string;
+      name: string;
+      status: string;
+      version: number;
+    };
+    OrganizationWorkspacePage: {
+      data: components["schemas"]["OrganizationWorkspace"][];
+      meta: {
+        current_page: number;
+        last_page: number;
+        total: number;
+        per_page: number;
+        options: {
+          status: {
+            [key: string]: string;
+          };
+        };
+      };
+    };
+    OrganizationWorkspaceDetail: {
+      organization: components["schemas"]["OrganizationWorkspace"];
+      options: {
+        status: {
+          [key: string]: string;
+        };
+      };
+      can_update: boolean;
+    };
+    OrganizationApplicationsPage: {
+      data: {
+        id: number;
+        application_key: string;
+        name: string;
+        state: string;
+        contract_version: string;
+      }[];
+      meta: {
+        current_page: number;
+        last_page: number;
+        total: number;
+        per_page: number;
+        options: {
+          state: {
+            [key: string]: string;
+          };
+        };
+        organization_id: number;
+      };
+    };
     "schema-Accepted": {
       /** Format: uuid */
       operation_id: string;

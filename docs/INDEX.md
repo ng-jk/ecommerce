@@ -2,7 +2,7 @@
 
 This index is the human entry point; [`registry.json`](registry.json) is the machine-readable catalog and requirement ledger. Paths in the registry are relative to the repository root. Generated OpenAPI component and path documents are included because they are versioned API contracts. Build output, screenshots, test reports and other generated evidence are excluded from the documentation inventory; requirement evidence paths may point to them when they exist.
 
-The canonical engineering and CRUD requirements remain in [engineering-spec.md](engineering-spec.md) and [crud-rules.md](crud-rules.md). This index does not replace them. The [2026-10-09 Shop3i amendment](decisions/2026-10-09-shop3i-amendment.md) resolves current product, architecture, extensibility, testing and release-policy decisions where older documents conflict. Requirement statuses describe documented implementation evidence, not intent: `planned`, `partial`, `implemented`, `blocked` or `historical`.
+The canonical engineering and CRUD requirements remain in [engineering-spec.md](engineering-spec.md) and [crud-rules.md](crud-rules.md). This index does not replace them. The [2026-10-13 service platform amendment](decisions/2026-10-13-service-platform.md) expands product scope beyond commerce and supersedes the commerce-only definition. The [2026-10-09 Shop3i amendment](decisions/2026-10-09-shop3i-amendment.md) retains applicable architecture, extensibility, testing and release-policy decisions. Requirement statuses describe documented implementation evidence, not intent: `planned`, `partial`, `implemented`, `blocked` or `historical`.
 
 ## Product and architecture
 
@@ -10,6 +10,8 @@ The canonical engineering and CRUD requirements remain in [engineering-spec.md](
 - [Target architecture](architecture/target.md) — shared interfaces, runtime boundaries, authoritative services and persistence.
 - [Extension and quality standards](standards/extensions-and-quality.md) — plugins, Mini Apps, contracts, review and test gates.
 - [Decisions and amendments](decisions/2026-10-09-shop3i-amendment.md) — current decisions and superseded statements.
+- [Service platform expansion](decisions/2026-10-13-service-platform.md) — nine Frappe reference products, solution commerce, service ownership and delivery gates.
+- [Nine-product backlog](service-platform-product-inventory.md) — pinned upstream references, feature ownership, acceptance criteria and Framework workspace proof scope.
 - [Requirement status](status/requirements.md) — evidence-aware implementation status and open work.
 - [Current implementation checkpoint](status/2026-10-09-implementation.md) — delivered changes, verification limits and release blockers.
 - [Company deployment profiles](company-deployment-profiles.md) — shared frontend branding and single Mini App composition.
