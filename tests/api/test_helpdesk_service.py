@@ -13,8 +13,8 @@ def grant_test_helpdesk(organization_id):
     assert subprocess.run(command + ["SELECT current_database()"], check=True, capture_output=True, text=True).stdout.strip() == "commerce_test"
     evidence = "synthetic-helpdesk-wire-" + uuid.uuid4().hex
     subprocess.run(command + [
-        "INSERT INTO application_entitlement_grants (organization_id,application_key,source,evidence_ref,starts_at,created_at,updated_at) "
-        f"VALUES ({organization_id},'helpdesk','operator','{evidence}',now()-interval '1 second',now(),now())"
+        ("INSERT INTO application_entitlement_grants (organization_id,application_key,source,evidence_ref,starts_at,created_at,updated_at) "
+        f"VALUES ({organization_id},'helpdesk','operator','{evidence}',now()-interval '1 second',now(),now())")
     ], check=True, capture_output=True, text=True)
 
 
@@ -82,7 +82,7 @@ def test_helpdesk_all_seventeen_commands_and_current_visibility():
     assert agent_summary["meta"]["total"] == 1 and "description" not in agent_summary["data"][0]
     agent_detail = success(agent_client, "GET", helpdesk + f"/agent/tickets/{ticket['id']}")["ticket"]
     assert agent_detail["requester_platform_user_id"] == requester_user["id"]
-    owner_summary = success(owner, "GET", helpdesk + f"/owner/tickets?status=open&per_page=1")
+    owner_summary = success(owner, "GET", helpdesk + "/owner/tickets?status=open&per_page=1")
     assert owner_summary["meta"]["total"] == 1 and "description" not in owner_summary["data"][0]
     assert success(owner, "GET", helpdesk + f"/owner/tickets/{ticket['id']}")["ticket"]["id"] == ticket["id"]
 
@@ -134,7 +134,7 @@ def test_helpdesk_foreign_or_inactive_agent_target_and_cross_organization_are_de
     success(foreign, "POST", "organizations", {
         "code": "foreign-" + uuid.uuid4().hex, "name": "Foreign workspace"
     })
-    inactive, inactive_user, _ = identity()
+    _inactive, inactive_user, _ = identity()
     for target in (foreign_user, inactive_user):
         denied = owner.call("POST", helpdesk + "/agents", {
             "queue_id": queue["id"], "target_platform_user_id": target["id"]

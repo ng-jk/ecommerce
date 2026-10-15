@@ -2,7 +2,7 @@
 import { act, createElement, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { beforeEach, expect, it, vi } from "vitest";
-import { ApiError } from "../../packages/api-client";
+import { ApiError, type CrmLead } from "../../packages/api-client";
 
 vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
 const routing = vi.hoisted(() => ({ push: vi.fn(), replace: vi.fn(), params: { id: "7", recordId: "5" } }));
@@ -13,13 +13,13 @@ vi.mock("expo-router", async () => {
 });
 const company = { id: 5, code: "acme", name: "Acme", version: 1 };
 const contact = { id: 5, company_id: 5, name: "Maya", email: "maya@example.com", version: 2 };
-const lead = { id: 5, company_id: 5, contact_id: null as number | null, name: "Maya", email: "maya@example.com", status: "qualified", version: 2 };
-const options = { status: { new: "New", contacted: "Contacted", qualified: "Qualified", converted: "Converted", lost: "Lost" } };
+const lead: CrmLead = { id: 5, company_id: 5, contact_id: null, name: "Maya", email: "maya@example.com", status: "qualified", version: 2 };
+const options: { status: Record<string, string> } = { status: { new: "New", contacted: "Contacted", qualified: "Qualified", converted: "Converted", lost: "Lost" } };
 const page = { current_page: 1, last_page: 2, total: 2, per_page: 1 };
 const crm = {
   companies: vi.fn(async () => ({ data: [company], meta: page })),
   contacts: vi.fn(async () => ({ data: [contact], meta: page })),
-  leads: vi.fn(async () => ({ data: [lead], meta: { ...page, options } })),
+  leads: vi.fn(async (_org: string, _page: number, _status: string) => ({ data: [lead], meta: { ...page, options } })),
   company: vi.fn(async () => ({ company })),
   contact: vi.fn(async () => ({ contact })),
   lead: vi.fn(async () => ({ lead, options })),
@@ -236,7 +236,7 @@ it("shows empty CRM pages and recovers from withdrawn status labels", async () =
   const empty = await render(createElement(CrmDirectory, { kind: "companies" }));
   expect(empty.container.textContent).toContain("No companies");
   await empty.close();
-  crm.leads.mockImplementation(async (_org, _page, status) => ({ data: [lead], meta: {
+  crm.leads.mockImplementation(async (_org: string, _page: number, status: string) => ({ data: [lead], meta: {
     ...page, options: { status: status ? {} : options.status },
   } }));
   const list = await render(createElement(CrmDirectory, { kind: "leads" }));

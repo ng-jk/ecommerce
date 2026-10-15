@@ -2,7 +2,7 @@
 import { act, createElement, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { beforeEach, expect, it, vi } from "vitest";
-import { ApiError } from "../../packages/api-client";
+import { ApiError, type LendingApplication } from "../../packages/api-client";
 
 vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
 const routing = vi.hoisted(() => ({ push: vi.fn(), replace: vi.fn(), params: {
@@ -17,15 +17,15 @@ const product = { id: 2, code: "basic", name: "Basic", jurisdiction_label: "Loca
   terms_text: "Whole-term flat charge", currency: "USD", minor_unit_digits: 2,
   principal_min_minor: 100, principal_max_minor: 1000, term_rate_numerator: 1,
   term_rate_denominator: 10, installment_count: 2, interval_days: 30, status: "active", version: 1 };
-const application = { id: 3, applicant_platform_user_id: 9, product_id: 2,
+const application: LendingApplication = { id: 3, applicant_platform_user_id: 9, product_id: 2,
   principal_minor: 200, first_due_date: "2026-11-01", purpose: "Inventory", status: "draft", version: 1 };
 const termsSnapshot = { product_id: 2, product_version: 1, principal_minor: 200,
   first_due_date: "2026-11-01", jurisdiction_label: "Local", currency: "USD",
   minor_unit_digits: 2, terms_text: "Original whole-term terms",
   term_rate_numerator: 1, term_rate_denominator: 10,
   installment_count: 2, interval_days: 30 };
-const productOptions = { draft: "Draft", active: "Active", disabled: "Disabled" };
-const applicationOptions = { draft: "Draft", submitted: "Submitted", approved: "Approved", rejected: "Rejected", withdrawn: "Withdrawn" };
+const productOptions: Record<string, string> = { draft: "Draft", active: "Active", disabled: "Disabled" };
+const applicationOptions: Record<string, string> = { draft: "Draft", submitted: "Submitted", approved: "Approved", rejected: "Rejected", withdrawn: "Withdrawn" };
 const meta = { current_page: 1, per_page: 2, last_page: 2, total: 3 };
 const lending = {
   products: vi.fn(async () => ({ data: [product], meta: { ...meta, options: productOptions } })),
@@ -42,7 +42,7 @@ const lending = {
     principal_minor: 200, charge_minor: 20, total_minor: 220,
     installments: [{ number: 1, due_date: "2026-11-01", principal_minor: 100, charge_minor: 10, total_minor: 110 }] })),
   reviews: vi.fn(async () => ({ data: [application], meta: { ...meta, options: applicationOptions } })),
-  review: vi.fn(async () => ({ application: { ...application, status: "submitted", terms_snapshot: termsSnapshot }, options: applicationOptions })),
+  review: vi.fn(async (): Promise<{ application: LendingApplication; options: Record<string, string> }> => ({ application: { ...application, status: "submitted", terms_snapshot: termsSnapshot }, options: applicationOptions })),
   decideReview: vi.fn(async () => ({ application: { ...application, status: "approved" }, options: applicationOptions })),
 };
 const workspace = { catalog: vi.fn(async () => ({ data: [{ application_key: "lending", name: "Lending",
@@ -270,7 +270,7 @@ it("renders authentication, loading, and retry states for every Lending data pag
     expect(signedOut.container.textContent).toContain("Sign in");
     await signedOut.close();
     session.user = { id: 9 };
-    request.mockImplementationOnce(() => new Promise(() => {}));
+    request.mockImplementationOnce(() => new Promise<never>(() => {}));
     const loading = await render(createElement(Page));
     expect(loading.container.textContent).toContain("Loading");
     await loading.close();
@@ -281,13 +281,13 @@ it("renders authentication, loading, and retry states for every Lending data pag
     expect(request).toHaveBeenCalledTimes(3);
     await failed.close();
     request.mockReset();
-    if (request === lending.products) request.mockResolvedValue({ data: [product], meta: { ...meta, options: productOptions } });
-    else if (request === lending.applications || request === lending.reviews)
-      request.mockResolvedValue({ data: [application], meta: { ...meta, options: applicationOptions } });
-    else if (request === lending.product) request.mockResolvedValue({ product, options: productOptions });
-    else if (request === lending.application) request.mockResolvedValue({ application, options: applicationOptions });
-    else if (request === lending.review) request.mockResolvedValue({ application: { ...application, status: "submitted", terms_snapshot: termsSnapshot }, options: applicationOptions });
-    else request.mockResolvedValue({ application_id: 3, application_version: 1, currency: "USD", minor_unit_digits: 2,
+    if (request === lending.products) lending.products.mockResolvedValue({ data: [product], meta: { ...meta, options: productOptions } });
+    else if (request === lending.applications) lending.applications.mockResolvedValue({ data: [application], meta: { ...meta, options: applicationOptions } });
+    else if (request === lending.reviews) lending.reviews.mockResolvedValue({ data: [application], meta: { ...meta, options: applicationOptions } });
+    else if (request === lending.product) lending.product.mockResolvedValue({ product, options: productOptions });
+    else if (request === lending.application) lending.application.mockResolvedValue({ application, options: applicationOptions });
+    else if (request === lending.review) lending.review.mockResolvedValue({ application: { ...application, status: "submitted", terms_snapshot: termsSnapshot }, options: applicationOptions });
+    else lending.schedule.mockResolvedValue({ application_id: 3, application_version: 1, currency: "USD", minor_unit_digits: 2,
       principal_minor: 200, charge_minor: 20, total_minor: 220, installments: [] });
   }
 });
@@ -331,7 +331,8 @@ it("shows validation errors and failed transitions without losing the current pa
 });
 
 it("hides decisions for terminal review states and purpose for redacted applications", async () => {
-  lending.review.mockResolvedValueOnce({ application: { ...application, status: "rejected", purpose: undefined }, options: applicationOptions });
+  const { purpose: _purpose, ...redactedApplication } = application;
+  lending.review.mockResolvedValueOnce({ application: { ...redactedApplication, status: "rejected" }, options: applicationOptions });
   const review = await render(createElement(LendingReviewDetail));
   expect(review.button("Decide")).toBeUndefined();
   expect(review.container.textContent).not.toContain("Purpose:"); await review.close();

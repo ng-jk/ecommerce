@@ -2,6 +2,7 @@
 import { act, createElement, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { beforeEach, expect, it, vi } from "vitest";
+import type { InsightQueryResult, InsightResource } from "../../packages/api-client";
 
 
 vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
@@ -12,8 +13,8 @@ vi.mock("expo-router", async () => {
     useFocusEffect: (callback: () => void) => useEffect(callback, [callback]) };
 });
 
-const resource = { id: 4, name: "Manual", version: 2, visibility: "private" as const, status: "active" as const, schema: [{ name: "team", type: "string" }, { name: "value", type: "integer" }], report_ids: [5] };
-const output = { data: [{ group: "A", value: { numerator: 7, denominator: 2 } }], freshness: { dataset_id: 4, dataset_version: 2, imported_at: null, source_kind: "manual" }, meta: { rows_scanned: 2, groups_total: 1, truncated: false } };
+const resource: InsightResource = { id: 4, name: "Manual", version: 2, visibility: "private", status: "active", schema: [{ name: "team", type: "string" }, { name: "value", type: "integer" }], report_ids: [5] };
+const output: InsightQueryResult = { data: [{ group: "A", value: { numerator: 7, denominator: 2 } }], freshness: { dataset_id: 4, dataset_version: 2, imported_at: null, source_kind: "manual" }, meta: { rows_scanned: 2, groups_total: 1, truncated: false } };
 const insights = { detail: vi.fn(async () => ({ resource })), list: vi.fn(async () => ({ data: [resource], meta: { current_page: 1, last_page: 2, per_page: 3, total: 4 } })), query: vi.fn(async () => output), createReport: vi.fn(async () => ({ resource })), updateReport: vi.fn(async () => ({ resource })), createDataset: vi.fn(async () => ({ resource })), updateDataset: vi.fn(async () => ({ resource })), replaceRows: vi.fn(async () => ({ resource })), createDashboard: vi.fn(async () => ({ resource })), updateDashboard: vi.fn(async () => ({ resource })), runReport: vi.fn(async () => output), renderDashboard: vi.fn(async () => ({ reports: [output] })) };
 const session = { api: { insights }, user: { id: 9 } as { id: number } | null };
 vi.mock("../../frontend/admin/src/screens/platform_shell_screen", () => ({
@@ -101,7 +102,7 @@ it("renders empty and truncated numeric output and preserves failures without sh
  insights.detail.mockResolvedValueOnce({ resource: { ...resource, status: "disabled" } }); insights.updateDashboard.mockRejectedValueOnce(new Error("Version changed")); const board = await render(createElement(InsightsRecord, { kind: "dashboards" })); await board.press("Enable dashboard"); expect(board.container.textContent).toContain("Version changed"); expect(insights.updateDashboard).toHaveBeenLastCalledWith("7", "4", expect.objectContaining({ status: "active" })); await board.close();
 });
 it("supports count, all groups, text and boolean filters with recoverable query and save rejection", async () => {
- insights.detail.mockResolvedValue({ resource: { ...resource, schema: [...resource.schema, { name: "ready", type: "boolean" }] } });
+  insights.detail.mockResolvedValue({ resource: { ...resource, schema: [...(resource.schema ?? []), { name: "ready", type: "boolean" }] } });
  const view = await render(createElement(InsightsQuery)); await view.press("Measure:"); await view.press("Measure:"); await view.press("Measure:"); await view.fill("Maximum groups (1–50)", "no"); await view.press("Choose filters");
  await view.fill("Filter value", "A"); await view.press("Add filter"); await view.press("Column:"); await view.press("Comparison:"); await view.press("Comparison:"); await view.press("Comparison:"); await view.press("Column:"); await view.fill("Filter value", "yes"); await view.press("Add filter"); expect(view.container.textContent).toContain("Enter true or false"); await view.fill("Filter value", "true"); await view.press("Add filter"); await view.press("Review query");
  insights.query.mockRejectedValueOnce(new Error("Fresh access denied")); await view.press("Run query"); expect(view.container.textContent).toContain("Fresh access denied"); await view.press("Save report"); await view.press("Visibility:"); await view.press("Visibility:"); insights.createReport.mockRejectedValueOnce(new Error("Name required")); await view.press("Save"); expect(view.container.textContent).toContain("Name required"); expect(insights.createReport).toHaveBeenLastCalledWith("7", expect.objectContaining({ name: "", visibility: "private", definition: expect.objectContaining({ metric: { aggregate: "count" } }) })); await view.close();

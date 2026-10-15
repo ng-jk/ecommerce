@@ -21,7 +21,7 @@ const deal = { id: 4, pipeline_id: 2, stage_id: 3, company_id: null, contact_id:
 const activity = { id: 4, deal_id: 3, type: "call", summary: "Called", occurred_at: "2026-10-13T10:00:00+00:00" };
 const stageOptions = { outcome: { open: "Open", won: "Won", lost: "Lost" } };
 const dealOptions = { status: { open: "Open", won: "Won" } };
-const activityOptions = { type: { call: "Call", note: "Note" } };
+const activityOptions: { type: Record<string, string> } = { type: { call: "Call", note: "Note" } };
 const page = { current_page: 1, last_page: 2, total: 2, per_page: 1 };
 const crm = {
   pipelines: vi.fn(async () => ({ data: [pipeline], meta: page })),
@@ -37,7 +37,7 @@ const crm = {
   createDeal: vi.fn(async () => ({ deal, options: dealOptions })),
   updateDeal: vi.fn(async () => ({ deal, options: dealOptions })),
   advanceDeal: vi.fn(async () => ({ deal: { ...deal, version: 2 }, options: dealOptions })),
-  activities: vi.fn(async () => ({ data: [activity], meta: { ...page, options: activityOptions } })),
+  activities: vi.fn(async (_org: string, _page: number, _deal: string, _filter: string) => ({ data: [activity], meta: { ...page, options: activityOptions } })),
   activity: vi.fn(async () => ({ activity, options: activityOptions })),
   createActivity: vi.fn(async () => ({ activity, options: activityOptions })),
 };
@@ -309,7 +309,7 @@ it("handles unavailable options, guest edit, missing stage context and retryable
 
 it("keeps model options fail closed and ignores advance on records without stages", async () => {
   const directStage = await render(createElement(GrowthForm, {
-    organizationId: "7", kind: "stages", options: stageOptions,
+    organizationId: "7", kind: "stages", options: stageOptions.outcome,
   }));
   expect(directStage.container.querySelector('input[aria-label="Pipeline ID"]')).not.toBeNull();
   await directStage.close();
@@ -337,7 +337,7 @@ it("keeps model options fail closed and ignores advance on records without stage
 });
 
 it("recovers when an activity filter option is withdrawn between pages", async () => {
-  crm.activities.mockImplementation(async (_org, _page, _deal, filter) => ({
+  crm.activities.mockImplementation(async (_org: string, _page: number, _deal: string, filter: string) => ({
     data: [activity], meta: { ...page, options: { type: filter ? {} : activityOptions.type } },
   }));
   const list = await render(createElement(GrowthDirectory, { kind: "activities" }));

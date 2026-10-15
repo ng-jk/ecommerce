@@ -4,10 +4,9 @@ import os
 from unittest.mock import patch
 
 import pytest
-
-from test_shop3i import ACTION, OP, FakeHTTP, accepted, terminal
 from shop3i import AssistantClient, AssistantError
 from shop3i.logic import from_environment
+from test_shop3i import ACTION, OP, FakeHTTP, accepted, terminal
 
 
 def test_platform_discovery_uses_standalone_endpoint_and_private_receipt():
@@ -44,15 +43,13 @@ def test_platform_environment_requires_no_shop_and_rejects_stale_shop_setting():
         os.environ["SHOP3I_SHOP"] = "fashion"
         with pytest.raises(ValueError, match="must not specify a shop"):
             from_environment()
-    with patch.dict(os.environ, {"SHOP3I_SCOPE": "other"}, clear=True):
-        with pytest.raises(ValueError, match="SHOP3I_SCOPE"):
-            from_environment()
+    with patch.dict(os.environ, {"SHOP3I_SCOPE": "other"}, clear=True), pytest.raises(ValueError, match="SHOP3I_SCOPE"):
+        from_environment()
 
 
 def test_receipt_file_cannot_cross_identity_scope(tmp_path):
     # Receipt persistence is unit-tested with an isolated path outside the checkout.
     with patch("shop3i.logic.load_receipt", return_value={
         "origin": "https://shop3i.com", "shop": "fashion", "receipt": "a" * 64,
-    }):
-        with pytest.raises(ValueError, match="another origin or shop"):
-            AssistantClient("https://shop3i.com", platform=True, state_file=tmp_path / "receipt")
+    }), pytest.raises(ValueError, match="another origin or shop"):
+        AssistantClient("https://shop3i.com", platform=True, state_file=tmp_path / "receipt")

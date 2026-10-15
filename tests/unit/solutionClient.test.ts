@@ -1,3 +1,4 @@
+import type { z } from "zod";
 import { describe, expect, it, vi } from "vitest";
 import {
   createPlatformSolutions,
@@ -28,7 +29,12 @@ const options = { queued: "Queued" };
 describe("solution commerce clients", () => {
   it("validates and routes every shop and standalone command", async () => {
     const request = vi.fn(
-      async (path: string, schema: { parse(value: unknown): unknown }) => {
+      async <T>(
+        path: string,
+        schema: z.ZodType<T, z.ZodTypeDef, unknown>,
+        _method?: string,
+        _body?: unknown,
+      ) => {
         const value = path.includes("offerings")
           ? path.endsWith("/4")
             ? { offering }
@@ -75,8 +81,21 @@ describe("solution commerce clients", () => {
         return schema.parse(value);
       },
     );
-    const shop = createShopSolutions(request);
-    const platform = createPlatformSolutions(request);
+    const shop = createShopSolutions(async (path, schema, method, body) =>
+      schema.parse(
+        await (method === undefined
+          ? request(path, schema)
+          : request(path, schema, method, body)),
+      ),
+    );
+    const platform = createPlatformSolutions(
+      async (path, schema, method, body) =>
+        schema.parse(
+          await (method === undefined
+            ? request(path, schema)
+            : request(path, schema, method, body)),
+        ),
+    );
     expect((await shop.offerings()).data[0]?.id).toBe(4);
     expect((await shop.offering(4)).offering.product_id).toBe(8);
     expect(
@@ -116,9 +135,29 @@ describe("solution commerce clients", () => {
   });
 
   it("rejects invalid ids and offering content before transport", () => {
-    const request = vi.fn(async () => ({}));
-    const shop = createShopSolutions(request);
-    const platform = createPlatformSolutions(request);
+    const request = vi.fn(
+      async <T>(
+        _path: string,
+        schema: z.ZodType<T, z.ZodTypeDef, unknown>,
+        _method?: string,
+        _body?: unknown,
+      ): Promise<T> => schema.parse({}),
+    );
+    const shop = createShopSolutions(async (path, schema, method, body) =>
+      schema.parse(
+        await (method === undefined
+          ? request(path, schema)
+          : request(path, schema, method, body)),
+      ),
+    );
+    const platform = createPlatformSolutions(
+      async (path, schema, method, body) =>
+        schema.parse(
+          await (method === undefined
+            ? request(path, schema)
+            : request(path, schema, method, body)),
+        ),
+    );
     expect(() => shop.offering("bad")).toThrow();
     expect(() => shop.offerings(0)).toThrow();
     expect(() =>

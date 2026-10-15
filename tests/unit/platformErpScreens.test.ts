@@ -2,7 +2,7 @@
 import { act, createElement, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { beforeEach, expect, it, vi } from "vitest";
-import { ApiError } from "../../packages/api-client";
+import { ApiError, type ErpJournal, type ErpJournalLine } from "../../packages/api-client";
 
 vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
 const routing = vi.hoisted(() => ({ push: vi.fn(), replace: vi.fn(), params: {
@@ -14,12 +14,13 @@ vi.mock("expo-router", async () => {
     useFocusEffect: (callback: () => void) => useEffect(callback, [callback]) };
 });
 const account = { id: 3, code: "cash", name: "Cash", type: "asset", version: 1 };
-const journal = { id: 3, effective_date: "2026-10-13", description: "Opening", currency: "USD",
+const firstJournalLine: ErpJournalLine = { id: 4, position: 1, account_id: 2, debit_minor: 100, credit_minor: 0 };
+const journal: ErpJournal = { id: 3, effective_date: "2026-10-13", description: "Opening", currency: "USD",
   status: "draft", version: 1, total_minor: 100, posted_at: null, reverses_journal_id: null,
-  lines: [{ id: 4, position: 1, account_id: 2, debit_minor: 100, credit_minor: 0 },
+  lines: [firstJournalLine,
     { id: 5, position: 2, account_id: 6, debit_minor: 0, credit_minor: 100 }] };
-const accountOptions = { type: { asset: "Asset", revenue: "Revenue" } };
-const journalOptions = { status: { draft: "Draft", posted: "Posted" } };
+const accountOptions: { type: Record<string, string> } = { type: { asset: "Asset", revenue: "Revenue" } };
+const journalOptions: { status: Record<string, string> } = { status: { draft: "Draft", posted: "Posted" } };
 const meta = { current_page: 1, per_page: 2, last_page: 2, total: 3 };
 const erp = {
   accounts: vi.fn(async () => ({ data: [account], meta: { ...meta, options: accountOptions } })),
@@ -28,10 +29,10 @@ const erp = {
   updateAccount: vi.fn(async () => ({ account, options: accountOptions })),
   journals: vi.fn(async () => ({ data: [journal], meta: { ...meta, options: journalOptions } })),
   journal: vi.fn(async () => ({ journal, options: journalOptions })),
-  createJournal: vi.fn(async () => ({ journal, options: journalOptions })),
-  updateJournal: vi.fn(async () => ({ journal, options: journalOptions })),
+  createJournal: vi.fn(async (_org: string, _input: unknown) => ({ journal, options: journalOptions })),
+  updateJournal: vi.fn(async (_org: string, _id: number, _input: unknown) => ({ journal, options: journalOptions })),
   postJournal: vi.fn(async () => ({ journal: { ...journal, status: "posted" }, options: journalOptions })),
-  reverseJournal: vi.fn(async () => ({ journal: { ...journal, id: 9 }, options: journalOptions })),
+  reverseJournal: vi.fn(async (_org: string, _id: number, _input: unknown) => ({ journal: { ...journal, id: 9 }, options: journalOptions })),
   ledger: vi.fn(async () => ({ data: [{ id: 4, journal_id: 3, account_id: 2, debit_minor: 100,
     credit_minor: 0 }], meta })),
 };
@@ -245,7 +246,7 @@ it("retries record and form errors, and shows immutable or unsupported journal e
   erp.journal.mockResolvedValue({ journal: { ...journal, status: "posted" }, options: journalOptions });
   const posted = await render(createElement(ErpJournalEditPage));
   expect(posted.container.textContent).toContain("immutable"); await posted.close();
-  erp.journal.mockResolvedValue({ journal: { ...journal, lines: [...journal.lines, journal.lines[0]] },
+  erp.journal.mockResolvedValue({ journal: { ...journal, lines: [...journal.lines, firstJournalLine] },
     options: journalOptions });
   const multiline = await render(createElement(ErpJournalEditPage));
   expect(multiline.container.textContent).toContain("multiple lines"); await multiline.close();
@@ -253,7 +254,7 @@ it("retries record and form errors, and shows immutable or unsupported journal e
     options: journalOptions });
   const reversal = await render(createElement(ErpJournalDetail));
   expect(reversal.container.textContent).toContain("Reversal of journal 2"); await reversal.close();
-  erp.journal.mockResolvedValue({ journal: { ...journal, lines: [...journal.lines, journal.lines[0]] },
+  erp.journal.mockResolvedValue({ journal: { ...journal, lines: [...journal.lines, firstJournalLine] },
     options: journalOptions });
   const noEdit = await render(createElement(ErpJournalDetail));
   expect(noEdit.button("Edit draft")).toBeUndefined(); await noEdit.close();

@@ -18,12 +18,14 @@ vi.mock("react-native", () => ({ View: ({ children }: { children: ReactNode }) =
 
 const employee = { id: 3, code: "staff-one", display_name: "Maya", linked_platform_user_id: 8,
   timezone: "Asia/Kuala_Lumpur", status: "active", version: 0 };
-const attendance = { id: 4, employee_id: 3, started_at: routing.params.started_at, ended_at: routing.params.ended_at,
+const attendance: { id: number; employee_id: number; started_at: string | undefined; ended_at: string | undefined;
+  local_date: string; timezone: string; version: number } = { id: 4, employee_id: 3, started_at: routing.params.started_at, ended_at: routing.params.ended_at,
   local_date: "2026-10-13", timezone: "Asia/Kuala_Lumpur", version: 0 };
 const leaveType = { id: 5, code: "annual", name: "Annual", allowance_days: 10, status: "active" };
 const leave = { id: 3, employee_id: 3, leave_type_id: 5, start_date: "2026-11-01", end_date: "2026-11-02",
   calendar_days: 2, status: "pending", version: 0 };
-const meta = { current_page: 1, last_page: 2, total: 4, per_page: 3,
+const meta: { current_page: number; last_page: number; total: number; per_page: number;
+  options: { status: Record<string, string> } } = { current_page: 1, last_page: 2, total: 4, per_page: 3,
   options: { status: { active: "Active", inactive: "Inactive", terminated: "Terminated", pending: "Pending", approved: "Approved", rejected: "Rejected" } } };
 const hr = {
   employees: vi.fn(async () => ({ data: [employee], meta })), createEmployee: vi.fn(async () => ({ employee })),
@@ -38,7 +40,7 @@ const hr = {
   createLeaveType: vi.fn(async () => ({ leave_type: leaveType, options: meta.options.status })),
   myLeave: vi.fn(async () => ({ data: [leave], meta })), requestLeave: vi.fn(async () => ({ leave })),
   myLeaveDetail: vi.fn(async () => ({ leave, options: meta.options.status })),
-  ownerLeave: vi.fn(async () => ({ data: [leave], meta })),
+  ownerLeave: vi.fn(async (): Promise<{ data: Array<Partial<typeof leave>>; meta: typeof meta }> => ({ data: [leave], meta })),
   ownerLeaveDetail: vi.fn(async () => ({ leave, options: meta.options.status })),
   decideLeave: vi.fn(async () => ({ leave: { ...leave, status: "approved", version: 1 }, options: meta.options.status })),
 };
@@ -309,7 +311,7 @@ it("uses fallback labels and only acts on versioned current records", async () =
   await untouchedEdit.press("Save employee");
   await untouchedEdit.close();
   hr.ownerAttendance.mockResolvedValueOnce({ data: [{ id: 4, employee_id: 3, local_date: "2026-10-13",
-    version: 0, started_at: undefined, ended_at: undefined }], meta });
+    timezone: "Asia/Kuala_Lumpur", version: 0, started_at: undefined, ended_at: undefined }], meta });
   const missingTimes = await render(createElement(HrDirectory, { kind: "employee-attendance" }));
   await missingTimes.press("2026-10-13");
   expect(routing.push).toHaveBeenCalledWith(hrPath("2", "attendance/4/correct?employee_id=3&version=0&started_at=&ended_at="));

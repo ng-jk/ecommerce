@@ -2,7 +2,7 @@
 import { act, createElement, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { beforeEach, expect, it, vi } from "vitest";
-import { ApiError } from "../../packages/api-client";
+import { ApiError, type LearningCourse } from "../../packages/api-client";
 
 vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
 const routing = vi.hoisted(() => ({ push: vi.fn(), replace: vi.fn(), params: { id: "2", recordId: "4" } }));
@@ -13,7 +13,7 @@ vi.mock("expo-router", async () => {
 });
 vi.mock("react-native", () => ({ View: ({ children }: { children: ReactNode }) => createElement("div", {}, children) }));
 
-const course = { id: 4, code: "native-course", title: "Native course", description: "Introduction", access_mode: "free" as const, status: "draft", version: 3 };
+const course: LearningCourse = { id: 4, code: "native-course", title: "Native course", description: "Introduction", access_mode: "free", status: "draft", version: 3 };
 const lesson = { id: 5, course_id: 4, title: "Read", content: "Content", position: 1, version: 0 };
 const question = { prompt: "Choose", options: ["A", "B"], correct_index: 1 };
 const assessment = { id: 6, course_id: 4, title: "Quiz", pass_score: 80, attempt_limit: 2, version: 0, questions: [question] };
@@ -21,7 +21,8 @@ const enrollment = { id: 7, course_id: 4, platform_user_id: 8, status: "active",
 const attempt = { id: 9, enrollment_id: 7, assessment_id: 6, number: 1, score: 100, status: "passed" };
 const progress = { lessons_delivered: 1, lessons_total: 1, assessments_passed: 1, assessments_total: 1, delivery_is_not_proof_of_study: true };
 const meta = { current_page: 1, last_page: 2, total: 2, per_page: 20 };
-const detail = { course, lessons: { data: [lesson], meta }, assessments: { data: [assessment], meta }, options: { draft: "Draft", published: "Published", archived: "Archived" } };
+const courseStatusOptions: Record<string, string> = { draft: "Draft", published: "Published", archived: "Archived" };
+const detail = { course, lessons: { data: [lesson], meta }, assessments: { data: [assessment], meta }, options: courseStatusOptions };
 const learning = {
   authorCourses: vi.fn(async () => ({ data: [course], meta })),
   courses: vi.fn(async () => ({ data: [course], meta })),
@@ -380,7 +381,8 @@ it("reports missing course, lesson, and assessment records with retry", async ()
 });
 
 it("keeps course status, answer options, and author form failures visible", async () => {
-  learning.authorCourse.mockResolvedValueOnce({ ...detail, course: { ...course, status: "archived", description: undefined }, options: {} });
+  const { description: _description, ...archivedCourse } = course;
+  learning.authorCourse.mockResolvedValueOnce({ ...detail, course: { ...archivedCourse, status: "archived" }, options: {} });
   const archived = await render(createElement(LearningCourseRecord, { author: true }));
   expect(archived.container.textContent).toContain("archived");
   expect(archived.container.textContent).not.toContain("Publish");
@@ -423,10 +425,12 @@ it("edits every author field, nested option, and validation error without revert
   const assessmentForm = await render(createElement(LearningAssessmentForm, { edit: true }));
   await assessmentForm.press("Add question");
   const prompts = [...assessmentForm.container.querySelectorAll<HTMLInputElement>('input[aria-label="Prompt"]')];
+  const secondPrompt = prompts[1];
+  if (!secondPrompt) throw new Error("Second prompt was not added");
   await act(async () => {
-    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set?.call(prompts[1], "Second prompt");
-    prompts[1].dispatchEvent(new Event("input", { bubbles: true }));
-    prompts[1].dispatchEvent(new Event("change", { bubbles: true }));
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set?.call(secondPrompt, "Second prompt");
+    secondPrompt.dispatchEvent(new Event("input", { bubbles: true }));
+    secondPrompt.dispatchEvent(new Event("change", { bubbles: true }));
   });
   await assessmentForm.press("Remove last question");
   await assessmentForm.fill("Title", "New quiz");

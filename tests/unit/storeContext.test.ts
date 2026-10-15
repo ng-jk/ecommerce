@@ -17,7 +17,10 @@ import { AdminShopContext } from "../../frontend/admin/src/screens/admin_shell_s
 import { useAdminShop } from "../../frontend/admin/src/screens/admin_shell_screen/logic/useAdminShop";
 import { deferred, mountHook } from "./reactHarness";
 import { createShopSlug, type ShopSlug } from "../../packages/api-client";
-import { parseDeploymentProfile, type DeploymentProfile } from "../../packages/storefront/services/profile";
+import {
+  parseDeploymentProfile,
+  type DeploymentProfile,
+} from "../../packages/storefront/services/profile";
 import type { StoreTheme } from "../../packages/storefront/screens/store_shell_screen/logic/context";
 
 vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
@@ -40,11 +43,38 @@ const address = {
 function apiFixture() {
   return {
     platformWorkspace: {
-      organizations: vi.fn(),
-      createOrganization: vi.fn(),
-      organization: vi.fn(),
-      updateOrganization: vi.fn(),
-      applications: vi.fn(),
+      organizations:
+        vi.fn<CommerceClient["platformWorkspace"]["organizations"]>(),
+      createOrganization:
+        vi.fn<CommerceClient["platformWorkspace"]["createOrganization"]>(),
+      organization:
+        vi.fn<CommerceClient["platformWorkspace"]["organization"]>(),
+      updateOrganization:
+        vi.fn<CommerceClient["platformWorkspace"]["updateOrganization"]>(),
+      applications:
+        vi.fn<CommerceClient["platformWorkspace"]["applications"]>(),
+      catalog: vi.fn<CommerceClient["platformWorkspace"]["catalog"]>(),
+      installApplication:
+        vi.fn<CommerceClient["platformWorkspace"]["installApplication"]>(),
+      disableApplication:
+        vi.fn<CommerceClient["platformWorkspace"]["disableApplication"]>(),
+      reenableApplication:
+        vi.fn<CommerceClient["platformWorkspace"]["reenableApplication"]>(),
+      memberships: vi.fn<CommerceClient["platformWorkspace"]["memberships"]>(),
+      membership: vi.fn<CommerceClient["platformWorkspace"]["membership"]>(),
+      invite: vi.fn<CommerceClient["platformWorkspace"]["invite"]>(),
+      changeRole: vi.fn<CommerceClient["platformWorkspace"]["changeRole"]>(),
+      revoke: vi.fn<CommerceClient["platformWorkspace"]["revoke"]>(),
+      accept: vi.fn<CommerceClient["platformWorkspace"]["accept"]>(),
+    },
+    solutions: {
+      purchases: vi.fn<CommerceClient["solutions"]["purchases"]>(),
+      purchase: vi.fn<CommerceClient["solutions"]["purchase"]>(),
+      retry: vi.fn<CommerceClient["solutions"]["retry"]>(),
+      offerings: vi.fn<CommerceClient["solutions"]["offerings"]>(),
+      offering: vi.fn<CommerceClient["solutions"]["offering"]>(),
+      publish: vi.fn<CommerceClient["solutions"]["publish"]>(),
+      bind: vi.fn<CommerceClient["solutions"]["bind"]>(),
     },
     me: vi.fn().mockResolvedValue({ user }),
     cart: vi.fn().mockResolvedValue({ items: [] }),
@@ -64,7 +94,15 @@ function apiFixture() {
     advanceOrder: vi.fn(),
   } satisfies CommerceClient;
 }
-async function mount(api = apiFixture(), storage = memoryStorage(), options: { shop?: ShopSlug; profile?: DeploymentProfile; theme?: StoreTheme } = {}) {
+async function mount(
+  api = apiFixture(),
+  storage = memoryStorage(),
+  options: {
+    shop?: ShopSlug;
+    profile?: DeploymentProfile;
+    theme?: StoreTheme;
+  } = {},
+) {
   let current!: ReturnType<typeof useStore>;
   function Probe() {
     current = useStore();
@@ -78,11 +116,21 @@ async function mount(api = apiFixture(), storage = memoryStorage(), options: { s
         ...options,
         api,
         plugins: {
-          list: vi.fn(), detail: vi.fn(), install: vi.fn(), update: vi.fn(),
-          balance: vi.fn(), credit: vi.fn(),
+          list: vi.fn(),
+          detail: vi.fn(),
+          install: vi.fn(),
+          update: vi.fn(),
+          balance: vi.fn(),
+          credit: vi.fn(),
         },
         miniapps: {
-          list: vi.fn(), launch: vi.fn(), invoke: vi.fn(), adminList: vi.fn(), install: vi.fn(), update: vi.fn(), reset: vi.fn(),
+          list: vi.fn(),
+          launch: vi.fn(),
+          invoke: vi.fn(),
+          adminList: vi.fn(),
+          install: vi.fn(),
+          update: vi.fn(),
+          reset: vi.fn(),
         },
         storage,
         randomUUID: () => "00000000-0000-4000-8000-000000000001",
@@ -105,26 +153,52 @@ async function mount(api = apiFixture(), storage = memoryStorage(), options: { s
 }
 
 it("selects a validated company theme, built-in themes, and explicit overrides", async () => {
-  const electronics = await mount(apiFixture(), memoryStorage(), { shop: "electronics" });
+  const electronics = await mount(apiFixture(), memoryStorage(), {
+    shop: "electronics",
+  });
   expect(electronics.value.theme.brand).toBe("VOLT");
   await electronics.unmount();
   const profile = parseDeploymentProfile({
-    version: 1, shop: "company-one", themeBase: "fashion",
-    branding: { brand: "Company One", label: "Company", title: "Home", subtitle: "Explore",
-      accent: "#123456", bg: "#ffffff", ink: "#111111", hero: "#eeeeee", image: "https://example.test/a.jpg" },
+    version: 1,
+    shop: "company-one",
+    themeBase: "fashion",
+    branding: {
+      brand: "Company One",
+      label: "Company",
+      title: "Home",
+      subtitle: "Explore",
+      accent: "#123456",
+      bg: "#ffffff",
+      ink: "#111111",
+      hero: "#eeeeee",
+      image: "https://example.test/a.jpg",
+    },
     home: { kind: "general" },
   });
-  const company = await mount(apiFixture(), memoryStorage(), { shop: profile.shop, profile });
+  const company = await mount(apiFixture(), memoryStorage(), {
+    shop: profile.shop,
+    profile,
+  });
   expect(company.value.theme.brand).toBe("Company One");
   expect(company.value.profile?.shop).toBe("company-one");
   await company.unmount();
-  const override = await mount(apiFixture(), memoryStorage(), { shop: "electronics", theme: themes.fashion });
+  const override = await mount(apiFixture(), memoryStorage(), {
+    shop: "electronics",
+    theme: themes.fashion,
+  });
   expect(override.value.theme.brand).toBe("maison.");
   await override.unmount();
-  expect(() => StoreStateProvider({
-    shop: createShopSlug("company-one"), api: apiFixture(), plugins: {} as never,
-    miniapps: {} as never, storage: memoryStorage(), randomUUID: () => "id", children: null,
-  })).toThrow("Company Shop requires a validated brand theme");
+  expect(() =>
+    StoreStateProvider({
+      shop: createShopSlug("company-one"),
+      api: apiFixture(),
+      plugins: {} as never,
+      miniapps: {} as never,
+      storage: memoryStorage(),
+      randomUUID: () => "id",
+      children: null,
+    }),
+  ).toThrow("Company Shop requires a validated brand theme");
 });
 
 it("hydrates account and cart, authenticates both flows, persists token and clears logout data", async () => {

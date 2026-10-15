@@ -1,40 +1,149 @@
+import type { z } from "zod";
 import { expect, it, vi } from "vitest";
 import { createLearningClient } from "../../packages/api-client/services/learning";
 
-const course = { id: 4, code: "native-course", title: "Native", description: "Intro", status: "draft", access_mode: "free", version: 3 };
-const lesson = { id: 5, course_id: 4, title: "Read", content: "Content", position: 1, version: 0 };
-const assessment = { id: 6, course_id: 4, title: "Quiz", pass_score: 80, attempt_limit: 2, version: 0 };
-const enrollment = { id: 7, course_id: 4, platform_user_id: 8, status: "active", version: 0 };
-const attempt = { id: 9, enrollment_id: 7, assessment_id: 6, number: 1, score: 100, status: "passed" };
-const progress = { lessons_delivered: 1, lessons_total: 1, assessments_passed: 1, assessments_total: 1, delivery_is_not_proof_of_study: true };
+const course = {
+  id: 4,
+  code: "native-course",
+  title: "Native",
+  description: "Intro",
+  status: "draft",
+  access_mode: "free",
+  version: 3,
+};
+const lesson = {
+  id: 5,
+  course_id: 4,
+  title: "Read",
+  content: "Content",
+  position: 1,
+  version: 0,
+};
+const assessment = {
+  id: 6,
+  course_id: 4,
+  title: "Quiz",
+  pass_score: 80,
+  attempt_limit: 2,
+  version: 0,
+};
+const enrollment = {
+  id: 7,
+  course_id: 4,
+  platform_user_id: 8,
+  status: "active",
+  version: 0,
+};
+const attempt = {
+  id: 9,
+  enrollment_id: 7,
+  assessment_id: 6,
+  number: 1,
+  score: 100,
+  status: "passed",
+};
+const progress = {
+  lessons_delivered: 1,
+  lessons_total: 1,
+  assessments_passed: 1,
+  assessments_total: 1,
+  delivery_is_not_proof_of_study: true,
+};
 const meta = { current_page: 1, last_page: 1, total: 1, per_page: 20 };
 const question = { prompt: "Choose", options: ["A", "B"], correct_index: 1 };
-const request = vi.fn(async (path: string, schema: { parse(value: unknown): unknown }) => {
-  const isList = path.includes("?page=") && !/\/[0-9]+\?/.test(path);
-  const isAssessment = path.includes("assessments/") && !path.includes("/attempts");
-  let value: unknown;
-  if (isList) value = { data: path.includes("attempts") ? [attempt] : path.includes("enrollments") ? [enrollment] : [course], meta };
-  else if (path.includes("/attempts")) value = { attempt, enrollment, progress };
-  else if (path.includes("enrollments/")) value = { enrollment, progress };
-  else if (path.endsWith("/enrollments")) value = { enrollment };
-  else if (isAssessment) value = { assessment: { ...assessment, questions: path.includes("/author/") ? [question] : [{ prompt: question.prompt, options: question.options }] } };
-  else if (path.includes("/assessments")) value = { assessment };
-  else if (path.includes("/lessons/") && !path.includes("/author/")) value = { lesson, enrollment, progress };
-  else if (path.includes("/lessons")) value = { lesson };
-  else if (path.includes("/courses/") && (path.includes("/author/") || path.includes("?"))) value = { course, lessons: { data: [lesson], meta }, assessments: { data: [assessment], meta }, options: { draft: "Draft" } };
-  else value = { course };
-  return schema.parse(value);
-});
+const request = vi.fn(
+  async <T>(
+    path: string,
+    schema: z.ZodType<T, z.ZodTypeDef, unknown>,
+    _method?: string,
+    _body?: unknown,
+  ) => {
+    const isList = path.includes("?page=") && !/\/[0-9]+\?/.test(path);
+    const isAssessment =
+      path.includes("assessments/") && !path.includes("/attempts");
+    let value: unknown;
+    if (isList)
+      value = {
+        data: path.includes("attempts")
+          ? [attempt]
+          : path.includes("enrollments")
+            ? [enrollment]
+            : [course],
+        meta,
+      };
+    else if (path.includes("/attempts"))
+      value = { attempt, enrollment, progress };
+    else if (path.includes("enrollments/")) value = { enrollment, progress };
+    else if (path.endsWith("/enrollments")) value = { enrollment };
+    else if (isAssessment)
+      value = {
+        assessment: {
+          ...assessment,
+          questions: path.includes("/author/")
+            ? [question]
+            : [{ prompt: question.prompt, options: question.options }],
+        },
+      };
+    else if (path.includes("/assessments")) value = { assessment };
+    else if (path.includes("/lessons/") && !path.includes("/author/"))
+      value = { lesson, enrollment, progress };
+    else if (path.includes("/lessons")) value = { lesson };
+    else if (
+      path.includes("/courses/") &&
+      (path.includes("/author/") || path.includes("?"))
+    )
+      value = {
+        course,
+        lessons: { data: [lesson], meta },
+        assessments: { data: [assessment], meta },
+        options: { draft: "Draft" },
+      };
+    else value = { course };
+    return schema.parse(value);
+  },
+);
 
 it("routes all 21 Learning commands through the scoped standalone client", async () => {
-  const learning = createLearningClient(request);
-  const create = { code: "native-course", title: "Native", description: "Intro", access_mode: "free" as const };
-  const changed = { title: "Native", description: "Intro", access_mode: "free" as const, expected_version: 3 };
-  const lessonInput = { course_id: 4, expected_version: 3, title: "Read", content: "Content", position: 1 };
-  const assessmentInput = { course_id: 4, expected_version: 3, title: "Quiz", questions: [question], pass_score: 80, attempt_limit: 2 };
+  const learning = createLearningClient(async (path, schema, method, body) =>
+    schema.parse(
+      await (method === undefined
+        ? request(path, schema)
+        : request(path, schema, method, body)),
+    ),
+  );
+  const create = {
+    code: "native-course",
+    title: "Native",
+    description: "Intro",
+    access_mode: "free" as const,
+  };
+  const changed = {
+    title: "Native",
+    description: "Intro",
+    access_mode: "free" as const,
+    expected_version: 3,
+  };
+  const lessonInput = {
+    course_id: 4,
+    expected_version: 3,
+    title: "Read",
+    content: "Content",
+    position: 1,
+  };
+  const assessmentInput = {
+    course_id: 4,
+    expected_version: 3,
+    title: "Quiz",
+    questions: [question],
+    pass_score: 80,
+    attempt_limit: 2,
+  };
   await learning.authorCourses(2);
   await learning.authorCourses(2, 1, 20, "draft");
-  expect(request).toHaveBeenLastCalledWith("organizations/2/learning/author/courses?page=1&per_page=20&status=draft", expect.anything());
+  expect(request).toHaveBeenLastCalledWith(
+    "organizations/2/learning/author/courses?page=1&per_page=20&status=draft",
+    expect.anything(),
+  );
   await learning.createCourse(2, create);
   await learning.authorCourse(2, 4);
   await learning.updateCourse(2, 4, changed);
@@ -43,9 +152,20 @@ it("routes all 21 Learning commands through the scoped standalone client", async
   await learning.authorLesson(2, 5);
   await learning.authorAssessment(2, 6);
   await learning.createLesson(2, lessonInput);
-  await learning.updateLesson(2, 5, { title: "Read", content: "Content", position: 1, expected_version: 0 });
+  await learning.updateLesson(2, 5, {
+    title: "Read",
+    content: "Content",
+    position: 1,
+    expected_version: 0,
+  });
   await learning.createAssessment(2, assessmentInput);
-  await learning.updateAssessment(2, 6, { title: "Quiz", questions: [question], pass_score: 80, attempt_limit: 2, expected_version: 0 });
+  await learning.updateAssessment(2, 6, {
+    title: "Quiz",
+    questions: [question],
+    pass_score: 80,
+    attempt_limit: 2,
+    expected_version: 0,
+  });
   await learning.courses(2);
   await learning.course(2, 4);
   await learning.enroll(2, { course_id: 4 });
@@ -56,18 +176,52 @@ it("routes all 21 Learning commands through the scoped standalone client", async
   await learning.submitAttempt(2, 6, { answers: [1] });
   await learning.attempts(2);
   expect(request).toHaveBeenCalledTimes(22);
-  expect(request).toHaveBeenCalledWith("organizations/2/learning/courses/4", expect.anything(), "PUT", changed);
-  expect(request).toHaveBeenCalledWith("organizations/2/learning/assessments/6/attempts", expect.anything(), "POST", { answers: [1] });
+  expect(request).toHaveBeenCalledWith(
+    "organizations/2/learning/courses/4",
+    expect.anything(),
+    "PUT",
+    changed,
+  );
+  expect(request).toHaveBeenCalledWith(
+    "organizations/2/learning/assessments/6/attempts",
+    expect.anything(),
+    "POST",
+    { answers: [1] },
+  );
 });
 
 it("rejects malformed IDs, versions, answer indexes, and forged fields before transport", () => {
   request.mockClear();
-  const learning = createLearningClient(request);
+  const learning = createLearningClient(async (path, schema, method, body) =>
+    schema.parse(
+      await (method === undefined
+        ? request(path, schema)
+        : request(path, schema, method, body)),
+    ),
+  );
   expect(() => learning.authorCourse("other", 4)).toThrow();
   expect(() => learning.courses(2, 0)).toThrow();
-  expect(() => learning.updateCourse(2, 4, { title: "Native", description: "Intro", access_mode: "free", expected_version: -1 })).toThrow();
-  expect(() => learning.enroll(2, { course_id: 4, platform_user_id: 9 } as never)).toThrow();
-  expect(() => learning.createAssessment(2, { course_id: 4, expected_version: 0, title: "Quiz", questions: [{ prompt: "Q", options: ["A", "B"], correct_index: 2 }], pass_score: 80, attempt_limit: 2 })).toThrow();
+  expect(() =>
+    learning.updateCourse(2, 4, {
+      title: "Native",
+      description: "Intro",
+      access_mode: "free",
+      expected_version: -1,
+    }),
+  ).toThrow();
+  expect(() =>
+    learning.enroll(2, { course_id: 4, platform_user_id: 9 } as never),
+  ).toThrow();
+  expect(() =>
+    learning.createAssessment(2, {
+      course_id: 4,
+      expected_version: 0,
+      title: "Quiz",
+      questions: [{ prompt: "Q", options: ["A", "B"], correct_index: 2 }],
+      pass_score: 80,
+      attempt_limit: 2,
+    }),
+  ).toThrow();
   expect(() => learning.submitAttempt(2, 6, { answers: [] })).toThrow();
   expect(request).not.toHaveBeenCalled();
 });

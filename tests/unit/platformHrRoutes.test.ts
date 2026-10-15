@@ -34,17 +34,17 @@ import OwnerLeave from "../../frontend/admin/src/app/platform/organizations/[id]
 import OwnerLeaveRecord from "../../frontend/admin/src/app/platform/organizations/[id]/hr/owner/leave/[recordId]";
 
 it.each([
-  [Hub, "hub"], [Mine, "employee:mine"], [Employees, "directory:employees"],
-  [CreateEmployee, "employee:create"], [Employee, "employee:owner"], [EditEmployee, "employee:edit"],
-  [EmployeeAttendance, "directory:employee-attendance"], [Attendance, "directory:attendance"],
-  [RecordAttendance, "attendance:record"], [CorrectAttendance, "attendance:correct"],
-  [LeaveTypes, "directory:leave-types"], [CreateLeaveType, "type:create"],
-  [Leave, "directory:leave"], [RequestLeave, "leave:create"], [LeaveRecord, "leave:mine"],
-  [OwnerLeave, "directory:owner-leave"], [OwnerLeaveRecord, "leave:owner"],
+  [() => createElement(Hub), "hub"], [() => createElement(Mine, {}), "employee:mine"], [() => createElement(Employees), "directory:employees"],
+  [() => createElement(CreateEmployee, {}), "employee:create"], [() => createElement(Employee, {}), "employee:owner"], [() => createElement(EditEmployee, {}), "employee:edit"],
+  [() => createElement(EmployeeAttendance), "directory:employee-attendance"], [() => createElement(Attendance), "directory:attendance"],
+  [() => createElement(RecordAttendance, {}), "attendance:record"], [() => createElement(CorrectAttendance, {}), "attendance:correct"],
+  [() => createElement(LeaveTypes), "directory:leave-types"], [() => createElement(CreateLeaveType), "type:create"],
+  [() => createElement(Leave), "directory:leave"], [() => createElement(RequestLeave), "leave:create"], [() => createElement(LeaveRecord, {}), "leave:mine"],
+  [() => createElement(OwnerLeave), "directory:owner-leave"], [() => createElement(OwnerLeaveRecord, {}), "leave:owner"],
 ] as const)("wires each HR page to its intended screen: %s", async (Page, expected) => {
   const container = document.createElement("div");
   const root = createRoot(container);
-  await act(async () => root.render(createElement(Page)));
+  await act(async () => root.render(Page()));
   expect(container.textContent).toBe(expected);
   await act(async () => root.unmount());
 });

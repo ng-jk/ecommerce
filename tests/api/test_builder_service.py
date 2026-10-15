@@ -17,8 +17,8 @@ def workspace():
     assert subprocess.run(command + ["SELECT current_database()"], check=True, capture_output=True, text=True).stdout.strip() == "commerce_test"
     evidence = "synthetic-builder-wire-" + uuid.uuid4().hex
     subprocess.run(command + [
-        "INSERT INTO application_entitlement_grants (organization_id,application_key,source,evidence_ref,starts_at,created_at,updated_at) "
-        f"VALUES ({organization_id},'builder','operator','{evidence}',now()-interval '1 second',now(),now())"
+        ("INSERT INTO application_entitlement_grants (organization_id,application_key,source,evidence_ref,starts_at,created_at,updated_at) "
+        f"VALUES ({organization_id},'builder','operator','{evidence}',now()-interval '1 second',now(),now())")
     ], check=True, capture_output=True, text=True)
     prefix = f"organizations/{organization_id}"
     catalog = success(owner, "GET", prefix + "/application-catalog?application_key=builder&per_page=1")

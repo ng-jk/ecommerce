@@ -12,8 +12,8 @@ def grant_test_learning(organization_id):
     assert subprocess.run(command + ["SELECT current_database()"], check=True, capture_output=True, text=True).stdout.strip() == "commerce_test"
     evidence = "synthetic-learning-wire-" + uuid.uuid4().hex
     subprocess.run(command + [
-        "INSERT INTO application_entitlement_grants (organization_id,application_key,source,evidence_ref,starts_at,created_at,updated_at) "
-        f"VALUES ({organization_id},'learning','operator','{evidence}',now()-interval '1 second',now(),now())"
+        ("INSERT INTO application_entitlement_grants (organization_id,application_key,source,evidence_ref,starts_at,created_at,updated_at) "
+        f"VALUES ({organization_id},'learning','operator','{evidence}',now()-interval '1 second',now(),now())")
     ], check=True, capture_output=True, text=True)
 
 

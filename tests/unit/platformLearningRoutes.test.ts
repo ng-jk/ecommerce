@@ -40,16 +40,16 @@ import Lesson from "../../frontend/admin/src/app/platform/organizations/[id]/lea
 import Assessment from "../../frontend/admin/src/app/platform/organizations/[id]/learning/assessments/[recordId]";
 
 it.each([
-  [Services, "services"], [Hub, "hub"], [Courses, "directory:courses"], [Course, "course:learner"],
-  [AuthorCourses, "directory:author/courses"], [CreateCourse, "course:create"], [AuthorCourse, "course:author"],
-  [EditCourse, "course:edit"], [CreateLesson, "lesson:create"], [CreateAssessment, "assessment:create"],
-  [AuthorLesson, "lesson:author"], [EditLesson, "lesson:edit"], [AuthorAssessment, "assessment:author"],
-  [EditAssessment, "assessment:edit"], [Enrollments, "directory:enrollments"], [Enrollment, "enrollment"],
-  [Attempts, "directory:attempts"], [Lesson, "lesson:learner"], [Assessment, "assessment:learner"],
+  [() => createElement(Services), "services"], [() => createElement(Hub), "hub"], [() => createElement(Courses), "directory:courses"], [() => createElement(Course, {}), "course:learner"],
+  [() => createElement(AuthorCourses), "directory:author/courses"], [() => createElement(CreateCourse), "course:create"], [() => createElement(AuthorCourse, {}), "course:author"],
+  [() => createElement(EditCourse, {}), "course:edit"], [() => createElement(CreateLesson), "lesson:create"], [() => createElement(CreateAssessment), "assessment:create"],
+  [() => createElement(AuthorLesson, {}), "lesson:author"], [() => createElement(EditLesson, {}), "lesson:edit"], [() => createElement(AuthorAssessment, {}), "assessment:author"],
+  [() => createElement(EditAssessment, {}), "assessment:edit"], [() => createElement(Enrollments), "directory:enrollments"], [() => createElement(Enrollment), "enrollment"],
+  [() => createElement(Attempts), "directory:attempts"], [() => createElement(Lesson, {}), "lesson:learner"], [() => createElement(Assessment, {}), "assessment:learner"],
 ] as const)("wires each Learning page to its intended screen: %s", async (Page, expected) => {
   const container = document.createElement("div");
   const root = createRoot(container);
-  await act(async () => root.render(createElement(Page)));
+  await act(async () => root.render(Page()));
   expect(container.textContent).toBe(expected);
   await act(async () => root.unmount());
 });

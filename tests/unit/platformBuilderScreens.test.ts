@@ -15,7 +15,7 @@ const page = { id: 4, slug: "home", title: "Home", blocks: [
   { type: "heading" as const, text: "Welcome", level: 1 },
   { type: "paragraph" as const, text: "Body" },
 ], status: "draft", version: 1, published_version: null as number | null, published_at: null as string | null };
-const options = { status: { draft: "Draft", published: "Published" },
+const options: { status: Record<string, string>; block_type: Record<string, string> } = { status: { draft: "Draft", published: "Published" },
   block_type: { heading: "Heading", paragraph: "Paragraph", image: "Image", button: "Button" } };
 const builder = {
   pages: vi.fn(async () => ({ data: [page], meta: { current_page: 1, per_page: 3, last_page: 2, total: 4, options } })),
