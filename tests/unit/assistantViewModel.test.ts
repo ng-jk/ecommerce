@@ -162,6 +162,7 @@ it("clears definitive failures and reports an unavailable client", async () => {
   expect(hook.value.error).toBe("Denied");
   expect(hook.value.pending).toBeNull();
   state.api.assistant = undefined;
+  await hook.rerender();
   await act(async () => {
     await hook.value.discover();
   });

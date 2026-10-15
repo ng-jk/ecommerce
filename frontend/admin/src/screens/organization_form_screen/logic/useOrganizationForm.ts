@@ -19,7 +19,10 @@ export function useOrganizationForm(initial?: Organization) {
           });
           router.replace(`/organizations/${initial.id}`);
         } else {
-          const result = await api.platformWorkspace.createOrganization({ code, name });
+          const result = await api.platformWorkspace.createOrganization({
+            code,
+            name,
+          });
           router.replace(`/organizations/${result.organization.id}`);
         }
       } catch (error) {

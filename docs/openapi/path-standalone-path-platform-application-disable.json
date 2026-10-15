@@ -1,0 +1,22 @@
+{
+  "post": {
+    "operationId": "standaloneApplicationDisable",
+    "description": "Owner-only versioned disable of an installed application. Framework cannot be disabled.",
+    "parameters": [
+      { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "minimum": 1 } },
+      { "name": "applicationKey", "in": "path", "required": true, "schema": { "type": "string", "maxLength": 80 } },
+      { "name": "Idempotency-Key", "in": "header", "required": true, "schema": { "type": "string", "format": "uuid" } },
+      { "name": "X-Operation-Token", "in": "header", "required": true, "schema": { "type": "string", "pattern": "^[a-f0-9]{64}$" } }
+    ],
+    "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "additionalProperties": false,
+      "required": ["expected_version"], "properties": { "expected_version": { "type": "integer", "minimum": 0 } } } } } },
+    "security": [{ "bearerAuth": [] }],
+    "responses": {
+      "202": { "description": "Committed operation accepted; poll the private receipt for disabled state and new version." },
+      "401": { "description": "Authentication required" },
+      "403": { "description": "Owner access or Framework policy denied" },
+      "409": { "description": "Installation or version conflict" },
+      "422": { "description": "validation_error field map" }
+    }
+  }
+}

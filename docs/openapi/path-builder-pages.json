@@ -1,0 +1,692 @@
+{
+  "get": {
+    "operationId": "builderPages",
+    "description": "List organization Builder pages with indexed status filter.",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "page",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "per_page",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        }
+      },
+      {
+        "name": "status",
+        "in": "query",
+        "schema": {
+          "enum": [
+            "draft",
+            "published"
+          ]
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Committed Builder operation; poll its private receipt.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Accepted"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current organization membership or Builder entitlement denied"
+      },
+      "404": {
+        "description": "Builder page unavailable in this organization"
+      },
+      "409": {
+        "description": "Version conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      },
+      "504": {
+        "description": "Remote Builder command deadline exceeded"
+      }
+    },
+    "x-completed-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "data",
+        "meta"
+      ],
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "slug",
+              "title",
+              "blocks",
+              "status",
+              "version",
+              "published_version",
+              "published_at"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "slug": {
+                "type": "string",
+                "maxLength": 100
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "blocks": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "type",
+                        "text",
+                        "level"
+                      ],
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "heading"
+                          ]
+                        },
+                        "text": {
+                          "type": "string",
+                          "maxLength": 200
+                        },
+                        "level": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 3
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "type",
+                        "text"
+                      ],
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "paragraph"
+                          ]
+                        },
+                        "text": {
+                          "type": "string",
+                          "maxLength": 2000
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "type",
+                        "src",
+                        "alt"
+                      ],
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "image"
+                          ]
+                        },
+                        "src": {
+                          "type": "string",
+                          "format": "uri",
+                          "pattern": "^https://"
+                        },
+                        "alt": {
+                          "type": "string",
+                          "maxLength": 200
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "type",
+                        "label",
+                        "url"
+                      ],
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "button"
+                          ]
+                        },
+                        "label": {
+                          "type": "string",
+                          "maxLength": 100
+                        },
+                        "url": {
+                          "type": "string",
+                          "format": "uri",
+                          "pattern": "^https://"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "status": {
+                "enum": [
+                  "draft",
+                  "published"
+                ]
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "published_version": {
+                "type": "integer",
+                "minimum": 0,
+                "nullable": true
+              },
+              "published_at": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true
+              }
+            }
+          }
+        },
+        "meta": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "current_page",
+            "per_page",
+            "last_page",
+            "total",
+            "options"
+          ],
+          "properties": {
+            "current_page": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "per_page": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "last_page": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "total": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "options": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "block_type"
+              ],
+              "properties": {
+                "status": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "block_type": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "post": {
+    "operationId": "builderCreatePage",
+    "description": "Owner: create a Builder draft with declarative blocks.",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Committed Builder operation; poll its private receipt.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Accepted"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current organization membership or Builder entitlement denied"
+      },
+      "404": {
+        "description": "Builder page unavailable in this organization"
+      },
+      "409": {
+        "description": "Version conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      },
+      "504": {
+        "description": "Remote Builder command deadline exceeded"
+      }
+    },
+    "x-completed-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "page",
+        "options"
+      ],
+      "properties": {
+        "page": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "slug",
+            "title",
+            "blocks",
+            "status",
+            "version",
+            "published_version",
+            "published_at"
+          ],
+          "properties": {
+            "id": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "slug": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "title": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "blocks": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "type",
+                      "text",
+                      "level"
+                    ],
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "heading"
+                        ]
+                      },
+                      "text": {
+                        "type": "string",
+                        "maxLength": 200
+                      },
+                      "level": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 3
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "type",
+                      "text"
+                    ],
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "paragraph"
+                        ]
+                      },
+                      "text": {
+                        "type": "string",
+                        "maxLength": 2000
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "type",
+                      "src",
+                      "alt"
+                    ],
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "image"
+                        ]
+                      },
+                      "src": {
+                        "type": "string",
+                        "format": "uri",
+                        "pattern": "^https://"
+                      },
+                      "alt": {
+                        "type": "string",
+                        "maxLength": 200
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "type",
+                      "label",
+                      "url"
+                    ],
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "button"
+                        ]
+                      },
+                      "label": {
+                        "type": "string",
+                        "maxLength": 100
+                      },
+                      "url": {
+                        "type": "string",
+                        "format": "uri",
+                        "pattern": "^https://"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "status": {
+              "enum": [
+                "draft",
+                "published"
+              ]
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "published_version": {
+              "type": "integer",
+              "minimum": 0,
+              "nullable": true
+            },
+            "published_at": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            }
+          }
+        },
+        "options": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "block_type"
+          ],
+          "properties": {
+            "status": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "block_type": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "slug",
+              "title",
+              "blocks"
+            ],
+            "properties": {
+              "slug": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 100,
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "blocks": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "type",
+                        "text",
+                        "level"
+                      ],
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "heading"
+                          ]
+                        },
+                        "text": {
+                          "type": "string",
+                          "maxLength": 200
+                        },
+                        "level": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 3
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "type",
+                        "text"
+                      ],
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "paragraph"
+                          ]
+                        },
+                        "text": {
+                          "type": "string",
+                          "maxLength": 2000
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "type",
+                        "src",
+                        "alt"
+                      ],
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "image"
+                          ]
+                        },
+                        "src": {
+                          "type": "string",
+                          "format": "uri",
+                          "pattern": "^https://"
+                        },
+                        "alt": {
+                          "type": "string",
+                          "maxLength": 200
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "type",
+                        "label",
+                        "url"
+                      ],
+                      "properties": {
+                        "type": {
+                          "enum": [
+                            "button"
+                          ]
+                        },
+                        "label": {
+                          "type": "string",
+                          "maxLength": 100
+                        },
+                        "url": {
+                          "type": "string",
+                          "format": "uri",
+                          "pattern": "^https://"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

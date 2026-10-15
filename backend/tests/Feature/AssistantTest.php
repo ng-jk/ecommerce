@@ -118,7 +118,7 @@ class AssistantTest extends TestCase
             }
         }
         $result = $this->turn(['discover' => true]);
-        $this->assertSame(['catalog', 'product', 'login', 'register'], array_column($result['available_actions'], 'name'));
+        $this->assertSame(['catalog', 'product', 'solutionOfferings', 'solutionOffering', 'login', 'register'], array_column($result['available_actions'], 'name'));
         $this->turn(['action' => 'adminProducts'], 403);
         $this->turn(['action' => 'assistant'], 403);
         $this->turn(['action' => 'operationStatus'], 403);
@@ -134,7 +134,9 @@ class AssistantTest extends TestCase
         $result = $this->turn($this->continuation($draft, ['confirm' => true]));
         $this->assertSame('completed', $result['status']);
         $this->assertSame($product->id, $result['api_result']['products']['data'][0]['id']);
-        Http::assertSent(fn ($request) => $request['messages'][1]['content'] === 'Show me everyday shirts' && count($request['tools']) === 4);
+        Http::assertSent(fn ($request) => $request['messages'][1]['content'] === 'Show me everyday shirts'
+            && array_column(array_column($request['tools'], 'function'), 'name')
+                === ['catalog', 'product', 'solutionOfferings', 'solutionOffering', 'login', 'register']);
         $this->assertSame([], Operation::first()->payload);
     }
 

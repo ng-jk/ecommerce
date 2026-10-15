@@ -1,0 +1,315 @@
+{
+  "get": {
+    "operationId": "standaloneCrmContacts",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "page",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        }
+      },
+      {
+        "name": "per_page",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        }
+      },
+      {
+        "name": "company_id",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "description": "Indexed company filter"
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Committed operation accepted; poll the private receipt for the CRM business result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Accepted"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current organization membership or CRM entitlement denied"
+      },
+      "404": {
+        "description": "CRM record is unavailable in this organization"
+      },
+      "409": {
+        "description": "Version or workflow conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      },
+      "504": {
+        "description": "Remote CRM command deadline exceeded"
+      }
+    },
+    "description": "Standalone CRM command. Current platform identity, membership, installation and entitlement are rechecked before the isolated CRM effect.",
+    "x-completed-result": {
+      "type": "object",
+      "required": [
+        "data",
+        "meta"
+      ],
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "company_id",
+              "name",
+              "email",
+              "version"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "company_id": {
+                "type": "integer",
+                "minimum": 1,
+                "nullable": true
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "maxLength": 254
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "meta": {
+          "type": "object",
+          "required": [
+            "current_page",
+            "last_page",
+            "total",
+            "per_page"
+          ],
+          "properties": {
+            "current_page": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "last_page": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "total": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "per_page": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      }
+    }
+  },
+  "post": {
+    "operationId": "standaloneCrmCreateContact",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Committed operation accepted; poll the private receipt for the CRM business result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Accepted"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current organization membership or CRM entitlement denied"
+      },
+      "404": {
+        "description": "CRM record is unavailable in this organization"
+      },
+      "409": {
+        "description": "Version or workflow conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      },
+      "504": {
+        "description": "Remote CRM command deadline exceeded"
+      }
+    },
+    "description": "Standalone CRM command. Current platform identity, membership, installation and entitlement are rechecked before the isolated CRM effect.",
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "email",
+              "company_id"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "maxLength": 254
+              },
+              "company_id": {
+                "type": "integer",
+                "minimum": 1,
+                "nullable": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "x-completed-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contact"
+      ],
+      "properties": {
+        "contact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "company_id",
+            "name",
+            "email",
+            "version"
+          ],
+          "properties": {
+            "id": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "company_id": {
+              "type": "integer",
+              "minimum": 1,
+              "nullable": true
+            },
+            "name": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "email": {
+              "type": "string",
+              "format": "email",
+              "maxLength": 254
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    }
+  }
+}

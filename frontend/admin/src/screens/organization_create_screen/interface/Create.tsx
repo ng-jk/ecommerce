@@ -4,5 +4,9 @@ import { Form } from "../../organization_form_screen";
 
 export function Create() {
   const { user } = useStore();
-  return <AdminPage title="Create organization">{user ? <Form /> : <Copy>Sign in to create an organization.</Copy>}</AdminPage>;
+  return (
+    <AdminPage title="Create organization">
+      {user ? <Form /> : <Copy>Sign in to create an organization.</Copy>}
+    </AdminPage>
+  );
 }

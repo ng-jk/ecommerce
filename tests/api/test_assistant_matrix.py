@@ -73,7 +73,7 @@ def test_all_business_functions_through_assistant(shop):
     customer = Assistant(shop, account["token"])
     customer_tools = customer.turn({"discover": True})
     assert customer_tools["role"] == "customer"
-    assert len(customer_tools["available_actions"]) == 18
+    assert len(customer_tools["available_actions"]) == 24
     assert customer.invoke("me")["user"]["email"] == email
     assert customer.invoke("cart")["items"] == []
     assert customer.invoke("logout")["logged_out"]
@@ -90,7 +90,7 @@ def test_all_business_functions_through_assistant(shop):
     )
     admin = Assistant(shop, admin_login["token"])
     tools = admin.turn({"discover": True})["available_actions"]
-    assert len(tools) == 32
+    assert len(tools) == 38
     organization = customer.invoke("createOrganization", {
         "code": "matrix-" + uuid.uuid4().hex, "name": "Matrix workspace",
     })["organization"]
@@ -100,6 +100,18 @@ def test_all_business_functions_through_assistant(shop):
     assert [app["application_key"] for app in customer.invoke("organizationApplications", {"id": identifier})["data"]] == ["framework"]
     renamed = customer.invoke("updateOrganization", {"id": identifier, "name": "Matrix renamed"})
     assert renamed["organization"]["version"] == organization["version"] + 1
+    recipient_account = guest.invoke("register", {
+        "name": "Membership recipient", "email": f"member-{uuid.uuid4()}@example.test",
+        "password": "Password2026!", "password_confirmation": "Password2026!", "device_name": "Membership matrix",
+    })
+    recipient = Assistant(shop, recipient_account["token"])
+    invited = customer.invoke("inviteMembership", {"id": identifier, "user_id": recipient_account["user"]["id"], "role": "member"})["membership"]
+    membership_target = {"id": identifier, "membership_id": invited["id"]}
+    assert recipient.invoke("membership", membership_target)["membership"]["status"] == "invited"
+    assert recipient.invoke("acceptMembership", membership_target)["membership"]["status"] == "active"
+    assert customer.invoke("memberships", {"id": identifier, "status": "active", "role": "member"})["data"]
+    assert customer.invoke("changeMembershipRole", {**membership_target, "role": "admin"})["membership"]["role"] == "admin"
+    assert customer.invoke("revokeMembership", membership_target)["membership"]["status"] == "revoked"
     admin.turn({"action": "organization", "data": {"id": identifier}}, 404)
     installation = admin.invoke("installPlugin", {"plugin_id": "loyalty"})["plugin"]
     assert installation["enabled"] is False
@@ -182,7 +194,7 @@ def test_all_business_functions_through_assistant(shop):
     )
     # These actions ran on the earlier authenticated instance before signing out.
     executed = (
-        guest.executed | customer.executed | admin.executed | earlier_customer_actions
+        guest.executed | customer.executed | admin.executed | recipient.executed | earlier_customer_actions
     )
     # Package lifecycle tools have their own approved-ZIP fixtures and complete
     # structured AI round trips in test_miniapps.py.

@@ -1,0 +1,81 @@
+# Apply after compose.crm-test.yaml for isolated Helpdesk integration only.
+services:
+  backend:
+    environment: &helpdesk-core
+      HELPDESK_SERVICE_AVAILABLE: "true"
+      HELPDESK_SERVICE_PROVISIONED: "true"
+      HELPDESK_SERVICE_URL: https://helpdesk-internal/api/v1/internal/services
+      PLATFORM_HELPDESK_SERVICE_KEY: ${PLATFORM_HELPDESK_SERVICE_KEY:?Set a separate Helpdesk service key}
+  worker:
+    environment: *helpdesk-core
+  service-worker:
+    environment: *helpdesk-core
+  helpdesk-db:
+    image: postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: helpdesk_bootstrap
+      POSTGRES_PASSWORD: ${HELPDESK_BOOTSTRAP_PASSWORD:?Set a separate HELPDESK bootstrap password}
+      HELPDESK_DATABASE_PASSWORD: ${HELPDESK_DATABASE_PASSWORD:?Set an isolated HELPDESK database password}
+    volumes:
+      - helpdesk_test_database:/var/lib/postgresql/data
+      - ./docker/services/helpdesk-init.sql:/docker-entrypoint-initdb.d/10-helpdesk.sql:ro
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U helpdesk_bootstrap -d postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks: [helpdesk_database]
+  helpdesk:
+    image: ecommerce-portfolio-backend
+    user: www-data
+    environment: &helpdesk-environment
+      SERVICE_EXCHANGE_ENABLED: "true"
+      PLATFORM_HELPDESK_SERVICE_KEY: ${PLATFORM_HELPDESK_SERVICE_KEY:?Set a separate Helpdesk service key}
+      PLATFORM_SERVICE_URL: https://platform-internal/api/v1/internal/services
+      HELPDESK_SERVICE_AVAILABLE: "true"
+      HELPDESK_SERVICE_PROVISIONED: "true"
+      SERVICE_NAME: helpdesk
+      APP_NAME: Shop3iHELPDESK
+      APP_ENV: testing
+      APP_DEBUG: "false"
+      APP_KEY: ${HELPDESK_APP_KEY:?Set a separate HELPDESK encryption key}
+      LOG_CHANNEL: stderr
+      DB_CONNECTION: pgsql
+      DB_HOST: helpdesk-db
+      DB_PORT: 5432
+      DB_DATABASE: helpdesk_test
+      DB_USERNAME: helpdesk_runtime
+      DB_PASSWORD: ${HELPDESK_DATABASE_PASSWORD:?Set an isolated HELPDESK database password}
+      SESSION_DRIVER: array
+      CACHE_STORE: array
+    volumes: &helpdesk-volumes
+      - ./test-results/service-runtime/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+    networks: [helpdesk_database, service_transport]
+    depends_on:
+      helpdesk-db: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+  helpdesk-worker:
+    image: ecommerce-portfolio-backend
+    user: www-data
+    environment: *helpdesk-environment
+    volumes: *helpdesk-volumes
+    command: [php, artisan, services:work]
+    networks: [helpdesk_database, service_transport]
+    depends_on:
+      helpdesk-db: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+  service-gateway:
+    networks:
+      service_transport:
+        aliases: [platform-internal, crm-internal, helpdesk-internal]
+    depends_on: [backend, crm, helpdesk]
+networks:
+  helpdesk_database:
+    internal: true
+volumes:
+  helpdesk_test_database:

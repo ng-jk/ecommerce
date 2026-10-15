@@ -1,0 +1,81 @@
+# Isolated builder integration service; apply after the preceding service overlays.
+services:
+  backend:
+    environment: &builder-core
+      BUILDER_SERVICE_AVAILABLE: "true"
+      BUILDER_SERVICE_PROVISIONED: "true"
+      BUILDER_SERVICE_URL: https://builder-internal/api/v1/internal/services
+      PLATFORM_BUILDER_SERVICE_KEY: ${PLATFORM_BUILDER_SERVICE_KEY:?Set a separate Helpdesk service key}
+  worker:
+    environment: *builder-core
+  service-worker:
+    environment: *builder-core
+  builder-db:
+    image: postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: builder_bootstrap
+      POSTGRES_PASSWORD: ${BUILDER_BOOTSTRAP_PASSWORD:?Set a separate BUILDER bootstrap password}
+      BUILDER_DATABASE_PASSWORD: ${BUILDER_DATABASE_PASSWORD:?Set an isolated BUILDER database password}
+    volumes:
+      - builder_test_database:/var/lib/postgresql/data
+      - ./docker/services/builder-init.sql:/docker-entrypoint-initdb.d/10-builder.sql:ro
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U builder_bootstrap -d postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks: [builder_database]
+  builder:
+    image: ecommerce-portfolio-backend
+    user: www-data
+    environment: &builder-environment
+      SERVICE_EXCHANGE_ENABLED: "true"
+      PLATFORM_BUILDER_SERVICE_KEY: ${PLATFORM_BUILDER_SERVICE_KEY:?Set a separate Helpdesk service key}
+      PLATFORM_SERVICE_URL: https://platform-internal/api/v1/internal/services
+      BUILDER_SERVICE_AVAILABLE: "true"
+      BUILDER_SERVICE_PROVISIONED: "true"
+      SERVICE_NAME: builder
+      APP_NAME: Shop3iBUILDER
+      APP_ENV: testing
+      APP_DEBUG: "false"
+      APP_KEY: ${BUILDER_APP_KEY:?Set a separate BUILDER encryption key}
+      LOG_CHANNEL: stderr
+      DB_CONNECTION: pgsql
+      DB_HOST: builder-db
+      DB_PORT: 5432
+      DB_DATABASE: builder_test
+      DB_USERNAME: builder_runtime
+      DB_PASSWORD: ${BUILDER_DATABASE_PASSWORD:?Set an isolated BUILDER database password}
+      SESSION_DRIVER: array
+      CACHE_STORE: array
+    volumes: &builder-volumes
+      - ./test-results/service-runtime/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+    networks: [builder_database, service_transport]
+    depends_on:
+      builder-db: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+  builder-worker:
+    image: ecommerce-portfolio-backend
+    user: www-data
+    environment: *builder-environment
+    volumes: *builder-volumes
+    command: [php, artisan, services:work]
+    networks: [builder_database, service_transport]
+    depends_on:
+      builder-db: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+  service-gateway:
+    networks:
+      service_transport:
+        aliases: [platform-internal, crm-internal, helpdesk-internal, learning-internal, builder-internal]
+    depends_on: [backend, crm, helpdesk, learning, builder]
+networks:
+  builder_database:
+    internal: true
+volumes:
+  builder_test_database:

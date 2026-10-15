@@ -12,6 +12,33 @@
     "/api/v1/shops/{shop}/products/{id}": {
       "$ref": "./openapi/path-api-v1-shops-shop-products-id.json"
     },
+    "/api/v1/shops/{shop}/solutions/offerings": {
+      "$ref": "./openapi/path-solution-offerings.json"
+    },
+    "/api/v1/shops/{shop}/solutions/offerings/{id}": {
+      "$ref": "./openapi/path-solution-offering.json"
+    },
+    "/api/v1/shops/{shop}/admin/solutions/offerings": {
+      "$ref": "./openapi/path-admin-solution-offerings.json"
+    },
+    "/api/v1/shops/{shop}/platform/organizations/{id}/solution-purchases": {
+      "$ref": "./openapi/path-solution-purchases.json"
+    },
+    "/api/v1/shops/{shop}/platform/organizations/{id}/solution-purchases/detail": {
+      "$ref": "./openapi/path-solution-purchase-detail.json"
+    },
+    "/api/v1/shops/{shop}/platform/organizations/{id}/solution-purchases/retry": {
+      "$ref": "./openapi/path-solution-purchase-retry.json"
+    },
+    "/api/v1/platform/organizations/{id}/solution-purchases": {
+      "$ref": "./openapi/path-standalone-solution-purchases.json"
+    },
+    "/api/v1/platform/organizations/{id}/solution-purchases/detail": {
+      "$ref": "./openapi/path-standalone-solution-purchase-detail.json"
+    },
+    "/api/v1/platform/organizations/{id}/solution-purchases/retry": {
+      "$ref": "./openapi/path-standalone-solution-purchase-retry.json"
+    },
     "/api/v1/shops/{shop}/auth/login": {
       "$ref": "./openapi/path-api-v1-shops-shop-auth-login.json"
     },
@@ -98,6 +125,336 @@
     },
     "/api/v1/shops/{shop}/platform/organizations/{id}/applications": {
       "$ref": "./openapi/path-platform-applications.json"
+    },
+    "/api/v1/shops/{shop}/platform/organizations/{id}/memberships": {
+      "$ref": "./openapi/path-platform-memberships.json"
+    },
+    "/api/v1/shops/{shop}/platform/organizations/{id}/memberships/{membership_id}": {
+      "$ref": "./openapi/path-platform-memberships-membership_id.json"
+    },
+    "/api/v1/shops/{shop}/platform/organizations/{id}/memberships/{membership_id}/revoke": {
+      "$ref": "./openapi/path-platform-memberships-membership_id-revoke.json"
+    },
+    "/api/v1/shops/{shop}/platform/organizations/{id}/memberships/{membership_id}/accept": {
+      "$ref": "./openapi/path-platform-memberships-membership_id-accept.json"
+    },
+    "/api/v1/platform/organizations": {
+      "$ref": "./openapi/path-standalone-path-platform-organizations.json"
+    },
+    "/api/v1/platform/organizations/{id}": {
+      "$ref": "./openapi/path-standalone-path-platform-organization.json"
+    },
+    "/api/v1/platform/organizations/{id}/applications": {
+      "$ref": "./openapi/path-standalone-path-platform-applications.json"
+    },
+    "/api/v1/platform/organizations/{id}/application-catalog": {
+      "$ref": "./openapi/path-standalone-path-platform-application-catalog.json"
+    },
+    "/api/v1/platform/organizations/{id}/applications/{applicationKey}/install": {
+      "$ref": "./openapi/path-standalone-path-platform-application-install.json"
+    },
+    "/api/v1/platform/organizations/{id}/applications/{applicationKey}/disable": {
+      "$ref": "./openapi/path-standalone-path-platform-application-disable.json"
+    },
+    "/api/v1/platform/organizations/{id}/applications/{applicationKey}/reenable": {
+      "$ref": "./openapi/path-standalone-path-platform-application-reenable.json"
+    },
+    "/api/v1/platform/organizations/{id}/memberships": {
+      "$ref": "./openapi/path-standalone-path-platform-memberships.json"
+    },
+    "/api/v1/platform/organizations/{id}/memberships/{membership_id}": {
+      "$ref": "./openapi/path-standalone-path-platform-memberships-membership_id.json"
+    },
+    "/api/v1/platform/organizations/{id}/memberships/{membership_id}/revoke": {
+      "$ref": "./openapi/path-standalone-path-platform-memberships-membership_id-revoke.json"
+    },
+    "/api/v1/platform/organizations/{id}/memberships/{membership_id}/accept": {
+      "$ref": "./openapi/path-standalone-path-platform-memberships-membership_id-accept.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/crm/companies": {
+      "$ref": "./openapi/path-crm-companies.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/crm/companies/{id}": {
+      "$ref": "./openapi/path-crm-companies-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/crm/contacts": {
+      "$ref": "./openapi/path-crm-contacts.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/crm/contacts/{id}": {
+      "$ref": "./openapi/path-crm-contacts-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/crm/leads": {
+      "$ref": "./openapi/path-crm-leads.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/crm/leads/{id}": {
+      "$ref": "./openapi/path-crm-leads-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/crm/leads/{id}/convert": {
+      "$ref": "./openapi/path-crm-leads-id-convert.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/crm/pipelines": {
+      "$ref": "./openapi/path-crm-pipelines.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/crm/pipelines/{id}": {
+      "$ref": "./openapi/path-crm-pipelines-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/crm/stages": {
+      "$ref": "./openapi/path-crm-stages.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/crm/stages/{id}": {
+      "$ref": "./openapi/path-crm-stages-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/crm/deals": {
+      "$ref": "./openapi/path-crm-deals.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/crm/deals/{id}": {
+      "$ref": "./openapi/path-crm-deals-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/crm/activities": {
+      "$ref": "./openapi/path-crm-activities.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/crm/activities/{id}": {
+      "$ref": "./openapi/path-crm-activities-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/crm/deals/{id}/advance": {
+      "$ref": "./openapi/path-crm-deals-id-advance.json"
+    },
+    "/api/v1/platform/auth/register": {
+      "$ref": "./openapi/path-platform-auth-register.json"
+    },
+    "/api/v1/platform/auth/login": {
+      "$ref": "./openapi/path-platform-auth-login.json"
+    },
+    "/api/v1/platform/auth/me": {
+      "$ref": "./openapi/path-platform-auth-me.json"
+    },
+    "/api/v1/platform/auth/logout": {
+      "$ref": "./openapi/path-platform-auth-logout.json"
+    },
+    "/api/v1/platform/operations/{id}": {
+      "$ref": "./openapi/path-platform-operation.json"
+    },
+    "/api/v1/platform/assistant": {
+      "$ref": "./openapi/path-platform-assistant.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/helpdesk/queues": {
+      "$ref": "./openapi/path-helpdesk-queues.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/helpdesk/queues/{id}": {
+      "$ref": "./openapi/path-helpdesk-queues-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/helpdesk/agents": {
+      "$ref": "./openapi/path-helpdesk-agents.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/helpdesk/agents/{id}/revoke": {
+      "$ref": "./openapi/path-helpdesk-agents-id-revoke.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/helpdesk/tickets": {
+      "$ref": "./openapi/path-helpdesk-tickets.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/helpdesk/tickets/{id}": {
+      "$ref": "./openapi/path-helpdesk-tickets-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/helpdesk/agent/tickets": {
+      "$ref": "./openapi/path-helpdesk-agent-tickets.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/helpdesk/agent/tickets/{id}": {
+      "$ref": "./openapi/path-helpdesk-agent-tickets-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/helpdesk/agent/tickets/{id}/status": {
+      "$ref": "./openapi/path-helpdesk-agent-tickets-id-status.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/helpdesk/owner/tickets": {
+      "$ref": "./openapi/path-helpdesk-owner-tickets.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/helpdesk/owner/tickets/{id}": {
+      "$ref": "./openapi/path-helpdesk-owner-tickets-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/helpdesk/owner/tickets/{id}/assign": {
+      "$ref": "./openapi/path-helpdesk-owner-tickets-id-assign.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/helpdesk/owner/tickets/{id}/status": {
+      "$ref": "./openapi/path-helpdesk-owner-tickets-id-status.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/builder/pages": {
+      "$ref": "./openapi/path-builder-pages.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/builder/pages/{id}": {
+      "$ref": "./openapi/path-builder-pages-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/builder/pages/{id}/publish": {
+      "$ref": "./openapi/path-builder-pages-id-publish.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/builder/pages/{id}/render": {
+      "$ref": "./openapi/path-builder-pages-id-render.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/learning/author/courses": {
+      "$ref": "./openapi/path-learning-author-courses.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/learning/courses": {
+      "$ref": "./openapi/path-learning-courses.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/learning/author/courses/{id}": {
+      "$ref": "./openapi/path-learning-author-courses-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/learning/courses/{id}": {
+      "$ref": "./openapi/path-learning-courses-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/learning/courses/{id}/publish": {
+      "$ref": "./openapi/path-learning-courses-id-publish.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/learning/courses/{id}/archive": {
+      "$ref": "./openapi/path-learning-courses-id-archive.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/learning/author/lessons/{id}": {
+      "$ref": "./openapi/path-learning-author-lessons-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/learning/author/assessments/{id}": {
+      "$ref": "./openapi/path-learning-author-assessments-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/learning/lessons": {
+      "$ref": "./openapi/path-learning-lessons.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/learning/lessons/{id}": {
+      "$ref": "./openapi/path-learning-lessons-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/learning/assessments": {
+      "$ref": "./openapi/path-learning-assessments.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/learning/assessments/{id}": {
+      "$ref": "./openapi/path-learning-assessments-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/learning/enrollments": {
+      "$ref": "./openapi/path-learning-enrollments.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/learning/enrollments/{id}": {
+      "$ref": "./openapi/path-learning-enrollments-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/learning/assessments/{id}/attempts": {
+      "$ref": "./openapi/path-learning-assessments-id-attempts.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/learning/attempts": {
+      "$ref": "./openapi/path-learning-attempts.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/insights/datasets": {
+      "$ref": "./openapi/path-insights-datasets.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/insights/datasets/{id}": {
+      "$ref": "./openapi/path-insights-datasets-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/insights/datasets/{id}/rows": {
+      "$ref": "./openapi/path-insights-datasets-id-rows.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/insights/datasets/{id}/query": {
+      "$ref": "./openapi/path-insights-datasets-id-query.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/insights/reports": {
+      "$ref": "./openapi/path-insights-reports.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/insights/reports/{id}": {
+      "$ref": "./openapi/path-insights-reports-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/insights/reports/{id}/run": {
+      "$ref": "./openapi/path-insights-reports-id-run.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/insights/dashboards": {
+      "$ref": "./openapi/path-insights-dashboards.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/insights/dashboards/{id}": {
+      "$ref": "./openapi/path-insights-dashboards-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/insights/dashboards/{id}/render": {
+      "$ref": "./openapi/path-insights-dashboards-id-render.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/erp/accounts": {
+      "$ref": "./openapi/path-erp-accounts.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/erp/accounts/{id}": {
+      "$ref": "./openapi/path-erp-accounts-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/erp/journals": {
+      "$ref": "./openapi/path-erp-journals.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/erp/journals/{id}": {
+      "$ref": "./openapi/path-erp-journals-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/erp/journals/{id}/post": {
+      "$ref": "./openapi/path-erp-journals-id-post.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/erp/journals/{id}/reverse": {
+      "$ref": "./openapi/path-erp-journals-id-reverse.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/erp/ledger": {
+      "$ref": "./openapi/path-erp-ledger.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/hr/employees": {
+      "$ref": "./openapi/path-hr-employees.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/hr/owner/employees/{id}": {
+      "$ref": "./openapi/path-hr-owner-employees-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/hr/employees/me": {
+      "$ref": "./openapi/path-hr-employees-me.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/hr/employees/{id}": {
+      "$ref": "./openapi/path-hr-employees-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/hr/attendance": {
+      "$ref": "./openapi/path-hr-attendance.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/hr/employees/{id}/attendance": {
+      "$ref": "./openapi/path-hr-employees-id-attendance.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/hr/attendance/{id}/correct": {
+      "$ref": "./openapi/path-hr-attendance-id-correct.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/hr/leave-types": {
+      "$ref": "./openapi/path-hr-leave-types.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/hr/leave": {
+      "$ref": "./openapi/path-hr-leave.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/hr/leave/{id}": {
+      "$ref": "./openapi/path-hr-leave-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/hr/owner/leave": {
+      "$ref": "./openapi/path-hr-owner-leave.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/hr/owner/leave/{id}": {
+      "$ref": "./openapi/path-hr-owner-leave-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/hr/owner/leave/{id}/decide": {
+      "$ref": "./openapi/path-hr-owner-leave-id-decide.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/lending/products": {
+      "$ref": "./openapi/path-lending-products.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/lending/products/{id}": {
+      "$ref": "./openapi/path-lending-products-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/lending/applications": {
+      "$ref": "./openapi/path-lending-applications.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/lending/applications/{id}": {
+      "$ref": "./openapi/path-lending-applications-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/lending/applications/{id}/submit": {
+      "$ref": "./openapi/path-lending-applications-id-submit.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/lending/applications/{id}/withdraw": {
+      "$ref": "./openapi/path-lending-applications-id-withdraw.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/lending/applications/{id}/schedule": {
+      "$ref": "./openapi/path-lending-applications-id-schedule.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/lending/reviews": {
+      "$ref": "./openapi/path-lending-reviews.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/lending/reviews/{id}": {
+      "$ref": "./openapi/path-lending-reviews-id.json"
+    },
+    "/api/v1/platform/organizations/{organization_id}/lending/reviews/{id}/decide": {
+      "$ref": "./openapi/path-lending-reviews-id-decide.json"
     }
   },
   "components": {

@@ -17,7 +17,8 @@
     ],
     "backward_compatible_migrations": false,
     "profiles": [
-      "assistant"
+      "assistant",
+      "services"
     ],
     "sudo_docker": true,
     "worker_readiness_url": "https://api.production.example.com/api/v1/shops/fashion/products",
@@ -43,7 +44,8 @@
     ],
     "backward_compatible_migrations": false,
     "profiles": [
-      "assistant"
+      "assistant",
+      "services"
     ],
     "sudo_docker": true,
     "worker_readiness_url": "https://api.testing.example.com/api/v1/shops/fashion/products",

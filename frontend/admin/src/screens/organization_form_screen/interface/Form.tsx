@@ -12,12 +12,30 @@ export function Form({ initial }: { initial?: Organization }) {
       ) : (
         <Field label="Code" value={model.code} onChangeText={model.setCode} />
       )}
-      {model.fieldErrors.code?.map((message, index) => <Copy key={`code.${index}`}>{message}</Copy>)}
+      {model.fieldErrors.code?.map((message, index) => (
+        <Copy key={`code.${index}`}>{message}</Copy>
+      ))}
       <Field label="Name" value={model.name} onChangeText={model.setName} />
-      {model.fieldErrors.name?.map((message, index) => <Copy key={`name.${index}`}>{message}</Copy>)}
-      {model.fieldErrors.expected_version?.map((message, index) => <Copy key={`version.${index}`}>{message}</Copy>)}
-      <Button title={initial ? "Save changes" : "Create organization"} disabled={model.busy} onPress={() => void model.save()} />
-      <Button title="Cancel" secondary onPress={() => router.replace(initial ? `/organizations/${initial.id}` : "/organizations")} />
+      {model.fieldErrors.name?.map((message, index) => (
+        <Copy key={`name.${index}`}>{message}</Copy>
+      ))}
+      {model.fieldErrors.expected_version?.map((message, index) => (
+        <Copy key={`version.${index}`}>{message}</Copy>
+      ))}
+      <Button
+        title={initial ? "Save changes" : "Create organization"}
+        disabled={model.busy}
+        onPress={() => void model.save()}
+      />
+      <Button
+        title="Cancel"
+        secondary
+        onPress={() =>
+          router.replace(
+            initial ? `/organizations/${initial.id}` : "/organizations",
+          )
+        }
+      />
     </>
   );
 }

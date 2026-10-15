@@ -435,7 +435,14 @@
   "frontend/admin/src/app/organizations/index.tsx": {
     "kind": "main",
     "fallback": "/workspace",
-    "controls": ["dashboard", "create", "status filter", "organization collection (one view pattern)", "previous", "next"]
+    "controls": [
+      "dashboard",
+      "create",
+      "status filter",
+      "organization collection (one view pattern)",
+      "previous",
+      "next"
+    ]
   },
   "frontend/admin/src/app/organizations/create.tsx": {
     "kind": "main",
@@ -445,7 +452,7 @@
   "frontend/admin/src/app/organizations/[id]/index.tsx": {
     "kind": "main",
     "fallback": "/organizations",
-    "controls": ["organizations", "edit when owner", "applications"]
+    "controls": ["organizations", "edit when owner", "applications", "members"]
   },
   "frontend/admin/src/app/organizations/[id]/edit.tsx": {
     "kind": "main",
@@ -456,5 +463,1229 @@
     "kind": "main",
     "fallback": "/organizations",
     "controls": ["organization", "previous", "next"]
+  },
+  "frontend/admin/src/app/organizations/[id]/memberships/index.tsx": {
+    "kind": "main",
+    "fallback": "/organizations",
+    "controls": [
+      "organization",
+      "invite when owner",
+      "status filter",
+      "role filter",
+      "member collection (one view pattern)",
+      "previous",
+      "next"
+    ]
+  },
+  "frontend/admin/src/app/organizations/[id]/memberships/create.tsx": {
+    "kind": "main",
+    "fallback": "/organizations",
+    "controls": ["existing shop user ID", "role", "send invitation", "cancel"]
+  },
+  "frontend/admin/src/app/organizations/[id]/memberships/[memberId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/organizations",
+    "controls": ["members", "change role", "revoke", "accept"]
+  },
+  "frontend/admin/src/app/organizations/[id]/memberships/[memberId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/organizations",
+    "controls": ["role", "save", "cancel"]
+  },
+  "frontend/admin/src/app/platform/login.tsx": {
+    "kind": "main",
+    "fallback": "/platform/profile",
+    "controls": ["email", "password", "device", "sign in", "register"]
+  },
+  "frontend/admin/src/app/platform/register.tsx": {
+    "kind": "main",
+    "fallback": "/platform/login",
+    "controls": [
+      "name",
+      "email",
+      "password",
+      "confirmation",
+      "device",
+      "create",
+      "sign in"
+    ]
+  },
+  "frontend/admin/src/app/platform/profile.tsx": {
+    "kind": "main",
+    "fallback": "/platform/login",
+    "controls": ["organizations", "sign out or sign in"]
+  },
+  "frontend/admin/src/app/platform/organizations/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/profile",
+    "controls": [
+      "account",
+      "create",
+      "status",
+      "view collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["code", "name", "create", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "all organizations",
+      "edit",
+      "applications",
+      "memberships",
+      "services"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["name", "save", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/applications.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "organization",
+      "application action collection",
+      "previous catalog page",
+      "next catalog page",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/memberships/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "organization",
+      "invite",
+      "status",
+      "view collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/memberships/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["platform user ID", "role", "invite", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/memberships/[memberId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["members", "edit", "revoke", "accept", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/memberships/[memberId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["role", "save", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/companies/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "organization",
+      "create",
+      "view collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/companies/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["code", "name", "save", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/companies/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["all", "edit", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/companies/[recordId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["name", "save", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/contacts/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "organization",
+      "create",
+      "view collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/contacts/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["name", "email", "company ID", "save", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/contacts/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["all", "edit", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/contacts/[recordId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["name", "email", "company ID", "save", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/leads/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "organization",
+      "create",
+      "status",
+      "view collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/leads/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["name", "email", "company ID", "save", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/leads/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["all", "edit", "convert", "converted contact", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/leads/[recordId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["name", "email", "company ID", "status", "save", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/sales/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["crm", "pipelines", "stages", "deals", "activities"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/pipelines/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "sales",
+      "create",
+      "view collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/pipelines/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["code", "name", "save", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/pipelines/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["all", "edit", "stages", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/pipelines/[recordId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["name", "save", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/stages/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "sales",
+      "create",
+      "pipeline ID",
+      "view collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/stages/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["code", "name", "position", "outcome", "save", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/stages/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["all", "edit", "pipeline", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/stages/[recordId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["name", "save", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/deals/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "sales",
+      "create",
+      "pipeline ID",
+      "view collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/deals/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "title",
+      "pipeline ID",
+      "stage ID",
+      "amount",
+      "currency",
+      "save",
+      "cancel"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/deals/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "all",
+      "edit",
+      "stages",
+      "activities",
+      "next stage ID",
+      "advance",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/deals/[recordId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "title",
+      "company ID",
+      "assignee ID",
+      "amount",
+      "currency",
+      "save",
+      "cancel"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/activities/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "sales",
+      "create",
+      "type",
+      "view collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/activities/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["deal ID", "type", "summary", "occurred at", "save", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/activities/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["all", "deal", "retry"]
+  },
+  "frontend/admin/src/app/platform/assistant.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "workspaces",
+      "message or required field",
+      "send or confirm or retry",
+      "available actions",
+      "action collection",
+      "new request"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/crm/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["organization", "companies", "contacts", "leads", "sales"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/helpdesk/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "organization",
+      "my tickets",
+      "agent desk",
+      "owner desk",
+      "queues",
+      "agents",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/helpdesk/queues/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "helpdesk",
+      "create",
+      "status",
+      "queue collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/helpdesk/queues/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["code", "name", "create", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/helpdesk/queues/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["queues", "edit", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/helpdesk/queues/[recordId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["name", "status", "save", "cancel", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/helpdesk/agents/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "helpdesk",
+      "assign",
+      "status",
+      "revoke collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/helpdesk/agents/assign.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "queue selection",
+      "queue pager",
+      "member selection",
+      "member pager",
+      "assign",
+      "cancel",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/helpdesk/tickets/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "helpdesk",
+      "create",
+      "status",
+      "ticket collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/helpdesk/tickets/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "queue selection",
+      "queue pager",
+      "subject",
+      "description",
+      "create",
+      "cancel",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/helpdesk/tickets/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["tickets", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/helpdesk/agent/tickets/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "helpdesk",
+      "status",
+      "ticket collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/helpdesk/agent/tickets/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["tickets", "status transition", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/helpdesk/owner/tickets/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "helpdesk",
+      "status",
+      "ticket collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/helpdesk/owner/tickets/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["tickets", "assign", "status transition", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/helpdesk/owner/tickets/[recordId]/assign.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["agent selection", "agent pager", "assign", "cancel", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/service-hub/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "organization",
+      "service 1",
+      "service 2",
+      "service 3",
+      "service 4",
+      "previous",
+      "next"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/learning/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "organization",
+      "courses",
+      "enrollments",
+      "attempts",
+      "author courses",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/learning/courses/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["learning", "course collection", "previous", "next", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/learning/courses/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "courses",
+      "enroll",
+      "lesson collection",
+      "assessment collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/learning/author/courses/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "learning",
+      "create",
+      "course collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/learning/author/courses/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "author courses",
+      "code",
+      "title",
+      "description",
+      "access mode",
+      "save",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/learning/author/courses/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "author courses",
+      "edit",
+      "add lesson",
+      "add assessment",
+      "publish",
+      "archive",
+      "content collection"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/learning/author/courses/[recordId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "author courses",
+      "title",
+      "description",
+      "access mode",
+      "save",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/learning/author/courses/[recordId]/lessons/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "author courses",
+      "title",
+      "content",
+      "position",
+      "save",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/learning/author/courses/[recordId]/assessments/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "author courses",
+      "title",
+      "pass score",
+      "attempt limit",
+      "question editor",
+      "save",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/learning/author/lessons/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["learning", "edit", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/learning/author/lessons/[recordId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "author courses",
+      "title",
+      "content",
+      "position",
+      "save",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/learning/author/assessments/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["courses", "answer key", "edit", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/learning/author/assessments/[recordId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "author courses",
+      "title",
+      "pass score",
+      "attempt limit",
+      "question editor",
+      "save",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/learning/enrollments/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "learning",
+      "enrollment collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/learning/enrollments/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["my enrollments", "course", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/learning/attempts/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["learning", "attempt collection", "previous", "next", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/learning/lessons/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["courses", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/learning/assessments/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["courses", "answer selection", "submit", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/builder/pages/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "services",
+      "create",
+      "status",
+      "page collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/builder/pages/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["slug", "title", "heading", "paragraph", "save", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/builder/pages/[pageId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["pages", "edit", "publish", "preview", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/builder/pages/[pageId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["title", "heading", "paragraph", "save", "cancel", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/builder/pages/[pageId]/render.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["page", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/insights/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["organization", "datasets", "reports", "dashboards"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/insights/datasets/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["insights", "create", "records", "previous", "next", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/insights/datasets/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["directory", "edit", "import", "query or run", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/insights/reports/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["insights", "create", "records", "previous", "next", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/insights/reports/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["directory", "edit", "import", "query or run", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/insights/dashboards/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["insights", "create", "records", "previous", "next", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/insights/dashboards/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["directory", "edit", "import", "query or run", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/insights/datasets/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "back",
+      "name",
+      "schema or reports",
+      "visibility",
+      "previous",
+      "next",
+      "save"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/insights/datasets/[recordId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "back",
+      "name",
+      "status or reports",
+      "visibility",
+      "previous",
+      "next",
+      "save"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/insights/dashboards/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "back",
+      "name",
+      "schema or reports",
+      "visibility",
+      "previous",
+      "next",
+      "save"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/insights/dashboards/[recordId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "back",
+      "name",
+      "status or reports",
+      "visibility",
+      "previous",
+      "next",
+      "save"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/insights/datasets/[recordId]/import.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["back", "CSV", "replace"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/insights/datasets/[recordId]/query.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "back",
+      "measure or column",
+      "group or comparison",
+      "filter value",
+      "add filter",
+      "clear filters",
+      "next or save"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/insights/reports/[recordId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "back",
+      "measure or column",
+      "group or comparison",
+      "filter value",
+      "add filter",
+      "clear filters",
+      "next or save"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/erp/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["services", "accounts", "journals"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/erp/accounts/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "ledger",
+      "create",
+      "type",
+      "account 1",
+      "account 2",
+      "previous",
+      "next"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/erp/accounts/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["code", "name", "type", "create", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/erp/accounts/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["accounts", "edit", "posted ledger"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/erp/accounts/[recordId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["name", "save", "cancel"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/erp/journals/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "ledger",
+      "create",
+      "status",
+      "journal 1",
+      "journal 2",
+      "previous",
+      "next"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/erp/journals/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "description",
+      "currency",
+      "debit account",
+      "credit account",
+      "amount",
+      "create",
+      "cancel"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/erp/journals/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["journals", "edit or reverse", "post"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/erp/journals/[recordId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "description",
+      "currency",
+      "debit account",
+      "credit account",
+      "amount",
+      "save",
+      "cancel"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/erp/ledger/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["account", "previous", "next"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/hr/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "services",
+      "my profile",
+      "my attendance",
+      "my leave",
+      "leave types",
+      "employees",
+      "approve leave"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/hr/me.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["hr", "sign in or retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/hr/employees/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "hr",
+      "add employee",
+      "employee 1",
+      "employee 2",
+      "employee 3",
+      "previous",
+      "next"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/hr/employees/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "employees",
+      "code",
+      "active member ID",
+      "display name",
+      "IANA timezone",
+      "save"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/hr/employees/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["employees", "edit employee", "attendance"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/hr/employees/[recordId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["employees", "display name", "IANA timezone", "status", "save"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/hr/employees/[recordId]/attendance.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "employee",
+      "attendance 1",
+      "attendance 2",
+      "attendance 3",
+      "previous",
+      "next"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/hr/attendance/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["hr", "record attendance", "previous", "next"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/hr/attendance/record.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["attendance", "start", "end", "record"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/hr/attendance/[recordId]/correct.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["attendance", "start", "end", "reason", "save correction"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/hr/leave-types/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["hr", "add leave type", "previous", "next"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/hr/leave-types/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["leave types", "code", "name", "allowance", "save"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/hr/leave/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "hr",
+      "request leave",
+      "leave 1",
+      "leave 2",
+      "leave 3",
+      "previous",
+      "next"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/hr/leave/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "my leave",
+      "leave type",
+      "previous types",
+      "next types",
+      "start date",
+      "end date",
+      "submit"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/hr/leave/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["my leave"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/hr/owner/leave/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["hr", "leave 1", "leave 2", "leave 3", "previous", "next"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/hr/owner/leave/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["owner leave", "approve", "reject"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/lending/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["services", "products", "applications", "reviews"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/lending/products/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "lending",
+      "create",
+      "status",
+      "product collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/lending/products/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "product fields",
+      "previous step",
+      "next step",
+      "create",
+      "cancel"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/lending/products/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["products", "edit", "apply", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/lending/products/[recordId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "product fields",
+      "previous step",
+      "next step",
+      "save",
+      "cancel"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/lending/applications/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "lending",
+      "create",
+      "status",
+      "application collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/lending/applications/create.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "product ID",
+      "principal",
+      "first due",
+      "purpose",
+      "create",
+      "cancel",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/lending/applications/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "applications",
+      "edit",
+      "submit",
+      "withdraw",
+      "schedule",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/lending/applications/[recordId]/edit.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["principal", "first due", "purpose", "save", "cancel", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/lending/applications/[recordId]/schedule.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["application", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/lending/reviews/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "lending",
+      "status",
+      "review collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/lending/reviews/[recordId]/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["reviews", "decide", "retry"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/lending/reviews/[recordId]/decide.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["review", "decision note", "approve", "reject", "retry"]
+  },
+  "frontend/admin/src/app/solutions/offerings/index.tsx": {
+    "kind": "main",
+    "fallback": "/",
+    "controls": [
+      "dashboard",
+      "publish",
+      "offering collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/solutions/offerings/create.tsx": {
+    "kind": "main",
+    "fallback": "/solutions/offerings",
+    "controls": [
+      "product ID",
+      "application key",
+      "deliverables",
+      "publish",
+      "cancel"
+    ]
+  },
+  "frontend/admin/src/app/solutions/offerings/[offeringId].tsx": {
+    "kind": "main",
+    "fallback": "/solutions/offerings",
+    "controls": ["solutions", "organizations", "retry"]
+  },
+  "frontend/admin/src/app/organizations/[id]/solution-purchases/index.tsx": {
+    "kind": "main",
+    "fallback": "/organizations",
+    "controls": [
+      "organization",
+      "bind order",
+      "purchase collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/organizations/[id]/solution-purchases/create.tsx": {
+    "kind": "main",
+    "fallback": "/organizations",
+    "controls": ["offering ID", "order ID", "bind", "cancel"]
+  },
+  "frontend/admin/src/app/organizations/[id]/solution-purchases/[purchaseId].tsx": {
+    "kind": "main",
+    "fallback": "/organizations",
+    "controls": ["purchases", "retry provisioning", "refresh"]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/solutions/index.tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": [
+      "organization",
+      "purchase collection",
+      "previous",
+      "next",
+      "retry"
+    ]
+  },
+  "frontend/admin/src/app/platform/organizations/[id]/solutions/[purchaseId].tsx": {
+    "kind": "main",
+    "fallback": "/platform/organizations",
+    "controls": ["purchases", "retry provisioning", "refresh"]
   }
 }

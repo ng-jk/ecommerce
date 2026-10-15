@@ -19,11 +19,16 @@ class OrganizationApplication extends Model
 
     public const Revoked = 'revoked';
 
-    protected $fillable = ['organization_id', 'application_key', 'state'];
+    protected $fillable = ['organization_id', 'application_key', 'state', 'version'];
 
     protected $hidden = ['organization_id', 'deleted_at', 'created_at', 'updated_at'];
 
-    protected $attributes = ['state' => self::Disabled];
+    protected $attributes = ['state' => self::Disabled, 'version' => 0];
+
+    protected function casts(): array
+    {
+        return ['version' => 'integer'];
+    }
 
     public static function options(): array
     {

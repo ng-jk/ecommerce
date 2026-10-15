@@ -1,0 +1,75 @@
+{
+  "get": {
+    "operationId": "standaloneHelpdeskOwnerTicket",
+    "description": "Standalone Helpdesk HD01 command. Current platform identity, organization membership, installation, entitlement and role are rechecked before the isolated effect. Agent reads additionally require an active queue roster.",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Durable command accepted; poll the private operation receipt for the business result."
+      },
+      "401": {
+        "description": "Platform bearer token unavailable or revoked"
+      },
+      "403": {
+        "description": "Current membership, role, queue roster or entitlement denied"
+      },
+      "404": {
+        "description": "Record unavailable within this organization and visibility scope"
+      },
+      "409": {
+        "description": "Version or status transition conflict"
+      },
+      "422": {
+        "description": "Strict validation_error field map"
+      },
+      "504": {
+        "description": "Remote Helpdesk command deadline exceeded"
+      }
+    },
+    "x-completed-result": {
+      "description": "Returns a bounded data/meta page for lists, or the scoped queue, agent or ticket with server status options for detail/mutations."
+    }
+  }
+}

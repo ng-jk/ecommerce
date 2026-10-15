@@ -7,6 +7,12 @@
     "shop_id": {
       "type": "integer"
     },
+    "solution_offering_id": {
+      "type": "integer",
+      "minimum": 1,
+      "nullable": true,
+      "description": "Immutable solution offering selected by the server at checkout, or null for an ordinary order."
+    },
     "status": {
       "type": "string",
       "enum": [
@@ -113,6 +119,7 @@
   "required": [
     "id",
     "shop_id",
+    "solution_offering_id",
     "status",
     "payment_method",
     "currency",

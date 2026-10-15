@@ -3,8 +3,9 @@ import { responseError } from "./errors";
 import { z } from "zod";
 import { ApiError, type ShopSlug, type StoragePort } from "../../contracts";
 import { accepted, operation } from "../../contracts";
-export type TransportOptions = {
-  shop: ShopSlug;
+export type TransportOptions = (
+  { shop: ShopSlug; platform?: never } | { platform: true; shop?: never }
+) & {
   origin: string;
   native: boolean;
   getToken(): Promise<string | null>;
@@ -24,6 +25,16 @@ export async function digestIdentity(value: string): Promise<string> {
   ).join("");
 }
 export function createTransport(options: TransportOptions) {
+  const resourcePrefix = options.platform
+    ? "/api/v1/platform"
+    : `/api/v1/shops/${options.shop}`;
+  const scope = options.platform ? "platform" : options.shop;
+  if (options.platform && !options.native)
+    throw new ApiError(
+      "Platform authentication requires a secure bearer token adapter.",
+      0,
+      "validation",
+    );
   const base = options.origin.replace(/\/$/, "");
   if (base) {
     let url: URL;
@@ -151,9 +162,9 @@ export function createTransport(options: TransportOptions) {
     operationReceipt?: string,
     pendingStorage = options.storage,
   ): Promise<T> {
-    const auth = path === "auth/me";
+    const auth = !options.platform && path === "auth/me";
     const fingerprint = JSON.stringify([
-      options.shop,
+      scope,
       path,
       method,
       body,
@@ -199,7 +210,7 @@ export function createTransport(options: TransportOptions) {
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
     };
     let response = await send(
-      `${base}/api/v1/shops/${options.shop}/${path}`,
+      `${base}${resourcePrefix}/${path}`,
       init,
       !auth || method === "GET",
     );
@@ -208,7 +219,7 @@ export function createTransport(options: TransportOptions) {
       if (
         !submission.success ||
         submission.data.poll_url !==
-          `/api/v1/shops/${options.shop}/operations/${submission.data.operation_id}`
+          `${resourcePrefix}/operations/${submission.data.operation_id}`
       )
         throw new ApiError("Invalid operation receipt.", 202, "invalid_body");
       let completed = false;

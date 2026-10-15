@@ -1,0 +1,81 @@
+# Isolated lending integration service; apply after the preceding service overlays.
+services:
+  backend:
+    environment: &lending-core
+      LENDING_SERVICE_AVAILABLE: "true"
+      LENDING_SERVICE_PROVISIONED: "true"
+      LENDING_SERVICE_URL: https://lending-internal/api/v1/internal/services
+      PLATFORM_LENDING_SERVICE_KEY: ${PLATFORM_LENDING_SERVICE_KEY:?Set a separate Lending service key}
+  worker:
+    environment: *lending-core
+  service-worker:
+    environment: *lending-core
+  lending-db:
+    image: postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: lending_bootstrap
+      POSTGRES_PASSWORD: ${LENDING_BOOTSTRAP_PASSWORD:?Set a separate LENDING bootstrap password}
+      LENDING_DATABASE_PASSWORD: ${LENDING_DATABASE_PASSWORD:?Set an isolated LENDING database password}
+    volumes:
+      - lending_test_database:/var/lib/postgresql/data
+      - ./docker/services/lending-init.sql:/docker-entrypoint-initdb.d/10-lending.sql:ro
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U lending_bootstrap -d postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks: [lending_database]
+  lending:
+    image: ecommerce-portfolio-backend
+    user: www-data
+    environment: &lending-environment
+      SERVICE_EXCHANGE_ENABLED: "true"
+      PLATFORM_LENDING_SERVICE_KEY: ${PLATFORM_LENDING_SERVICE_KEY:?Set a separate Lending service key}
+      PLATFORM_SERVICE_URL: https://platform-internal/api/v1/internal/services
+      LENDING_SERVICE_AVAILABLE: "true"
+      LENDING_SERVICE_PROVISIONED: "true"
+      SERVICE_NAME: lending
+      APP_NAME: Shop3iLending
+      APP_ENV: testing
+      APP_DEBUG: "false"
+      APP_KEY: ${LENDING_APP_KEY:?Set a separate LENDING encryption key}
+      LOG_CHANNEL: stderr
+      DB_CONNECTION: pgsql
+      DB_HOST: lending-db
+      DB_PORT: 5432
+      DB_DATABASE: lending_test
+      DB_USERNAME: lending_runtime
+      DB_PASSWORD: ${LENDING_DATABASE_PASSWORD:?Set an isolated LENDING database password}
+      SESSION_DRIVER: array
+      CACHE_STORE: array
+    volumes: &lending-volumes
+      - ./test-results/service-runtime/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+    networks: [lending_database, service_transport]
+    depends_on:
+      lending-db: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+  lending-worker:
+    image: ecommerce-portfolio-backend
+    user: www-data
+    environment: *lending-environment
+    volumes: *lending-volumes
+    command: [php, artisan, services:work]
+    networks: [lending_database, service_transport]
+    depends_on:
+      lending-db: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+  service-gateway:
+    networks:
+      service_transport:
+        aliases: [platform-internal, crm-internal, helpdesk-internal, learning-internal, builder-internal, insights-internal, erp-internal, hr-internal, lending-internal]
+    depends_on: [backend, crm, helpdesk, learning, builder, insights, erp, hr, lending]
+networks:
+  lending_database:
+    internal: true
+volumes:
+  lending_test_database:

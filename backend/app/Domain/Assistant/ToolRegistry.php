@@ -5,6 +5,7 @@ namespace App\Domain\Assistant;
 use App\Domain\AccessPolicy;
 use App\Models\Order;
 use App\Models\Organization;
+use App\Models\OrganizationMembership;
 use App\Models\PluginInstallation;
 use App\Models\Shop;
 use App\Models\User;
@@ -16,13 +17,22 @@ class ToolRegistry
         $tools = json_decode(file_get_contents(resource_path('assistant-tools.json')), true, flags: JSON_THROW_ON_ERROR);
         foreach ($tools as &$tool) {
             foreach (['expected_version', 'checkout_key'] as $field) {
+                if ($field === 'expected_version' && str_starts_with($tool['path'], '/api/v1/platform/')) {
+                    continue;
+                }
                 unset($tool['parameters']['properties'][$field]);
                 $tool['parameters']['required'] = array_values(array_diff($tool['parameters']['required'], [$field]));
             }
             if (isset($tool['parameters']['properties']['status'])) {
-                $options = $tool['action'] === 'platform.organizations' ? Organization::options() : Order::options();
+                $options = str_starts_with($tool['action'], 'platform.membership') ? OrganizationMembership::options('status')
+                    : ($tool['action'] === 'platform.organizations' ? Organization::options() : Order::options());
                 $tool['parameters']['properties']['status']['enum'] = array_keys($options);
                 $tool['parameters']['properties']['status']['options'] = $options;
+            }
+            if (str_starts_with($tool['action'], 'platform.membership') && isset($tool['parameters']['properties']['role'])) {
+                $options = OrganizationMembership::options();
+                $tool['parameters']['properties']['role']['enum'] = array_keys($options);
+                $tool['parameters']['properties']['role']['options'] = $options;
             }
             if ($tool['action'] === 'cart.update') {
                 $tool['description'] = 'Add a product to my cart by product name and quantity, or replace the complete cart using items.';

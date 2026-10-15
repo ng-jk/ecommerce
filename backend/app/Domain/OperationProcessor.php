@@ -3,6 +3,7 @@
 namespace App\Domain;
 
 use App\Models\Operation;
+use App\Models\RemoteCommand;
 use App\Modules\Events\Interface\Events;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -19,7 +20,10 @@ class OperationProcessor
         $claimed = DB::transaction(function (): ?Operation {
             $query = Operation::whereIn('status', [Operation::Queued, Operation::Processing])->where('available_at', '<=', now())->orderBy('id');
             $query->whereNotExists(function ($q): void {
-                $q->selectRaw('1')->from('operations as earlier')->whereColumn('earlier.user_id', 'operations.user_id')->whereColumn('earlier.id', '<', 'operations.id')->whereIn('earlier.status', [Operation::Queued, Operation::Processing])->whereNull('earlier.deleted_at');
+                $q->selectRaw('1')->from('operations as earlier')->where(function ($principal): void {
+                    $principal->whereColumn('earlier.user_id', 'operations.user_id')
+                        ->orWhereColumn('earlier.platform_user_id', 'operations.platform_user_id');
+                })->whereColumn('earlier.id', '<', 'operations.id')->whereIn('earlier.status', [Operation::Queued, Operation::Processing])->whereNull('earlier.deleted_at');
             });
             $op = $query->lock(DB::getDriverName() === 'pgsql' ? 'FOR UPDATE SKIP LOCKED' : true)->first();
             if (! $op) {
@@ -49,7 +53,20 @@ class OperationProcessor
                 $result = DB::transaction(function () use ($op): array {
                     return app(ActionExecutor::class)->execute($op);
                 });
-                $op->fill(['status' => Operation::Succeeded, 'result' => $result, 'http_status' => 200]);
+                if (($result['_remote_pending'] ?? false) === true) {
+                    $commandOperation = $op->action === 'platform.assistant'
+                        ? Operation::where('parent_operation_id', $op->id)->where('status', Operation::Delegated)->firstOrFail() : $op;
+                    abort_unless(RemoteCommand::where('operation_id', $commandOperation->id)
+                        ->where('status', RemoteCommand::Waiting)->where('deadline_at', '>', now())->exists(), 409);
+                    $op->fill(['status' => Operation::Queued, 'attempts' => max(0, $op->attempts - 1),
+                        'available_at' => now()->addSeconds(2), 'http_status' => null, 'result' => null]);
+                } elseif (isset($result['_remote_completion'])) {
+                    $completion = $result['_remote_completion'];
+                    $op->fill(['status' => $completion['status'], 'result' => $completion['result'],
+                        'http_status' => $completion['http_status']]);
+                } else {
+                    $op->fill(['status' => Operation::Succeeded, 'result' => $result, 'http_status' => 200]);
+                }
             } catch (Throwable $error) {
                 $status = match (true) {
                     $error instanceof ValidationException => 422,
@@ -67,7 +84,7 @@ class OperationProcessor
             } finally {
                 Auth::forgetGuards();
             }
-            if ((str_starts_with($op->action, 'auth.') || $op->action === 'assistant') && $op->status !== Operation::Queued) {
+            if ((str_starts_with($op->action, 'auth.') || str_starts_with($op->action, 'platform.auth.') || in_array($op->action, ['assistant', 'platform.assistant'], true)) && $op->status !== Operation::Queued) {
                 $op->payload = [];
             }
             $op->save();

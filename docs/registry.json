@@ -561,6 +561,839 @@
       "title": "Nine-product reference and acceptance inventory",
       "status": "active",
       "supersedes": []
+    },
+    {
+      "id": "openapi-path-platform-auth-login",
+      "path": "docs/openapi/path-platform-auth-login.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-platform-auth-logout",
+      "path": "docs/openapi/path-platform-auth-logout.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-platform-auth-me",
+      "path": "docs/openapi/path-platform-auth-me.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-platform-auth-register",
+      "path": "docs/openapi/path-platform-auth-register.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-platform-memberships-membership_id-accept",
+      "path": "docs/openapi/path-platform-memberships-membership_id-accept.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-platform-memberships-membership_id-revoke",
+      "path": "docs/openapi/path-platform-memberships-membership_id-revoke.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-platform-memberships-membership_id",
+      "path": "docs/openapi/path-platform-memberships-membership_id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-platform-memberships",
+      "path": "docs/openapi/path-platform-memberships.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-platform-operation",
+      "path": "docs/openapi/path-platform-operation.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-standalone-path-platform-applications",
+      "path": "docs/openapi/path-standalone-path-platform-applications.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-standalone-path-platform-application-catalog",
+      "path": "docs/openapi/path-standalone-path-platform-application-catalog.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-standalone-path-platform-application-install",
+      "path": "docs/openapi/path-standalone-path-platform-application-install.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-standalone-path-platform-application-disable",
+      "path": "docs/openapi/path-standalone-path-platform-application-disable.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-standalone-path-platform-application-reenable",
+      "path": "docs/openapi/path-standalone-path-platform-application-reenable.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-standalone-path-platform-memberships-membership_id-accept",
+      "path": "docs/openapi/path-standalone-path-platform-memberships-membership_id-accept.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-standalone-path-platform-memberships-membership_id-revoke",
+      "path": "docs/openapi/path-standalone-path-platform-memberships-membership_id-revoke.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-standalone-path-platform-memberships-membership_id",
+      "path": "docs/openapi/path-standalone-path-platform-memberships-membership_id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-standalone-path-platform-memberships",
+      "path": "docs/openapi/path-standalone-path-platform-memberships.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-standalone-path-platform-organization",
+      "path": "docs/openapi/path-standalone-path-platform-organization.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-standalone-path-platform-organizations",
+      "path": "docs/openapi/path-standalone-path-platform-organizations.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-crm-companies",
+      "path": "docs/openapi/path-crm-companies.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-crm-companies-id",
+      "path": "docs/openapi/path-crm-companies-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-crm-contacts",
+      "path": "docs/openapi/path-crm-contacts.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-crm-contacts-id",
+      "path": "docs/openapi/path-crm-contacts-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-crm-leads",
+      "path": "docs/openapi/path-crm-leads.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-crm-leads-id",
+      "path": "docs/openapi/path-crm-leads-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-crm-leads-id-convert",
+      "path": "docs/openapi/path-crm-leads-id-convert.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-crm-pipelines",
+      "path": "docs/openapi/path-crm-pipelines.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-crm-pipelines-id",
+      "path": "docs/openapi/path-crm-pipelines-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-crm-stages",
+      "path": "docs/openapi/path-crm-stages.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-crm-stages-id",
+      "path": "docs/openapi/path-crm-stages-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-crm-deals",
+      "path": "docs/openapi/path-crm-deals.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-crm-deals-id",
+      "path": "docs/openapi/path-crm-deals-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-crm-activities",
+      "path": "docs/openapi/path-crm-activities.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-crm-activities-id",
+      "path": "docs/openapi/path-crm-activities-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-crm-deals-id-advance",
+      "path": "docs/openapi/path-crm-deals-id-advance.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-platform-assistant",
+      "path": "docs/openapi/path-platform-assistant.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-helpdesk-queues",
+      "path": "docs/openapi/path-helpdesk-queues.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-helpdesk-queues-id",
+      "path": "docs/openapi/path-helpdesk-queues-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-helpdesk-agents",
+      "path": "docs/openapi/path-helpdesk-agents.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-helpdesk-agents-id-revoke",
+      "path": "docs/openapi/path-helpdesk-agents-id-revoke.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-helpdesk-tickets",
+      "path": "docs/openapi/path-helpdesk-tickets.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-helpdesk-tickets-id",
+      "path": "docs/openapi/path-helpdesk-tickets-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-helpdesk-agent-tickets",
+      "path": "docs/openapi/path-helpdesk-agent-tickets.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-helpdesk-agent-tickets-id",
+      "path": "docs/openapi/path-helpdesk-agent-tickets-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-helpdesk-agent-tickets-id-status",
+      "path": "docs/openapi/path-helpdesk-agent-tickets-id-status.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-helpdesk-owner-tickets",
+      "path": "docs/openapi/path-helpdesk-owner-tickets.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-helpdesk-owner-tickets-id",
+      "path": "docs/openapi/path-helpdesk-owner-tickets-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-helpdesk-owner-tickets-id-assign",
+      "path": "docs/openapi/path-helpdesk-owner-tickets-id-assign.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-helpdesk-owner-tickets-id-status",
+      "path": "docs/openapi/path-helpdesk-owner-tickets-id-status.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-builder-pages",
+      "path": "docs/openapi/path-builder-pages.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-builder-pages-id",
+      "path": "docs/openapi/path-builder-pages-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-builder-pages-id-publish",
+      "path": "docs/openapi/path-builder-pages-id-publish.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-builder-pages-id-render",
+      "path": "docs/openapi/path-builder-pages-id-render.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-learning-author-courses",
+      "path": "docs/openapi/path-learning-author-courses.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-learning-courses",
+      "path": "docs/openapi/path-learning-courses.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-learning-author-courses-id",
+      "path": "docs/openapi/path-learning-author-courses-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-learning-courses-id",
+      "path": "docs/openapi/path-learning-courses-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-learning-courses-id-publish",
+      "path": "docs/openapi/path-learning-courses-id-publish.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-learning-courses-id-archive",
+      "path": "docs/openapi/path-learning-courses-id-archive.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-learning-author-lessons-id",
+      "path": "docs/openapi/path-learning-author-lessons-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-learning-author-assessments-id",
+      "path": "docs/openapi/path-learning-author-assessments-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-learning-lessons",
+      "path": "docs/openapi/path-learning-lessons.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-learning-lessons-id",
+      "path": "docs/openapi/path-learning-lessons-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-learning-assessments",
+      "path": "docs/openapi/path-learning-assessments.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-learning-assessments-id",
+      "path": "docs/openapi/path-learning-assessments-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-learning-enrollments",
+      "path": "docs/openapi/path-learning-enrollments.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-learning-enrollments-id",
+      "path": "docs/openapi/path-learning-enrollments-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-learning-assessments-id-attempts",
+      "path": "docs/openapi/path-learning-assessments-id-attempts.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-learning-attempts",
+      "path": "docs/openapi/path-learning-attempts.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-insights-datasets",
+      "path": "docs/openapi/path-insights-datasets.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-insights-datasets-id",
+      "path": "docs/openapi/path-insights-datasets-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-insights-datasets-id-rows",
+      "path": "docs/openapi/path-insights-datasets-id-rows.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-insights-datasets-id-query",
+      "path": "docs/openapi/path-insights-datasets-id-query.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-insights-reports",
+      "path": "docs/openapi/path-insights-reports.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-insights-reports-id",
+      "path": "docs/openapi/path-insights-reports-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-insights-reports-id-run",
+      "path": "docs/openapi/path-insights-reports-id-run.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-insights-dashboards",
+      "path": "docs/openapi/path-insights-dashboards.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-insights-dashboards-id",
+      "path": "docs/openapi/path-insights-dashboards-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-insights-dashboards-id-render",
+      "path": "docs/openapi/path-insights-dashboards-id-render.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-erp-accounts",
+      "path": "docs/openapi/path-erp-accounts.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-erp-accounts-id",
+      "path": "docs/openapi/path-erp-accounts-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-erp-journals",
+      "path": "docs/openapi/path-erp-journals.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-erp-journals-id",
+      "path": "docs/openapi/path-erp-journals-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-erp-journals-id-post",
+      "path": "docs/openapi/path-erp-journals-id-post.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-erp-journals-id-reverse",
+      "path": "docs/openapi/path-erp-journals-id-reverse.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "openapi-path-erp-ledger",
+      "path": "docs/openapi/path-erp-ledger.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-hr-employees",
+      "path": "docs/openapi/path-hr-employees.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-hr-owner-employees-id",
+      "path": "docs/openapi/path-hr-owner-employees-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-hr-employees-me",
+      "path": "docs/openapi/path-hr-employees-me.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-hr-employees-id",
+      "path": "docs/openapi/path-hr-employees-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-hr-attendance",
+      "path": "docs/openapi/path-hr-attendance.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-hr-employees-id-attendance",
+      "path": "docs/openapi/path-hr-employees-id-attendance.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-hr-attendance-id-correct",
+      "path": "docs/openapi/path-hr-attendance-id-correct.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-hr-leave-types",
+      "path": "docs/openapi/path-hr-leave-types.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-hr-leave",
+      "path": "docs/openapi/path-hr-leave.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-hr-leave-id",
+      "path": "docs/openapi/path-hr-leave-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-hr-owner-leave",
+      "path": "docs/openapi/path-hr-owner-leave.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-hr-owner-leave-id",
+      "path": "docs/openapi/path-hr-owner-leave-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-hr-owner-leave-id-decide",
+      "path": "docs/openapi/path-hr-owner-leave-id-decide.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-lending-products",
+      "path": "docs/openapi/path-lending-products.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-lending-products-id",
+      "path": "docs/openapi/path-lending-products-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-lending-applications",
+      "path": "docs/openapi/path-lending-applications.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-lending-applications-id",
+      "path": "docs/openapi/path-lending-applications-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-lending-applications-id-submit",
+      "path": "docs/openapi/path-lending-applications-id-submit.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-lending-applications-id-withdraw",
+      "path": "docs/openapi/path-lending-applications-id-withdraw.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-lending-applications-id-schedule",
+      "path": "docs/openapi/path-lending-applications-id-schedule.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-lending-reviews",
+      "path": "docs/openapi/path-lending-reviews.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-lending-reviews-id",
+      "path": "docs/openapi/path-lending-reviews-id.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-lending-reviews-id-decide",
+      "path": "docs/openapi/path-lending-reviews-id-decide.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-solution-offerings",
+      "path": "docs/openapi/path-solution-offerings.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-solution-offering",
+      "path": "docs/openapi/path-solution-offering.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-admin-solution-offerings",
+      "path": "docs/openapi/path-admin-solution-offerings.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-solution-purchases",
+      "path": "docs/openapi/path-solution-purchases.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-solution-purchase-detail",
+      "path": "docs/openapi/path-solution-purchase-detail.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-solution-purchase-retry",
+      "path": "docs/openapi/path-solution-purchase-retry.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-standalone-solution-purchases",
+      "path": "docs/openapi/path-standalone-solution-purchases.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-standalone-solution-purchase-detail",
+      "path": "docs/openapi/path-standalone-solution-purchase-detail.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
+    },
+    {
+      "id": "path-standalone-solution-purchase-retry",
+      "path": "docs/openapi/path-standalone-solution-purchase-retry.json",
+      "kind": "contract",
+      "status": "active",
+      "supersedes": []
     }
   ],
   "requirements": [
@@ -1303,11 +2136,20 @@
       "title": "Feature-level phased service delivery",
       "document": "decisions-2026-10-13-service-platform",
       "anchor": "delivery-phases",
-      "status": "planned",
-      "implementation": [],
-      "tests": [],
+      "status": "partial",
+      "implementation": [
+        "tools/service_release.py",
+        "tools/manual_release.py",
+        "compose.server.services.yaml"
+      ],
+      "tests": [
+        "tests/deployment/test_service_release.py",
+        "tests/deployment/test_service_release_hook.py"
+      ],
       "proofs": [],
-      "evidence": [],
+      "evidence": [
+        "test-results/lifecycle/platform-expansion-20261015.html"
+      ],
       "reviews": [
         "requirement",
         "architecture",
@@ -1339,11 +2181,28 @@
       "title": "ERP capability expansion",
       "document": "service-platform-product-inventory",
       "anchor": "feature-backlog-and-acceptance",
-      "status": "planned",
-      "implementation": [],
-      "tests": [],
-      "proofs": [],
-      "evidence": [],
+      "status": "partial",
+      "implementation": [
+        "backend/app/Modules/Erp/ErpActions.php",
+        "backend/app/Modules/Erp/ErpCommandHandler.php",
+        "backend/database/migrations/services/erp",
+        "packages/api-client/services/erp/index.ts",
+        "frontend/admin/src/screens/platform_erp_screen/index.ts"
+      ],
+      "tests": [
+        "backend/tests/Feature/ErpActionsTest.php",
+        "backend/tests/Feature/ErpCommandHandlerTest.php",
+        "tests/unit/platformErpClient.test.ts",
+        "tests/unit/platformErpRoutes.test.ts",
+        "tests/unit/platformErpScreens.test.ts",
+        "tests/api/test_erp_service.py"
+      ],
+      "proofs": [
+        "formal/Commerce/Erp.lean"
+      ],
+      "evidence": [
+        "test-results/lifecycle/platform-expansion-20261015.html"
+      ],
       "reviews": [
         "requirement",
         "architecture",
@@ -1357,11 +2216,28 @@
       "title": "HR capability expansion",
       "document": "service-platform-product-inventory",
       "anchor": "feature-backlog-and-acceptance",
-      "status": "planned",
-      "implementation": [],
-      "tests": [],
-      "proofs": [],
-      "evidence": [],
+      "status": "partial",
+      "implementation": [
+        "backend/app/Modules/Hr/HrActions.php",
+        "backend/app/Modules/Hr/HrCommandHandler.php",
+        "backend/database/migrations/services/hr",
+        "packages/api-client/services/hr/index.ts",
+        "frontend/admin/src/screens/platform_hr_screen/index.ts"
+      ],
+      "tests": [
+        "backend/tests/Feature/HrActionsTest.php",
+        "backend/tests/Feature/HrCommandHandlerTest.php",
+        "tests/unit/platformHrClient.test.ts",
+        "tests/unit/platformHrRoutes.test.ts",
+        "tests/unit/platformHrScreens.test.ts",
+        "tests/api/test_hr_service.py"
+      ],
+      "proofs": [
+        "formal/Commerce/Hr.lean"
+      ],
+      "evidence": [
+        "test-results/lifecycle/platform-expansion-20261015.html"
+      ],
       "reviews": [
         "requirement",
         "architecture",
@@ -1375,11 +2251,27 @@
       "title": "Learning capability expansion",
       "document": "service-platform-product-inventory",
       "anchor": "feature-backlog-and-acceptance",
-      "status": "planned",
-      "implementation": [],
-      "tests": [],
-      "proofs": [],
-      "evidence": [],
+      "status": "partial",
+      "implementation": [
+        "backend/app/Modules/Learning/LearningActions.php",
+        "backend/app/Modules/Learning/LearningCommandHandler.php",
+        "backend/database/migrations/services/learning",
+        "packages/api-client/services/learning/index.ts",
+        "frontend/admin/src/screens/platform_learning_screen/index.ts"
+      ],
+      "tests": [
+        "backend/tests/Feature/LearningTest.php",
+        "tests/unit/platformLearningClient.test.ts",
+        "tests/unit/platformLearningRoutes.test.ts",
+        "tests/unit/platformLearningScreens.test.ts",
+        "tests/api/test_learning_service.py"
+      ],
+      "proofs": [
+        "formal/Commerce/Learning.lean"
+      ],
+      "evidence": [
+        "test-results/lifecycle/platform-expansion-20261015.html"
+      ],
       "reviews": [
         "requirement",
         "architecture",
@@ -1393,11 +2285,27 @@
       "title": "Insights capability expansion",
       "document": "service-platform-product-inventory",
       "anchor": "feature-backlog-and-acceptance",
-      "status": "planned",
-      "implementation": [],
-      "tests": [],
-      "proofs": [],
-      "evidence": [],
+      "status": "partial",
+      "implementation": [
+        "backend/app/Modules/Insights/InsightsActions.php",
+        "backend/app/Modules/Insights/InsightsCommandHandler.php",
+        "backend/database/migrations/services/insights",
+        "packages/api-client/services/insights/index.ts",
+        "frontend/admin/src/screens/platform_insights_screen/index.ts"
+      ],
+      "tests": [
+        "backend/tests/Feature/InsightsTest.php",
+        "tests/unit/platformInsightsClient.test.ts",
+        "tests/unit/platformInsightsRoutes.test.ts",
+        "tests/unit/platformInsightsScreens.test.ts",
+        "tests/api/test_insights_service.py"
+      ],
+      "proofs": [
+        "formal/Commerce/Insights.lean"
+      ],
+      "evidence": [
+        "test-results/lifecycle/platform-expansion-20261015.html"
+      ],
       "reviews": [
         "requirement",
         "architecture",
@@ -1411,11 +2319,31 @@
       "title": "CRM capability expansion",
       "document": "service-platform-product-inventory",
       "anchor": "feature-backlog-and-acceptance",
-      "status": "planned",
-      "implementation": [],
-      "tests": [],
+      "status": "partial",
+      "implementation": [
+        "backend/app/Modules/Crm/CrmActions.php",
+        "backend/app/Modules/Crm/CrmCommandHandler.php",
+        "backend/database/migrations/services/crm/2026_10_13_021332_create_crm_companies_table.php",
+        "packages/api-client/services/crm/index.ts",
+        "frontend/admin/src/screens/platform_crm_screen/index.ts",
+        "backend/database/migrations/services/crm"
+      ],
+      "tests": [
+        "backend/tests/Feature/CrmActionsTest.php",
+        "backend/tests/Feature/CrmCommandHandlerTest.php",
+        "tests/unit/platformCrmClient.test.ts",
+        "tests/unit/platformCrmScreens.test.ts",
+        "backend/tests/Feature/CrmDealActionsTest.php",
+        "tests/unit/platformCrmGrowthClient.test.ts",
+        "tests/unit/platformCrmGrowthRoutes.test.ts",
+        "tests/unit/platformCrmGrowthScreens.test.ts",
+        "tests/unit/platformCrmHub.test.ts",
+        "tests/api/test_crm_service.py"
+      ],
       "proofs": [],
-      "evidence": [],
+      "evidence": [
+        "test-results/lifecycle/platform-expansion-20261015.html"
+      ],
       "reviews": [
         "requirement",
         "architecture",
@@ -1429,11 +2357,26 @@
       "title": "Helpdesk capability expansion",
       "document": "service-platform-product-inventory",
       "anchor": "feature-backlog-and-acceptance",
-      "status": "planned",
-      "implementation": [],
-      "tests": [],
+      "status": "partial",
+      "implementation": [
+        "backend/app/Modules/Helpdesk/HelpdeskActions.php",
+        "backend/app/Modules/Helpdesk/HelpdeskCommandHandler.php",
+        "backend/database/migrations/services/helpdesk",
+        "packages/api-client/services/helpdesk/index.ts",
+        "frontend/admin/src/screens/platform_helpdesk_screen/index.ts"
+      ],
+      "tests": [
+        "backend/tests/Feature/HelpdeskActionsTest.php",
+        "backend/tests/Feature/HelpdeskCommandHandlerTest.php",
+        "tests/unit/platformHelpdeskClient.test.ts",
+        "tests/unit/platformHelpdeskRoutes.test.ts",
+        "tests/unit/platformHelpdeskScreens.test.ts",
+        "tests/api/test_helpdesk_service.py"
+      ],
       "proofs": [],
-      "evidence": [],
+      "evidence": [
+        "test-results/lifecycle/platform-expansion-20261015.html"
+      ],
       "reviews": [
         "requirement",
         "architecture",
@@ -1447,11 +2390,28 @@
       "title": "Lending capability expansion",
       "document": "service-platform-product-inventory",
       "anchor": "feature-backlog-and-acceptance",
-      "status": "planned",
-      "implementation": [],
-      "tests": [],
-      "proofs": [],
-      "evidence": [],
+      "status": "partial",
+      "implementation": [
+        "backend/app/Modules/Lending/LendingActions.php",
+        "backend/app/Modules/Lending/LendingCommandHandler.php",
+        "backend/database/migrations/services/lending",
+        "packages/api-client/services/lending/index.ts",
+        "frontend/admin/src/screens/platform_lending_screen/index.ts"
+      ],
+      "tests": [
+        "backend/tests/Feature/LendingProductCodeRaceTest.php",
+        "backend/tests/Feature/LendingTest.php",
+        "tests/unit/platformLendingClient.test.ts",
+        "tests/unit/platformLendingRoutes.test.ts",
+        "tests/unit/platformLendingScreens.test.ts",
+        "tests/api/test_lending_service.py"
+      ],
+      "proofs": [
+        "formal/Commerce/Lending.lean"
+      ],
+      "evidence": [
+        "test-results/lifecycle/platform-expansion-20261015.html"
+      ],
       "reviews": [
         "requirement",
         "architecture",
@@ -1469,12 +2429,19 @@
       "implementation": [
         "backend/app/Modules/Platform/OrganizationActions.php",
         "frontend/admin/src/app/organizations/index.tsx",
-        "packages/api-client/services/platform_workspace/index.ts"
+        "packages/api-client/services/platform_workspace/index.ts",
+        "backend/app/Modules/Platform/PlatformAuthActions.php",
+        "backend/app/Http/Controllers/PlatformOperationController.php",
+        "frontend/admin/src/screens/platform_workspace_screen/index.ts"
       ],
       "tests": [
         "backend/tests/Feature/OrganizationWorkspaceTest.php",
         "backend/tests/Feature/AssistantWorkspaceTest.php",
-        "tests/api/test_platform_workspace.py"
+        "tests/api/test_platform_workspace.py",
+        "backend/tests/Feature/PlatformIdentityFoundationTest.php",
+        "backend/tests/Feature/OrganizationPlatformIdentityTest.php",
+        "backend/tests/Feature/PlatformOperationBoundaryTest.php",
+        "tests/api/test_platform_identity.py"
       ],
       "proofs": [
         "formal/Commerce/OrganizationWorkspace.lean"
@@ -1486,7 +2453,8 @@
         "test-results/workspace-frontend-coverage/coverage-final.json",
         "test-results/api/coverage.json",
         "test-results/api/exchanges.json",
-        "test-results/workspace-proof-build.log"
+        "test-results/workspace-proof-build.log",
+        "test-results/lifecycle/platform-expansion-20261015.html"
       ],
       "reviews": [
         "requirement",
@@ -1501,11 +2469,57 @@
       "title": "Builder capability expansion",
       "document": "service-platform-product-inventory",
       "anchor": "feature-backlog-and-acceptance",
-      "status": "planned",
-      "implementation": [],
-      "tests": [],
+      "status": "partial",
+      "implementation": [
+        "backend/app/Modules/Builder/BuilderActions.php",
+        "backend/app/Modules/Builder/BuilderCommandHandler.php",
+        "backend/database/migrations/services/builder",
+        "packages/api-client/services/builder/index.ts",
+        "frontend/admin/src/screens/platform_builder_screen/index.ts"
+      ],
+      "tests": [
+        "backend/tests/Feature/BuilderActionsTest.php",
+        "backend/tests/Feature/BuilderCommandHandlerTest.php",
+        "tests/unit/platformBuilderClient.test.ts",
+        "tests/unit/platformBuilderRoutes.test.ts",
+        "tests/unit/platformBuilderScreens.test.ts",
+        "tests/api/test_builder_service.py"
+      ],
       "proofs": [],
-      "evidence": [],
+      "evidence": [
+        "test-results/lifecycle/platform-expansion-20261015.html"
+      ],
+      "reviews": [
+        "requirement",
+        "architecture",
+        "code",
+        "security",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "PRODUCT-SOLUTIONS",
+      "title": "Solution catalog, verified settlement and durable provisioning",
+      "document": "service-platform-product-inventory",
+      "anchor": "feature-backlog-and-acceptance",
+      "status": "partial",
+      "implementation": [
+        "backend/app/Domain/SolutionCommerce.php",
+        "backend/app/Domain/StoreActions.php",
+        "backend/app/Domain/Payments/PaymentProcessor.php",
+        "frontend/admin/src/screens/solution_commerce_screen/index.ts",
+        "frontend/admin/src/screens/platform_solution_screen/index.ts"
+      ],
+      "tests": [
+        "backend/tests/Feature/SolutionCommerceTest.php",
+        "tests/unit/solutionClient.test.ts",
+        "tests/unit/solutionScreens.test.ts",
+        "tests/api/test_solution_commerce.py"
+      ],
+      "proofs": [],
+      "evidence": [
+        "test-results/lifecycle/platform-expansion-20261015.html"
+      ],
       "reviews": [
         "requirement",
         "architecture",

@@ -6,11 +6,23 @@ use App\Modules\Events\Data\EventListener;
 use App\Modules\Events\Interface\Events;
 use Illuminate\Support\Facades\DB;
 use LogicException;
+use PHPUnit\Framework\Attributes\Group;
 use RuntimeException;
 use Tests\TestCase;
 
 class EventInfrastructureTest extends TestCase
 {
+    #[Group('postgresql')]
+    public function test_postgresql_listener_subscribes_and_reuses_its_live_connection(): void
+    {
+        $listener = new EventListener;
+        $listener->wait(1);
+        $this->assertSame('commerce_events', DB::selectOne('SELECT pg_listening_channels() AS channel')->channel);
+        DB::select("SELECT pg_notify('commerce_events', 'work')");
+        $listener->wait(1);
+        $this->assertSame('commerce_events', DB::selectOne('SELECT pg_listening_channels() AS channel')->channel);
+    }
+
     public function test_publication_outside_a_business_transaction_is_rejected(): void
     {
         $this->assertSame(0, DB::transactionLevel());

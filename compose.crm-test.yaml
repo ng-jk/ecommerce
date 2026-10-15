@@ -1,0 +1,116 @@
+# Integration overlay only. The core and CRM receive different database credentials.
+# Secrets and the local CA live in ignored test-results/service-runtime, never Git.
+x-service-environment: &service-environment
+  SERVICE_EXCHANGE_ENABLED: "true"
+  PLATFORM_CRM_SERVICE_KEY: ${PLATFORM_CRM_SERVICE_KEY:?Set the isolated service key}
+  CRM_SERVICE_URL: https://crm-internal/api/v1/internal/services
+  PLATFORM_SERVICE_URL: https://platform-internal/api/v1/internal/services
+  CRM_SERVICE_AVAILABLE: "true"
+  CRM_SERVICE_PROVISIONED: "true"
+services:
+  backend:
+    networks: [default, service_transport]
+    environment:
+      <<: *service-environment
+      SERVICE_NAME: platform
+    volumes:
+      - ./test-results/service-runtime/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+  worker:
+    networks: [default, service_transport]
+    environment:
+      <<: *service-environment
+      SERVICE_NAME: platform
+    volumes:
+      - ./test-results/service-runtime/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+  crm-db:
+    image: postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: crm_bootstrap
+      POSTGRES_PASSWORD: ${CRM_BOOTSTRAP_PASSWORD:?Set a separate CRM bootstrap password}
+      CRM_DATABASE_PASSWORD: ${CRM_DATABASE_PASSWORD:?Set an isolated CRM database password}
+    volumes:
+      - crm_test_database:/var/lib/postgresql/data
+      - ./docker/services/crm-init.sql:/docker-entrypoint-initdb.d/10-crm.sql:ro
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U crm_bootstrap -d postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks: [crm_database]
+  crm:
+    image: ecommerce-portfolio-backend
+    user: www-data
+    environment: &crm-environment
+      <<: *service-environment
+      SERVICE_NAME: crm
+      APP_NAME: Shop3iCRM
+      APP_ENV: testing
+      APP_DEBUG: "false"
+      APP_KEY: ${CRM_APP_KEY:?Set a separate CRM encryption key}
+      LOG_CHANNEL: stderr
+      DB_CONNECTION: pgsql
+      DB_HOST: crm-db
+      DB_PORT: 5432
+      DB_DATABASE: crm_test
+      DB_USERNAME: crm_runtime
+      DB_PASSWORD: ${CRM_DATABASE_PASSWORD:?Set an isolated CRM database password}
+      SESSION_DRIVER: array
+      CACHE_STORE: array
+    volumes: &crm-volumes
+      - ./test-results/service-runtime/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+    networks: [crm_database, service_transport]
+    depends_on:
+      crm-db: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+  crm-worker:
+    image: ecommerce-portfolio-backend
+    user: www-data
+    environment: *crm-environment
+    volumes: *crm-volumes
+    command: [php, artisan, services:work]
+    networks: [crm_database, service_transport]
+    depends_on:
+      crm-db: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+  service-worker:
+    extends:
+      file: compose.yaml
+      service: worker
+    image: ecommerce-portfolio-backend
+    command: [php, artisan, services:work]
+    environment:
+      <<: *service-environment
+      SERVICE_NAME: platform
+      DB_DATABASE: commerce_test
+      APP_ENV: testing
+    volumes:
+      - ./test-results/service-runtime/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+    networks: [default, service_transport]
+  service-gateway:
+    image: caddy@sha256:de23def33b17fb5d1290b0f6c2add1d70780e52341896c00a4c8a2a2fe9d355e
+    volumes:
+      - ./docker/services/runtime.Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./backend/public:/var/www/html/public:ro
+      - ./test-results/service-runtime/certificates/services.crt:/certificates/services.crt:ro
+      - ./test-results/service-runtime/certificates/services.key:/certificates/services.key:ro
+    networks:
+      default: {}
+      service_transport:
+        aliases: [platform-internal, crm-internal]
+    depends_on: [backend, crm]
+    security_opt: [no-new-privileges:true]
+networks:
+  crm_database:
+    internal: true
+  service_transport:
+    internal: true
+volumes:
+  crm_test_database:

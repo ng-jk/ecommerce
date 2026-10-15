@@ -1,0 +1,75 @@
+{
+  "get": {
+    "operationId": "standaloneHrOwnerEmployee",
+    "description": "Standalone HR command. Current identity, membership, installation, entitlement and role are checked before the isolated effect. Attendance captures an interval, not proof of work; leave uses calendar days and makes no statutory or payroll claim.",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Durable command accepted; poll its private result receipt"
+      },
+      "401": {
+        "description": "Token unavailable or revoked"
+      },
+      "403": {
+        "description": "Current membership, role or entitlement denied"
+      },
+      "404": {
+        "description": "HR record unavailable in this organization or to this employee"
+      },
+      "409": {
+        "description": "Version, overlap, allowance, or state conflict"
+      },
+      "422": {
+        "description": "Strict validation_error field map"
+      },
+      "504": {
+        "description": "Remote HR command deadline exceeded"
+      }
+    },
+    "x-completed-result": {
+      "description": "Scoped HR record or bounded data/meta page with server status options."
+    }
+  }
+}

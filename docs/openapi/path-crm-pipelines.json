@@ -1,0 +1,298 @@
+{
+  "get": {
+    "operationId": "crmPipelines",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "page",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        }
+      },
+      {
+        "name": "per_page",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        }
+      },
+      {
+        "name": "code",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "maxLength": 80
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Committed CRM operation; poll its private receipt.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Accepted"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current organization membership or CRM entitlement denied"
+      },
+      "404": {
+        "description": "CRM record unavailable in this organization"
+      },
+      "409": {
+        "description": "Version or workflow conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      },
+      "504": {
+        "description": "Remote CRM command deadline exceeded"
+      }
+    },
+    "description": "Standalone CRM command. Platform identity, membership, installation, entitlement, and any assignee target are checked before the isolated CRM effect.",
+    "x-completed-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "data",
+        "meta"
+      ],
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "code",
+              "name",
+              "version"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "code": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "meta": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "current_page",
+            "last_page",
+            "total",
+            "per_page"
+          ],
+          "properties": {
+            "current_page": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "last_page": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "total": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "per_page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        }
+      }
+    }
+  },
+  "post": {
+    "operationId": "crmCreatePipeline",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Committed CRM operation; poll its private receipt.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Accepted"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current organization membership or CRM entitlement denied"
+      },
+      "404": {
+        "description": "CRM record unavailable in this organization"
+      },
+      "409": {
+        "description": "Version or workflow conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      },
+      "504": {
+        "description": "Remote CRM command deadline exceeded"
+      }
+    },
+    "description": "Standalone CRM command. Platform identity, membership, installation, entitlement, and any assignee target are checked before the isolated CRM effect.",
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "name"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9-]*$",
+                "minLength": 3,
+                "maxLength": 80
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 200
+              }
+            }
+          }
+        }
+      }
+    },
+    "x-completed-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pipeline"
+      ],
+      "properties": {
+        "pipeline": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "code",
+            "name",
+            "version"
+          ],
+          "properties": {
+            "id": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "code": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "name": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    }
+  }
+}

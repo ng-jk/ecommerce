@@ -1,0 +1,81 @@
+# Isolated learning integration service; apply after the preceding service overlays.
+services:
+  backend:
+    environment: &learning-core
+      LEARNING_SERVICE_AVAILABLE: "true"
+      LEARNING_SERVICE_PROVISIONED: "true"
+      LEARNING_SERVICE_URL: https://learning-internal/api/v1/internal/services
+      PLATFORM_LEARNING_SERVICE_KEY: ${PLATFORM_LEARNING_SERVICE_KEY:?Set a separate Helpdesk service key}
+  worker:
+    environment: *learning-core
+  service-worker:
+    environment: *learning-core
+  learning-db:
+    image: postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: learning_bootstrap
+      POSTGRES_PASSWORD: ${LEARNING_BOOTSTRAP_PASSWORD:?Set a separate LEARNING bootstrap password}
+      LEARNING_DATABASE_PASSWORD: ${LEARNING_DATABASE_PASSWORD:?Set an isolated LEARNING database password}
+    volumes:
+      - learning_test_database:/var/lib/postgresql/data
+      - ./docker/services/learning-init.sql:/docker-entrypoint-initdb.d/10-learning.sql:ro
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U learning_bootstrap -d postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks: [learning_database]
+  learning:
+    image: ecommerce-portfolio-backend
+    user: www-data
+    environment: &learning-environment
+      SERVICE_EXCHANGE_ENABLED: "true"
+      PLATFORM_LEARNING_SERVICE_KEY: ${PLATFORM_LEARNING_SERVICE_KEY:?Set a separate Helpdesk service key}
+      PLATFORM_SERVICE_URL: https://platform-internal/api/v1/internal/services
+      LEARNING_SERVICE_AVAILABLE: "true"
+      LEARNING_SERVICE_PROVISIONED: "true"
+      SERVICE_NAME: learning
+      APP_NAME: Shop3iLEARNING
+      APP_ENV: testing
+      APP_DEBUG: "false"
+      APP_KEY: ${LEARNING_APP_KEY:?Set a separate LEARNING encryption key}
+      LOG_CHANNEL: stderr
+      DB_CONNECTION: pgsql
+      DB_HOST: learning-db
+      DB_PORT: 5432
+      DB_DATABASE: learning_test
+      DB_USERNAME: learning_runtime
+      DB_PASSWORD: ${LEARNING_DATABASE_PASSWORD:?Set an isolated LEARNING database password}
+      SESSION_DRIVER: array
+      CACHE_STORE: array
+    volumes: &learning-volumes
+      - ./test-results/service-runtime/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+    networks: [learning_database, service_transport]
+    depends_on:
+      learning-db: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+  learning-worker:
+    image: ecommerce-portfolio-backend
+    user: www-data
+    environment: *learning-environment
+    volumes: *learning-volumes
+    command: [php, artisan, services:work]
+    networks: [learning_database, service_transport]
+    depends_on:
+      learning-db: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+  service-gateway:
+    networks:
+      service_transport:
+        aliases: [platform-internal, crm-internal, helpdesk-internal, learning-internal]
+    depends_on: [backend, crm, helpdesk, learning]
+networks:
+  learning_database:
+    internal: true
+volumes:
+  learning_test_database:

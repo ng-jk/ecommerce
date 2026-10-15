@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Shop;
+use App\Models\SolutionOffering;
 use App\Models\User;
 use App\Modules\Events\Interface\Events;
 use App\Support\PublicData;
@@ -102,17 +103,33 @@ class StoreActions extends Controller
             $products = Product::where('shop_id', $shop->id)->whereIn('id', array_column($cart, 'product_id'))->orderBy('id')->lockForUpdate()->get()->keyBy('id');
             $items = [];
             $subtotal = 0;
+            $solutionOfferingId = null;
             foreach ($cart as $line) {
                 $product = $products->get($line['product_id']);
                 if (! $product || ! $product->active || $product->stock < $line['quantity']) {
                     throw ValidationException::withMessages(['stock' => 'A product is unavailable or has insufficient stock. Please update your cart.']);
                 }
-                $items[] = ['product_id' => $product->id, 'name' => $product->name, 'price' => $product->price, 'quantity' => $line['quantity']];
+                $item = ['product_id' => $product->id, 'name' => $product->name,
+                    'price' => $product->price, 'quantity' => $line['quantity']];
+                $offering = SolutionOffering::query()->where('product_id', $product->id)
+                    ->orderByDesc('version')->lockForUpdate()->first();
+                if ($offering) {
+                    abort_unless(count($cart) === 1 && $line['quantity'] === 1
+                        && $driver !== Payment::Simulated && $offering->shop_id === $shop->id
+                        && $offering->currency === 'MYR' && $offering->unit_amount === $product->price, 422,
+                        'Solution checkout requires one current offering and a verified payment method.');
+                    $solutionOfferingId = $offering->id;
+                    $item['solution_offering_id'] = $offering->id;
+                }
+                $items[] = $item;
                 $subtotal += $product->price * $line['quantity'];
                 $product->decrement('stock', $line['quantity']);
                 $product->increment('version');
             }
-            $order = Order::create(['shop_id' => $shop->id, 'user_id' => $user->id, 'checkout_key' => $data['checkout_key'], 'items' => $items, 'shipping_address' => $data['shipping_address'], 'subtotal' => $subtotal, 'shipping' => 800, 'total' => $subtotal + 800, 'status' => 'placed', 'payment_method' => $driver, 'currency' => 'MYR']);
+            $order = Order::create(['shop_id' => $shop->id, 'solution_offering_id' => $solutionOfferingId,
+                'user_id' => $user->id, 'checkout_key' => $data['checkout_key'], 'items' => $items,
+                'shipping_address' => $data['shipping_address'], 'subtotal' => $subtotal, 'shipping' => 800,
+                'total' => $subtotal + 800, 'status' => 'placed', 'payment_method' => $driver, 'currency' => 'MYR']);
             app(Events::class)->publish('order.placed', 'order', $order->id,
                 ['order_id' => $order->id, 'shop_id' => $order->shop_id, 'status' => Order::Placed, 'version' => $order->version],
                 'order:'.$order->id.':placed');

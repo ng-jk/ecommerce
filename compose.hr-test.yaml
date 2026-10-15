@@ -1,0 +1,81 @@
+# Isolated hr integration service; apply after the preceding service overlays.
+services:
+  backend:
+    environment: &hr-core
+      HR_SERVICE_AVAILABLE: "true"
+      HR_SERVICE_PROVISIONED: "true"
+      HR_SERVICE_URL: https://hr-internal/api/v1/internal/services
+      PLATFORM_HR_SERVICE_KEY: ${PLATFORM_HR_SERVICE_KEY:?Set a separate HR service key}
+  worker:
+    environment: *hr-core
+  service-worker:
+    environment: *hr-core
+  hr-db:
+    image: postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: hr_bootstrap
+      POSTGRES_PASSWORD: ${HR_BOOTSTRAP_PASSWORD:?Set a separate HR bootstrap password}
+      HR_DATABASE_PASSWORD: ${HR_DATABASE_PASSWORD:?Set an isolated HR database password}
+    volumes:
+      - hr_test_database:/var/lib/postgresql/data
+      - ./docker/services/hr-init.sql:/docker-entrypoint-initdb.d/10-hr.sql:ro
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U hr_bootstrap -d postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks: [hr_database]
+  hr:
+    image: ecommerce-portfolio-backend
+    user: www-data
+    environment: &hr-environment
+      SERVICE_EXCHANGE_ENABLED: "true"
+      PLATFORM_HR_SERVICE_KEY: ${PLATFORM_HR_SERVICE_KEY:?Set a separate HR service key}
+      PLATFORM_SERVICE_URL: https://platform-internal/api/v1/internal/services
+      HR_SERVICE_AVAILABLE: "true"
+      HR_SERVICE_PROVISIONED: "true"
+      SERVICE_NAME: hr
+      APP_NAME: Shop3iHR
+      APP_ENV: testing
+      APP_DEBUG: "false"
+      APP_KEY: ${HR_APP_KEY:?Set a separate HR encryption key}
+      LOG_CHANNEL: stderr
+      DB_CONNECTION: pgsql
+      DB_HOST: hr-db
+      DB_PORT: 5432
+      DB_DATABASE: hr_test
+      DB_USERNAME: hr_runtime
+      DB_PASSWORD: ${HR_DATABASE_PASSWORD:?Set an isolated HR database password}
+      SESSION_DRIVER: array
+      CACHE_STORE: array
+    volumes: &hr-volumes
+      - ./test-results/service-runtime/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+    networks: [hr_database, service_transport]
+    depends_on:
+      hr-db: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+  hr-worker:
+    image: ecommerce-portfolio-backend
+    user: www-data
+    environment: *hr-environment
+    volumes: *hr-volumes
+    command: [php, artisan, services:work]
+    networks: [hr_database, service_transport]
+    depends_on:
+      hr-db: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+  service-gateway:
+    networks:
+      service_transport:
+        aliases: [platform-internal, crm-internal, helpdesk-internal, learning-internal, builder-internal, insights-internal, erp-internal, hr-internal]
+    depends_on: [backend, crm, helpdesk, learning, builder, insights, erp, hr]
+networks:
+  hr_database:
+    internal: true
+volumes:
+  hr_test_database:

@@ -11,6 +11,7 @@ import { schemas } from "../../contracts";
 import { createTransport } from "../../transport";
 import { assistantAdapter } from "../../assistant";
 import { createPlatformWorkspace } from "../../platform_workspace";
+import { createShopSolutions } from "../../solutions";
 export function createClient(options: {
   shop: ShopSlug;
   origin: string;
@@ -34,6 +35,7 @@ export function createClient(options: {
     z.coerce.number().int().positive().parse(id);
   return {
     platformWorkspace: createPlatformWorkspace(request),
+    solutions: createShopSolutions(request),
     assistant: assistantAdapter(
       request,
       options.native ? storage : memoryStorage(),

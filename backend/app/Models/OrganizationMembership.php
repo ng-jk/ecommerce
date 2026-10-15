@@ -25,11 +25,16 @@ class OrganizationMembership extends Model
 
     public const Revoked = 'revoked';
 
-    protected $fillable = ['organization_id', 'user_id', 'role', 'status'];
+    protected $fillable = ['organization_id', 'user_id', 'platform_user_id', 'role', 'status', 'version'];
 
-    protected $hidden = ['organization_id', 'user_id', 'deleted_at', 'created_at', 'updated_at'];
+    protected $hidden = ['organization_id', 'user_id', 'platform_user_id', 'deleted_at', 'created_at', 'updated_at'];
 
-    protected $attributes = ['role' => self::Member, 'status' => self::Invited];
+    protected $attributes = ['role' => self::Member, 'status' => self::Invited, 'version' => 0];
+
+    protected function casts(): array
+    {
+        return ['version' => 'integer'];
+    }
 
     public static function options(string $field = 'role'): array
     {
@@ -48,5 +53,10 @@ class OrganizationMembership extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function platformUser(): BelongsTo
+    {
+        return $this->belongsTo(PlatformUser::class);
     }
 }

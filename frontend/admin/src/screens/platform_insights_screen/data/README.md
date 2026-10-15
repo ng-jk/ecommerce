@@ -1,0 +1,1 @@
+Insights screens use the authenticated platform session and the shared Insights SDK. Transport lives in packages/api-client/services/insights/data; this layer currently has no screen-specific persistence adapter.

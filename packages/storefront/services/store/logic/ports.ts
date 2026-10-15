@@ -11,6 +11,7 @@ import type {
 } from "@portfolio/api-client";
 export interface CommerceClient {
   platformWorkspace: ReturnType<typeof createClient>["platformWorkspace"];
+  solutions: ReturnType<typeof createClient>["solutions"];
   assistant?: AssistantPort["assistant"];
   catalog(
     search?: string,

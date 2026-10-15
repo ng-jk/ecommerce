@@ -1,0 +1,255 @@
+{
+  "get": {
+    "operationId": "standaloneCrmCompany",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Committed operation accepted; poll the private receipt for the CRM business result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Accepted"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current organization membership or CRM entitlement denied"
+      },
+      "404": {
+        "description": "CRM record is unavailable in this organization"
+      },
+      "409": {
+        "description": "Version or workflow conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      },
+      "504": {
+        "description": "Remote CRM command deadline exceeded"
+      }
+    },
+    "description": "Standalone CRM command. Current platform identity, membership, installation and entitlement are rechecked before the isolated CRM effect.",
+    "x-completed-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "company"
+      ],
+      "properties": {
+        "company": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "code",
+            "name",
+            "version"
+          ],
+          "properties": {
+            "id": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "code": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "name": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  "patch": {
+    "operationId": "standaloneCrmUpdateCompany",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Committed operation accepted; poll the private receipt for the CRM business result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Accepted"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current organization membership or CRM entitlement denied"
+      },
+      "404": {
+        "description": "CRM record is unavailable in this organization"
+      },
+      "409": {
+        "description": "Version or workflow conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      },
+      "504": {
+        "description": "Remote CRM command deadline exceeded"
+      }
+    },
+    "description": "Standalone CRM command. Current platform identity, membership, installation and entitlement are rechecked before the isolated CRM effect.",
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "expected_version"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "expected_version": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "x-completed-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "company"
+      ],
+      "properties": {
+        "company": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "code",
+            "name",
+            "version"
+          ],
+          "properties": {
+            "id": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "code": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "name": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    }
+  }
+}

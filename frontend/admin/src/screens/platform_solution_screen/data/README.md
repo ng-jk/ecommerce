@@ -1,0 +1,1 @@
+This screen delegates its data adapter to the typed standalone solution client exported by `@portfolio/api-client`. The logic hooks obtain that client through `usePlatformSession`; no screen-local transport or persisted state is required.

@@ -9,6 +9,8 @@ class Operation extends Model
 {
     use SoftDeletes;
 
+    public const Delegated = 'delegated';
+
     public const Queued = 'queued';
 
     public const Processing = 'processing';
@@ -21,11 +23,11 @@ class Operation extends Model
 
     protected $guarded = ['id'];
 
-    protected $hidden = ['payload', 'payload_hash', 'receipt_hash', 'scope', 'token_id', 'auth_version', 'deleted_at'];
+    protected $hidden = ['parent_operation_id', 'payload', 'payload_hash', 'receipt_hash', 'scope', 'token_id', 'auth_version', 'deleted_at'];
 
     public static function options(): array
     {
-        return [self::Queued => 'Queued', self::Processing => 'Processing', self::Succeeded => 'Succeeded', self::Rejected => 'Rejected', self::Failed => 'Failed'];
+        return [self::Delegated => 'Delegated to parent', self::Queued => 'Queued', self::Processing => 'Processing', self::Succeeded => 'Succeeded', self::Rejected => 'Rejected', self::Failed => 'Failed'];
     }
 
     protected function casts(): array

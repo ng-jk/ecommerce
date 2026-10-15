@@ -1,0 +1,71 @@
+{
+  "get": {
+    "operationId": "solutionOffering",
+    "parameters": [
+      {
+        "name": "shop",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "maxLength": 80
+        }
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Durably accepted; poll the private operation receipt.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Accepted"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current shop or organization authority denied"
+      },
+      "404": {
+        "description": "Resource unavailable"
+      },
+      "409": {
+        "description": "Idempotency or state conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      }
+    },
+    "description": "Durable worker command; payment authority is verified by the payment worker."
+  }
+}

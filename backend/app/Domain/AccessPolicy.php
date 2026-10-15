@@ -18,7 +18,7 @@ class AccessPolicy
         }
 
         $maximum = str_starts_with($action, 'admin.') ? [User::Admin] : [User::Customer, User::Admin];
-        if (in_array($action, ['catalog', 'product', 'auth.login', 'auth.register'], true)) {
+        if (in_array($action, ['catalog', 'product', 'solutions.offerings', 'solutions.offering', 'auth.login', 'auth.register'], true)) {
             array_unshift($maximum, 'guest');
         }
 

@@ -67,18 +67,22 @@ def _result(value):
 
 
 class AssistantClient:
-    def __init__(self, base_url, shop, *, token=None, operation_token=None, state_file=None,
+    def __init__(self, base_url, shop=None, *, platform=False, token=None, operation_token=None, state_file=None,
                  transport=request, deadline=45, attempts=3, sleep=time.sleep, clock=time.monotonic):
         parsed = urlsplit(base_url)
         if parsed.scheme not in {"http", "https"} or not parsed.netloc or parsed.username or parsed.password or parsed.query or parsed.fragment or parsed.path not in {"", "/"}:
             raise ValueError("base_url must be an origin")
         if parsed.scheme != "https" and parsed.hostname not in {"localhost", "127.0.0.1", "::1"}:
             raise ValueError("HTTPS is required outside localhost")
-        if not re.fullmatch(r"[a-z0-9-]+", shop) or shop not in {"fashion", "electronics"}:
+        if type(platform) is not bool:
+            raise ValueError("platform must be a boolean")
+        if platform and shop is not None:
+            raise ValueError("Platform identity must not specify a shop")
+        if not platform and (not isinstance(shop, str) or not re.fullmatch(r"[a-z0-9-]+", shop) or shop not in {"fashion", "electronics"}):
             raise ValueError("Invalid shop")
         self.origin = base_url.rstrip("/")
         self.shop = shop
-        self.path = f"/api/v1/shops/{shop}"
+        self.path = "/api/v1/platform" if platform else f"/api/v1/shops/{shop}"
         self.token = token
         self.transport = transport
         self.deadline = deadline
@@ -220,7 +224,10 @@ class AssistantClient:
 def from_environment(*, state_file=None):
     base = os.environ.get("SHOP3I_BASE_URL")
     shop = os.environ.get("SHOP3I_SHOP")
-    if not base or not shop:
+    scope = os.environ.get("SHOP3I_SCOPE", "commerce")
+    if scope not in {"commerce", "platform"}:
+        raise ValueError("SHOP3I_SCOPE must be commerce or platform")
+    if not base or (scope == "commerce" and not shop):
         raise ValueError("SHOP3I_BASE_URL and SHOP3I_SHOP are required")
-    return AssistantClient(base, shop, token=os.environ.get("SHOP3I_BEARER_TOKEN"),
+    return AssistantClient(base, shop, platform=scope == "platform", token=os.environ.get("SHOP3I_BEARER_TOKEN"),
                            operation_token=os.environ.get("SHOP3I_OPERATION_TOKEN"), state_file=state_file)

@@ -12,6 +12,7 @@ use App\Models\PluginInstallation;
 use App\Models\Product;
 use App\Models\Shop;
 use App\Models\User;
+use App\Modules\Platform\MembershipActions;
 use App\Modules\Platform\OrganizationActions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -119,6 +120,15 @@ class AssistantActions
         $action = $tool['action'];
         $id = $arguments['id'] ?? null;
         unset($arguments['id']);
+        $membershipId = $arguments['membership_id'] ?? null;
+        unset($arguments['membership_id']);
+        if (in_array($action, ['platform.membership.role', 'platform.membership.revoke', 'platform.membership.accept'], true)) {
+            $detail = app(MembershipActions::class)->detail($user, (int) $id, (int) $membershipId);
+            if ($action !== 'platform.membership.accept') {
+                abort_unless($detail['can_manage'], 403);
+            }
+            $arguments['expected_version'] = $detail['membership']['version'];
+        }
         if ($action === 'cart.update') {
             if (array_key_exists('items', $arguments) && (isset($arguments['product_id']) || isset($arguments['product_query']) || isset($arguments['quantity']))) {
                 throw ValidationException::withMessages(['data' => 'Choose either an items replacement or a product addition.']);
@@ -169,7 +179,7 @@ class AssistantActions
             }
         }
 
-        return ['input' => $arguments, 'id' => $id, 'quote' => $quote, 'total_sen' => $action === 'checkout' ? array_sum(array_map(fn ($line) => $line['price'] * $line['quantity'], $quote)) + 800 : null];
+        return ['input' => $arguments, 'id' => $id, 'membership_id' => $membershipId, 'quote' => $quote, 'total_sen' => $action === 'checkout' ? array_sum(array_map(fn ($line) => $line['price'] * $line['quantity'], $quote)) + 800 : null];
     }
 
     private function redact(array $prepared): array
@@ -185,7 +195,7 @@ class AssistantActions
             $product = Product::where('shop_id', $shop->id)->lockForUpdate()->findOrFail($line['product_id']);
             abort_unless($product->version === $line['version'] && $product->price === $line['price'], 409, 'The quoted product changed. Start a new checkout.');
         }
-        $child = new Operation(['shop_id' => $shop->id, 'user_id' => $user?->id, 'auth_version' => $parent->auth_version, 'token_id' => $parent->token_id, 'action' => $tool['action'], 'payload' => ['input' => $prepared['input'], 'id' => $prepared['id']]]);
+        $child = new Operation(['shop_id' => $shop->id, 'user_id' => $user?->id, 'auth_version' => $parent->auth_version, 'token_id' => $parent->token_id, 'action' => $tool['action'], 'payload' => ['input' => $prepared['input'], 'id' => $prepared['id'], 'membership_id' => $prepared['membership_id'] ?? null]]);
         $child->id = $parent->id;
         $result = app(ActionExecutor::class)->execute($child);
         $conversation->status = Conversation::Complete;

@@ -1,0 +1,190 @@
+{
+  "get": {
+    "operationId": "standaloneInsightsDataset",
+    "description": "Standalone Insights command. Manual datasets use a bounded typed query language. No SQL or foreign database credentials are accepted. Current dataset access applies to reports and dashboards. Integer sums and exact rational averages avoid floating-point ambiguity.",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Durable command accepted; poll its private result receipt"
+      },
+      "401": {
+        "description": "Token unavailable or revoked"
+      },
+      "403": {
+        "description": "Current membership, role or entitlement denied"
+      },
+      "404": {
+        "description": "Record unavailable in this organization and visibility scope"
+      },
+      "409": {
+        "description": "Version conflict"
+      },
+      "422": {
+        "description": "Strict validation_error field map"
+      },
+      "504": {
+        "description": "Remote Insights command deadline exceeded"
+      }
+    },
+    "x-completed-result": {
+      "description": "Resource metadata, bounded data/meta page, or query data with dataset version and import timestamp. Average values are exact numerator/denominator objects."
+    }
+  },
+  "put": {
+    "operationId": "standaloneInsightsUpdateDataset",
+    "description": "Standalone Insights command. Manual datasets use a bounded typed query language. No SQL or foreign database credentials are accepted. Current dataset access applies to reports and dashboards. Integer sums and exact rational averages avoid floating-point ambiguity.",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Durable command accepted; poll its private result receipt"
+      },
+      "401": {
+        "description": "Token unavailable or revoked"
+      },
+      "403": {
+        "description": "Current membership, role or entitlement denied"
+      },
+      "404": {
+        "description": "Record unavailable in this organization and visibility scope"
+      },
+      "409": {
+        "description": "Version conflict"
+      },
+      "422": {
+        "description": "Strict validation_error field map"
+      },
+      "504": {
+        "description": "Remote Insights command deadline exceeded"
+      }
+    },
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "expected_version",
+              "name",
+              "visibility",
+              "status"
+            ],
+            "properties": {
+              "expected_version": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "visibility": {
+                "type": "string",
+                "enum": [
+                  "private",
+                  "organization"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "disabled"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "x-completed-result": {
+      "description": "Resource metadata, bounded data/meta page, or query data with dataset version and import timestamp. Average values are exact numerator/denominator objects."
+    }
+  }
+}

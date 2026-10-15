@@ -1,0 +1,58 @@
+{
+  "post": {
+    "operationId": "platformLogout",
+    "parameters": [
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "cookieAuth": []
+      },
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Committed operation accepted; poll the private receipt for the business result.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Accepted"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current account, organization or capability access denied"
+      },
+      "409": {
+        "description": "Idempotency or version conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      }
+    },
+    "description": "Durable worker command. Current identity, organization membership and record version are rechecked before effects and result disclosure."
+  }
+}

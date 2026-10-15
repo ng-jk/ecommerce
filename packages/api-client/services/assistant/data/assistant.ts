@@ -129,7 +129,10 @@ export function assistantAdapter(
           .object({ user, token: z.string().min(1).optional() })
           .parse(result.api_result);
         if (native && auth.token) await storage.set("token", auth.token);
-      } else if (result.executed_action === "auth.logout") {
+      } else if (
+        result.executed_action === "auth.logout" ||
+        result.executed_action === "platform.auth.logout"
+      ) {
         await storage.remove("token");
         await storage.clear?.();
       }

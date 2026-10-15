@@ -12,6 +12,11 @@
     },
     "quantity": {
       "type": "integer"
+    },
+    "solution_offering_id": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Immutable offering version for a solution line."
     }
   },
   "required": [

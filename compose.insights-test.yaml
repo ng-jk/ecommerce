@@ -1,0 +1,81 @@
+# Isolated insights integration service; apply after the preceding service overlays.
+services:
+  backend:
+    environment: &insights-core
+      INSIGHTS_SERVICE_AVAILABLE: "true"
+      INSIGHTS_SERVICE_PROVISIONED: "true"
+      INSIGHTS_SERVICE_URL: https://insights-internal/api/v1/internal/services
+      PLATFORM_INSIGHTS_SERVICE_KEY: ${PLATFORM_INSIGHTS_SERVICE_KEY:?Set a separate Helpdesk service key}
+  worker:
+    environment: *insights-core
+  service-worker:
+    environment: *insights-core
+  insights-db:
+    image: postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: insights_bootstrap
+      POSTGRES_PASSWORD: ${INSIGHTS_BOOTSTRAP_PASSWORD:?Set a separate INSIGHTS bootstrap password}
+      INSIGHTS_DATABASE_PASSWORD: ${INSIGHTS_DATABASE_PASSWORD:?Set an isolated INSIGHTS database password}
+    volumes:
+      - insights_test_database:/var/lib/postgresql/data
+      - ./docker/services/insights-init.sql:/docker-entrypoint-initdb.d/10-insights.sql:ro
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U insights_bootstrap -d postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks: [insights_database]
+  insights:
+    image: ecommerce-portfolio-backend
+    user: www-data
+    environment: &insights-environment
+      SERVICE_EXCHANGE_ENABLED: "true"
+      PLATFORM_INSIGHTS_SERVICE_KEY: ${PLATFORM_INSIGHTS_SERVICE_KEY:?Set a separate Helpdesk service key}
+      PLATFORM_SERVICE_URL: https://platform-internal/api/v1/internal/services
+      INSIGHTS_SERVICE_AVAILABLE: "true"
+      INSIGHTS_SERVICE_PROVISIONED: "true"
+      SERVICE_NAME: insights
+      APP_NAME: Shop3iINSIGHTS
+      APP_ENV: testing
+      APP_DEBUG: "false"
+      APP_KEY: ${INSIGHTS_APP_KEY:?Set a separate INSIGHTS encryption key}
+      LOG_CHANNEL: stderr
+      DB_CONNECTION: pgsql
+      DB_HOST: insights-db
+      DB_PORT: 5432
+      DB_DATABASE: insights_test
+      DB_USERNAME: insights_runtime
+      DB_PASSWORD: ${INSIGHTS_DATABASE_PASSWORD:?Set an isolated INSIGHTS database password}
+      SESSION_DRIVER: array
+      CACHE_STORE: array
+    volumes: &insights-volumes
+      - ./test-results/service-runtime/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+    networks: [insights_database, service_transport]
+    depends_on:
+      insights-db: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+  insights-worker:
+    image: ecommerce-portfolio-backend
+    user: www-data
+    environment: *insights-environment
+    volumes: *insights-volumes
+    command: [php, artisan, services:work]
+    networks: [insights_database, service_transport]
+    depends_on:
+      insights-db: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+  service-gateway:
+    networks:
+      service_transport:
+        aliases: [platform-internal, crm-internal, helpdesk-internal, learning-internal, builder-internal, insights-internal]
+    depends_on: [backend, crm, helpdesk, learning, builder, insights]
+networks:
+  insights_database:
+    internal: true
+volumes:
+  insights_test_database:

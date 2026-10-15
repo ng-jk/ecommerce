@@ -1,0 +1,199 @@
+{
+  "get": {
+    "operationId": "standaloneLendingApplications",
+    "description": "Standalone Lending workflow using explicit operator jurisdiction labels and whole-term flat charge terms, not APR. Approval requires a distinct decision maker and a valid first due date. No compliance, disbursement, repayment or account balance is asserted. Submitted terms are immutable; exact integer allocation conserves principal and charges.",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "status",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "submitted",
+            "approved",
+            "rejected",
+            "withdrawn"
+          ]
+        }
+      },
+      {
+        "name": "page",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        }
+      },
+      {
+        "name": "per_page",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Durable command accepted; poll its private result receipt"
+      },
+      "401": {
+        "description": "Token unavailable or revoked"
+      },
+      "403": {
+        "description": "Current membership, role or entitlement denied"
+      },
+      "404": {
+        "description": "Record unavailable in this organization and visibility scope"
+      },
+      "409": {
+        "description": "Version conflict"
+      },
+      "422": {
+        "description": "Strict validation_error field map"
+      },
+      "504": {
+        "description": "Remote Lending command deadline exceeded"
+      }
+    },
+    "x-completed-result": {
+      "description": "Versioned product/application with model-owned options, bounded data/meta page, or approved immutable schedule with integer principal_minor/charge_minor/total_minor and numbered due dates. Whole-term charge is rounded up once; each total is allocated by quotient and remainder."
+    }
+  },
+  "post": {
+    "operationId": "standaloneCreateLendingApplication",
+    "description": "Standalone Lending workflow using explicit operator jurisdiction labels and whole-term flat charge terms, not APR. Approval requires a distinct decision maker and a valid first due date. No compliance, disbursement, repayment or account balance is asserted. Submitted terms are immutable; exact integer allocation conserves principal and charges.",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Durable command accepted; poll its private result receipt"
+      },
+      "401": {
+        "description": "Token unavailable or revoked"
+      },
+      "403": {
+        "description": "Current membership, role or entitlement denied"
+      },
+      "404": {
+        "description": "Record unavailable in this organization and visibility scope"
+      },
+      "409": {
+        "description": "Version conflict"
+      },
+      "422": {
+        "description": "Strict validation_error field map"
+      },
+      "504": {
+        "description": "Remote Lending command deadline exceeded"
+      }
+    },
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "product_id",
+              "principal_minor",
+              "first_due_date",
+              "purpose"
+            ],
+            "properties": {
+              "product_id": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "principal_minor": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000000000
+              },
+              "first_due_date": {
+                "type": "string",
+                "format": "date"
+              },
+              "purpose": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              }
+            }
+          }
+        }
+      }
+    },
+    "x-completed-result": {
+      "description": "Versioned product/application with model-owned options, bounded data/meta page, or approved immutable schedule with integer principal_minor/charge_minor/total_minor and numbered due dates. Whole-term charge is rounded up once; each total is allocated by quotient and remainder."
+    }
+  }
+}

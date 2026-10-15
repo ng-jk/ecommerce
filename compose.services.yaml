@@ -1,0 +1,40 @@
+# Standalone opt-in database-boundary verification. No application is advertised as deployed.
+# Supply three distinct operator-owned secrets; use a fresh named project for each verification.
+services:
+  service-db:
+    image: ${SERVICE_POSTGRES_IMAGE:?Set an approved digest-pinned PostgreSQL image}
+    environment:
+      POSTGRES_USER: service_bootstrap
+      POSTGRES_PASSWORD: ${SERVICE_BOOTSTRAP_PASSWORD:?Set a unique bootstrap password}
+      PLATFORM_DATABASE_PASSWORD: ${PLATFORM_DATABASE_PASSWORD:?Set a unique platform runtime password}
+      DOMAIN_DATABASE_PASSWORD: ${DOMAIN_DATABASE_PASSWORD:?Set a unique domain runtime password}
+    volumes:
+      - service_data:/var/lib/postgresql/data
+      - ./docker/services/isolation.sql:/docker-entrypoint-initdb.d/10-isolation.sql:ro
+    networks: [service_private]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U service_bootstrap -d postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+  isolation-check:
+    image: ${SERVICE_POSTGRES_IMAGE:?Set an approved digest-pinned PostgreSQL image}
+    environment:
+      PLATFORM_DATABASE_PASSWORD: ${PLATFORM_DATABASE_PASSWORD:?Set a unique platform runtime password}
+      DOMAIN_DATABASE_PASSWORD: ${DOMAIN_DATABASE_PASSWORD:?Set a unique domain runtime password}
+    command: [sh, /checks/check-isolation.sh]
+    volumes:
+      - ./docker/services/check-isolation.sh:/checks/check-isolation.sh:ro
+    networks: [service_private]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    depends_on:
+      service-db:
+        condition: service_healthy
+networks:
+  service_private:
+    internal: true
+volumes:
+  service_data:

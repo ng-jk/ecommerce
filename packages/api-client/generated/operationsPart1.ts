@@ -116,422 +116,25 @@ export interface operationsPart1 {
       };
     };
   };
-  login: {
-    parameters: {
-      query?: never;
-      header: {
-        "Idempotency-Key": string;
-        "X-Operation-Token": string;
-      };
-      path: {
-        shop: "fashion" | "electronics";
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          email: string;
-          password: string;
-          device_name?: string;
-        };
-      };
-    };
-    responses: {
-      /** @description Durably accepted. Poll the operation for its result. */
-      202: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["schema-Accepted"];
-        };
-      };
-      /** @description Unauthenticated */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Wrong shop or role */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Not found */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Validation failed */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["schema-Error"];
-        };
-      };
-    };
-  };
-  register: {
-    parameters: {
-      query?: never;
-      header: {
-        "Idempotency-Key": string;
-        "X-Operation-Token": string;
-      };
-      path: {
-        shop: "fashion" | "electronics";
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          name: string;
-          email: string;
-          password: string;
-          password_confirmation: string;
-          device_name?: string;
-        };
-      };
-    };
-    responses: {
-      /** @description Durably accepted. Poll the operation for its result. */
-      202: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["schema-Accepted"];
-        };
-      };
-      /** @description Unauthenticated */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Wrong shop or role */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Not found */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Validation failed */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["schema-Error"];
-        };
-      };
-    };
-  };
-  me: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        shop: "fashion" | "electronics";
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Success */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": {
-            user: components["schemas"]["schema-User"];
-          };
-        };
-      };
-      /** @description Unauthenticated */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Wrong shop or role */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Not found */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Validation failed */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["schema-Error"];
-        };
-      };
-    };
-  };
-  logout: {
-    parameters: {
-      query?: never;
-      header: {
-        "Idempotency-Key": string;
-        "X-Operation-Token": string;
-      };
-      path: {
-        shop: "fashion" | "electronics";
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Durably accepted. Poll the operation for its result. */
-      202: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["schema-Accepted"];
-        };
-      };
-      /** @description Unauthenticated */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  cart: {
-    parameters: {
-      query?: never;
-      header: {
-        "Idempotency-Key": string;
-        "X-Operation-Token": string;
-      };
-      path: {
-        shop: "fashion" | "electronics";
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Durably accepted. Poll the operation for its result. */
-      202: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["schema-Accepted"];
-        };
-      };
-      /** @description Unauthenticated */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Wrong shop or role */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Not found */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Validation failed */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["schema-Error"];
-        };
-      };
-    };
-  };
-  updateCart: {
-    parameters: {
-      query?: never;
-      header: {
-        "Idempotency-Key": string;
-        "X-Operation-Token": string;
-      };
-      path: {
-        shop: "fashion" | "electronics";
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          items: components["schemas"]["schema-CartInput"][];
-          expected_version: number;
-        };
-      };
-    };
-    responses: {
-      /** @description Durably accepted. Poll the operation for its result. */
-      202: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["schema-Accepted"];
-        };
-      };
-      /** @description Unauthenticated */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Wrong shop or role */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Not found */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Validation failed */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["schema-Error"];
-        };
-      };
-    };
-  };
-  checkout: {
-    parameters: {
-      query?: never;
-      header: {
-        "Idempotency-Key": string;
-        "X-Operation-Token": string;
-      };
-      path: {
-        shop: "fashion" | "electronics";
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          /** Format: uuid */
-          checkout_key: string;
-          shipping_address: components["schemas"]["schema-Address"];
-          expected_version: number;
-          /** @description Optional configured payment method identifier or custom method name. Server configuration determines availability. */
-          payment_method?: string;
-        };
-      };
-    };
-    responses: {
-      /** @description Durably accepted. Poll the operation for its result. */
-      202: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["schema-Accepted"];
-        };
-      };
-      /** @description Unauthenticated */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Wrong shop or role */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Not found */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Validation failed */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["schema-Error"];
-        };
-      };
-    };
-  };
-  orders: {
+  solutionOfferings: {
     parameters: {
       query?: {
+        application_key?: string;
         page?: number;
-        /** @description Indexed exact-match filter; status labels and values are supplied in the result options map. */
-        status?: string;
+        per_page?: number;
       };
       header: {
         "Idempotency-Key": string;
         "X-Operation-Token": string;
       };
       path: {
-        shop: "fashion" | "electronics";
+        shop: string;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description Durably accepted. Poll the operation for its result. */
+      /** @description Durably accepted; poll the private operation receipt. */
       202: {
         headers: {
           [name: string]: unknown;
@@ -540,98 +143,44 @@ export interface operationsPart1 {
           "application/json": components["schemas"]["schema-Accepted"];
         };
       };
-      /** @description Unauthenticated */
+      /** @description Authentication required */
       401: {
         headers: {
           [name: string]: unknown;
         };
         content?: never;
       };
-      /** @description Wrong shop or role */
+      /** @description Current shop or organization authority denied */
       403: {
         headers: {
           [name: string]: unknown;
         };
         content?: never;
       };
-      /** @description Not found */
+      /** @description Resource unavailable */
       404: {
         headers: {
           [name: string]: unknown;
         };
         content?: never;
       };
-      /** @description Validation failed */
+      /** @description Idempotency or state conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description validation_error field map */
       422: {
         headers: {
           [name: string]: unknown;
         };
-        content: {
-          "application/json": components["schemas"]["schema-Error"];
-        };
+        content?: never;
       };
     };
   };
-  adminProducts: {
-    parameters: {
-      query?: {
-        page?: number;
-        /** @description Indexed exact-match filter; status labels and values are supplied in the result options map. */
-        category?: string;
-      };
-      header: {
-        "Idempotency-Key": string;
-        "X-Operation-Token": string;
-      };
-      path: {
-        shop: "fashion" | "electronics";
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Durably accepted. Poll the operation for its result. */
-      202: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["schema-Accepted"];
-        };
-      };
-      /** @description Unauthenticated */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Wrong shop or role */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Not found */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Validation failed */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["schema-Error"];
-        };
-      };
-    };
-  };
-  createProduct: {
+  solutionOffering: {
     parameters: {
       query?: never;
       header: {
@@ -639,84 +188,14 @@ export interface operationsPart1 {
         "X-Operation-Token": string;
       };
       path: {
-        shop: "fashion" | "electronics";
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": {
-          name: string;
-          category: string;
-          description: string;
-          image_url: string;
-          price: number;
-          stock: number;
-          active?: boolean;
-          specifications?: {
-            [key: string]: string;
-          } | null;
-        };
-      };
-    };
-    responses: {
-      /** @description Durably accepted. Poll the operation for its result. */
-      202: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["schema-Accepted"];
-        };
-      };
-      /** @description Unauthenticated */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Wrong shop or role */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Not found */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Validation failed */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["schema-Error"];
-        };
-      };
-    };
-  };
-  adminProduct: {
-    parameters: {
-      query?: never;
-      header: {
-        "Idempotency-Key": string;
-        "X-Operation-Token": string;
-      };
-      path: {
-        shop: "fashion" | "electronics";
+        shop: string;
         id: number;
       };
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description Durably accepted. Poll the operation for its result. */
+      /** @description Durably accepted; poll the private operation receipt. */
       202: {
         headers: {
           [name: string]: unknown;
@@ -725,35 +204,561 @@ export interface operationsPart1 {
           "application/json": components["schemas"]["schema-Accepted"];
         };
       };
-      /** @description Unauthenticated */
+      /** @description Authentication required */
       401: {
         headers: {
           [name: string]: unknown;
         };
         content?: never;
       };
-      /** @description Wrong shop or role */
+      /** @description Current shop or organization authority denied */
       403: {
         headers: {
           [name: string]: unknown;
         };
         content?: never;
       };
-      /** @description Not found */
+      /** @description Resource unavailable */
       404: {
         headers: {
           [name: string]: unknown;
         };
         content?: never;
       };
-      /** @description Validation failed */
+      /** @description Idempotency or state conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description validation_error field map */
       422: {
         headers: {
           [name: string]: unknown;
         };
-        content: {
-          "application/json": components["schemas"]["schema-Error"];
+        content?: never;
+      };
+    };
+  };
+  publishSolutionOffering: {
+    parameters: {
+      query?: never;
+      header: {
+        "Idempotency-Key": string;
+        "X-Operation-Token": string;
+      };
+      path: {
+        shop: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          product_id: number;
+          application_key: string;
+          deliverables: string[];
         };
+      };
+    };
+    responses: {
+      /** @description Durably accepted; poll the private operation receipt. */
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["schema-Accepted"];
+        };
+      };
+      /** @description Authentication required */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Current shop or organization authority denied */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Resource unavailable */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Idempotency or state conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description validation_error field map */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  solutionPurchases: {
+    parameters: {
+      query?: {
+        page?: number;
+        per_page?: number;
+      };
+      header: {
+        "Idempotency-Key": string;
+        "X-Operation-Token": string;
+      };
+      path: {
+        shop: string;
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Durably accepted; poll the private operation receipt. */
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["schema-Accepted"];
+        };
+      };
+      /** @description Authentication required */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Current shop or organization authority denied */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Resource unavailable */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Idempotency or state conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description validation_error field map */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  bindSolutionPurchase: {
+    parameters: {
+      query?: never;
+      header: {
+        "Idempotency-Key": string;
+        "X-Operation-Token": string;
+      };
+      path: {
+        shop: string;
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          offering_id: number;
+          order_id: number;
+        };
+      };
+    };
+    responses: {
+      /** @description Durably accepted; poll the private operation receipt. */
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["schema-Accepted"];
+        };
+      };
+      /** @description Authentication required */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Current shop or organization authority denied */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Resource unavailable */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Idempotency or state conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description validation_error field map */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  solutionPurchase: {
+    parameters: {
+      query?: {
+        purchase_id?: number;
+      };
+      header: {
+        "Idempotency-Key": string;
+        "X-Operation-Token": string;
+      };
+      path: {
+        shop: string;
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Durably accepted; poll the private operation receipt. */
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["schema-Accepted"];
+        };
+      };
+      /** @description Authentication required */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Current shop or organization authority denied */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Resource unavailable */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Idempotency or state conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description validation_error field map */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  retrySolutionPurchase: {
+    parameters: {
+      query?: never;
+      header: {
+        "Idempotency-Key": string;
+        "X-Operation-Token": string;
+      };
+      path: {
+        shop: string;
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          purchase_id: number;
+        };
+      };
+    };
+    responses: {
+      /** @description Durably accepted; poll the private operation receipt. */
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["schema-Accepted"];
+        };
+      };
+      /** @description Authentication required */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Current shop or organization authority denied */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Resource unavailable */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Idempotency or state conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description validation_error field map */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  standaloneSolutionPurchases: {
+    parameters: {
+      query?: {
+        page?: number;
+        per_page?: number;
+      };
+      header: {
+        "Idempotency-Key": string;
+        "X-Operation-Token": string;
+      };
+      path: {
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Durably accepted; poll the private operation receipt. */
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["schema-Accepted"];
+        };
+      };
+      /** @description Authentication required */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Current shop or organization authority denied */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Resource unavailable */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Idempotency or state conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description validation_error field map */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  standaloneSolutionPurchase: {
+    parameters: {
+      query?: {
+        purchase_id?: number;
+      };
+      header: {
+        "Idempotency-Key": string;
+        "X-Operation-Token": string;
+      };
+      path: {
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Durably accepted; poll the private operation receipt. */
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["schema-Accepted"];
+        };
+      };
+      /** @description Authentication required */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Current shop or organization authority denied */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Resource unavailable */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Idempotency or state conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description validation_error field map */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  standaloneRetrySolutionPurchase: {
+    parameters: {
+      query?: never;
+      header: {
+        "Idempotency-Key": string;
+        "X-Operation-Token": string;
+      };
+      path: {
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          purchase_id: number;
+        };
+      };
+    };
+    responses: {
+      /** @description Durably accepted; poll the private operation receipt. */
+      202: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["schema-Accepted"];
+        };
+      };
+      /** @description Authentication required */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Current shop or organization authority denied */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Resource unavailable */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Idempotency or state conflict */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description validation_error field map */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
     };
   };

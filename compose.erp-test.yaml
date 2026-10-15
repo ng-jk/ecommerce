@@ -1,0 +1,81 @@
+# Isolated erp integration service; apply after the preceding service overlays.
+services:
+  backend:
+    environment: &erp-core
+      ERP_SERVICE_AVAILABLE: "true"
+      ERP_SERVICE_PROVISIONED: "true"
+      ERP_SERVICE_URL: https://erp-internal/api/v1/internal/services
+      PLATFORM_ERP_SERVICE_KEY: ${PLATFORM_ERP_SERVICE_KEY:?Set a separate Helpdesk service key}
+  worker:
+    environment: *erp-core
+  service-worker:
+    environment: *erp-core
+  erp-db:
+    image: postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: erp_bootstrap
+      POSTGRES_PASSWORD: ${ERP_BOOTSTRAP_PASSWORD:?Set a separate ERP bootstrap password}
+      ERP_DATABASE_PASSWORD: ${ERP_DATABASE_PASSWORD:?Set an isolated ERP database password}
+    volumes:
+      - erp_test_database:/var/lib/postgresql/data
+      - ./docker/services/erp-init.sql:/docker-entrypoint-initdb.d/10-erp.sql:ro
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U erp_bootstrap -d postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks: [erp_database]
+  erp:
+    image: ecommerce-portfolio-backend
+    user: www-data
+    environment: &erp-environment
+      SERVICE_EXCHANGE_ENABLED: "true"
+      PLATFORM_ERP_SERVICE_KEY: ${PLATFORM_ERP_SERVICE_KEY:?Set a separate Helpdesk service key}
+      PLATFORM_SERVICE_URL: https://platform-internal/api/v1/internal/services
+      ERP_SERVICE_AVAILABLE: "true"
+      ERP_SERVICE_PROVISIONED: "true"
+      SERVICE_NAME: erp
+      APP_NAME: Shop3iERP
+      APP_ENV: testing
+      APP_DEBUG: "false"
+      APP_KEY: ${ERP_APP_KEY:?Set a separate ERP encryption key}
+      LOG_CHANNEL: stderr
+      DB_CONNECTION: pgsql
+      DB_HOST: erp-db
+      DB_PORT: 5432
+      DB_DATABASE: erp_test
+      DB_USERNAME: erp_runtime
+      DB_PASSWORD: ${ERP_DATABASE_PASSWORD:?Set an isolated ERP database password}
+      SESSION_DRIVER: array
+      CACHE_STORE: array
+    volumes: &erp-volumes
+      - ./test-results/service-runtime/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+    networks: [erp_database, service_transport]
+    depends_on:
+      erp-db: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+  erp-worker:
+    image: ecommerce-portfolio-backend
+    user: www-data
+    environment: *erp-environment
+    volumes: *erp-volumes
+    command: [php, artisan, services:work]
+    networks: [erp_database, service_transport]
+    depends_on:
+      erp-db: {condition: service_healthy}
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+  service-gateway:
+    networks:
+      service_transport:
+        aliases: [platform-internal, crm-internal, helpdesk-internal, learning-internal, builder-internal, insights-internal, erp-internal]
+    depends_on: [backend, crm, helpdesk, learning, builder, insights, erp]
+networks:
+  erp_database:
+    internal: true
+volumes:
+  erp_test_database:

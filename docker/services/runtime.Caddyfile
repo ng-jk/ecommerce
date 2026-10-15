@@ -1,0 +1,109 @@
+{
+    auto_https off
+    admin off
+}
+https://platform-internal {
+    tls /certificates/services.crt /certificates/services.key
+    @service path /api/v1/internal/services/*
+    handle @service {
+        root * /var/www/html/public
+        php_fastcgi backend:9000
+    }
+    handle {
+        respond "Not found" 404
+    }
+}
+https://crm-internal {
+    tls /certificates/services.crt /certificates/services.key
+    @service path /api/v1/internal/services/inbox /api/v1/internal/services/result-authority
+    handle @service {
+        root * /var/www/html/public
+        php_fastcgi crm:9000
+    }
+    handle {
+        respond "Not found" 404
+    }
+}
+https://helpdesk-internal {
+    tls /certificates/services.crt /certificates/services.key
+    @service path /api/v1/internal/services/inbox /api/v1/internal/services/result-authority
+    handle @service {
+        root * /var/www/html/public
+        php_fastcgi helpdesk:9000
+    }
+    handle {
+        respond "Not found" 404
+    }
+}
+
+https://learning-internal {
+    tls /certificates/services.crt /certificates/services.key
+    @service path /api/v1/internal/services/inbox /api/v1/internal/services/result-authority
+    handle @service {
+        root * /var/www/html/public
+        php_fastcgi learning:9000
+    }
+    handle {
+        respond "Not found" 404
+    }
+}
+
+https://builder-internal {
+    tls /certificates/services.crt /certificates/services.key
+    @service path /api/v1/internal/services/inbox /api/v1/internal/services/result-authority
+    handle @service {
+        root * /var/www/html/public
+        php_fastcgi builder:9000
+    }
+    handle {
+        respond "Not found" 404
+    }
+}
+
+https://insights-internal {
+    tls /certificates/services.crt /certificates/services.key
+    @service path /api/v1/internal/services/inbox /api/v1/internal/services/result-authority
+    handle @service {
+        root * /var/www/html/public
+        php_fastcgi insights:9000
+    }
+    handle {
+        respond "Not found" 404
+    }
+}
+
+https://erp-internal {
+    tls /certificates/services.crt /certificates/services.key
+    @service path /api/v1/internal/services/inbox /api/v1/internal/services/result-authority
+    handle @service {
+        root * /var/www/html/public
+        php_fastcgi erp:9000
+    }
+    handle {
+        respond "Not found" 404
+    }
+}
+
+https://hr-internal {
+    tls /certificates/services.crt /certificates/services.key
+    @service path /api/v1/internal/services/inbox /api/v1/internal/services/result-authority
+    handle @service {
+        root * /var/www/html/public
+        php_fastcgi hr:9000
+    }
+    handle {
+        respond "Not found" 404
+    }
+}
+
+https://lending-internal {
+    tls /certificates/services.crt /certificates/services.key
+    @service path /api/v1/internal/services/inbox /api/v1/internal/services/result-authority
+    handle @service {
+        root * /var/www/html/public
+        php_fastcgi lending:9000
+    }
+    handle {
+        respond "Not found" 404
+    }
+}

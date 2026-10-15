@@ -1,0 +1,281 @@
+{
+  "post": {
+    "operationId": "builderPublishPage",
+    "description": "Owner: publish an immutable snapshot of the current draft.",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Committed Builder operation; poll its private receipt.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Accepted"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current organization membership or Builder entitlement denied"
+      },
+      "404": {
+        "description": "Builder page unavailable in this organization"
+      },
+      "409": {
+        "description": "Version conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      },
+      "504": {
+        "description": "Remote Builder command deadline exceeded"
+      }
+    },
+    "x-completed-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "page",
+        "options"
+      ],
+      "properties": {
+        "page": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "slug",
+            "title",
+            "blocks",
+            "status",
+            "version",
+            "published_version",
+            "published_at"
+          ],
+          "properties": {
+            "id": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "slug": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "title": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "blocks": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "type",
+                      "text",
+                      "level"
+                    ],
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "heading"
+                        ]
+                      },
+                      "text": {
+                        "type": "string",
+                        "maxLength": 200
+                      },
+                      "level": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 3
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "type",
+                      "text"
+                    ],
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "paragraph"
+                        ]
+                      },
+                      "text": {
+                        "type": "string",
+                        "maxLength": 2000
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "type",
+                      "src",
+                      "alt"
+                    ],
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "image"
+                        ]
+                      },
+                      "src": {
+                        "type": "string",
+                        "format": "uri",
+                        "pattern": "^https://"
+                      },
+                      "alt": {
+                        "type": "string",
+                        "maxLength": 200
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "type",
+                      "label",
+                      "url"
+                    ],
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "button"
+                        ]
+                      },
+                      "label": {
+                        "type": "string",
+                        "maxLength": 100
+                      },
+                      "url": {
+                        "type": "string",
+                        "format": "uri",
+                        "pattern": "^https://"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "status": {
+              "enum": [
+                "draft",
+                "published"
+              ]
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "published_version": {
+              "type": "integer",
+              "minimum": 0,
+              "nullable": true
+            },
+            "published_at": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            }
+          }
+        },
+        "options": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "block_type"
+          ],
+          "properties": {
+            "status": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "block_type": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "expected_version"
+            ],
+            "properties": {
+              "expected_version": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

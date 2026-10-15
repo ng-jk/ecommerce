@@ -1,0 +1,189 @@
+{
+  "post": {
+    "operationId": "standaloneLearningCreateCourse",
+    "description": "Standalone Learning command. Current platform identity, membership, installation, entitlement and role are checked before the isolated effect. Paid learner access requires a service-local verified settlement grant. Lesson delivery is not proof of study.",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Durable command accepted; poll its private result receipt"
+      },
+      "401": {
+        "description": "Token unavailable or revoked"
+      },
+      "403": {
+        "description": "Current membership, role or entitlement denied"
+      },
+      "404": {
+        "description": "Course or record unavailable in this organization and visibility scope"
+      },
+      "409": {
+        "description": "Version, publication, or attempt-limit conflict"
+      },
+      "422": {
+        "description": "Strict validation_error field map"
+      },
+      "504": {
+        "description": "Remote Learning command deadline exceeded"
+      }
+    },
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "title",
+              "description",
+              "access_mode"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 80,
+                "pattern": "^[a-z][a-z0-9-]*$"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 10000
+              },
+              "access_mode": {
+                "type": "string",
+                "enum": [
+                  "free",
+                  "paid"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "x-completed-result": {
+      "description": "Scoped business result, or bounded data/meta page for lists."
+    }
+  },
+  "get": {
+    "operationId": "standaloneLearningCourses",
+    "description": "Standalone Learning command. Current platform identity, membership, installation, entitlement and role are checked before the isolated effect. Paid learner access requires a service-local verified settlement grant. Lesson delivery is not proof of study.",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "page",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        }
+      },
+      {
+        "name": "per_page",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Durable command accepted; poll its private result receipt"
+      },
+      "401": {
+        "description": "Token unavailable or revoked"
+      },
+      "403": {
+        "description": "Current membership, role or entitlement denied"
+      },
+      "404": {
+        "description": "Course or record unavailable in this organization and visibility scope"
+      },
+      "409": {
+        "description": "Version, publication, or attempt-limit conflict"
+      },
+      "422": {
+        "description": "Strict validation_error field map"
+      },
+      "504": {
+        "description": "Remote Learning command deadline exceeded"
+      }
+    },
+    "x-completed-result": {
+      "description": "Scoped business result, or bounded data/meta page for lists."
+    }
+  }
+}

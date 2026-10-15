@@ -18,3 +18,5 @@ export { HomeScreen } from "./screens/home_screen";
 export { OrdersScreen } from "./screens/orders_screen";
 export { ProductScreen } from "./screens/product_screen";
 export { themes, useStore } from "./screens/store_shell_screen";
+export { displayRows, nextChoice } from "./services/assistant";
+export { useAssistantSession } from "./screens/assistant_screen";

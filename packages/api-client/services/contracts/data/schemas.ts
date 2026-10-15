@@ -43,6 +43,7 @@ export const cart = z.object({
 export const order = z.object({
   id: integer,
   shop_id: integer,
+  solution_offering_id: integer.nullable().optional(),
   status: z.string(),
   total: integer,
   subtotal: integer,
@@ -108,7 +109,9 @@ export const errorBody = z.object({
 export const accepted = z.object({
   operation_id: z.string().uuid(),
   status: z.string(),
-  poll_url: z.string().startsWith("/api/v1/shops/"),
+  poll_url: z
+    .string()
+    .regex(/^\/api\/v1\/(?:shops\/[^/]+|platform)\/operations\/[a-f0-9-]+$/),
 });
 export const operation = z.object({
   operation_id: z.string().uuid(),

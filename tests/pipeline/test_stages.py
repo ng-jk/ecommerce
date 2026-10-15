@@ -30,7 +30,7 @@ def test_isolated_environment_preserves_existing_configuration(tmp_path, monkeyp
     assert stages.os.environ["DB_PASSWORD"] == "configured"
 
 
-def test_build_and_api_stages_are_ordered_and_isolated(commands):
+def test_build_and_api_stages_are_ordered_and_isolated(commands, monkeypatch):
     stages.build()
     assert [call[0][-1] for call in commands] == [
         "backend",
@@ -39,6 +39,12 @@ def test_build_and_api_stages_are_ordered_and_isolated(commands):
         "admin",
     ]
     commands.clear()
+    monkeypatch.setattr(stages.service_runtime, "compose", lambda: stages.COMPOSE)
+    monkeypatch.setattr(
+        stages.service_runtime,
+        "start",
+        lambda command: stages.run([*command, "up", "-d", "db", "backend"]),
+    )
     stages.integration()
     assert all("commerce-tests" in call[0] for call in commands[:5])
     assert commands[1][0][-2:] == ["migrate", "--force"]
@@ -73,11 +79,13 @@ def test_unit_coverage_and_optional_browser_commands(commands, monkeypatch, exis
     )
     assert "tests/deployment" in commands[0][0]
     assert "--cov=tools.manual_release" in commands[0][0]
+    assert "--cov=tools.service_release" in commands[0][0]
     assert "--cov-fail-under=100" in commands[0][0]
     assert "--coverage.thresholds.branches=100" in commands[1][0]
     assert "--cov-fail-under=100" in commands[2][0]
     assert "--cov=tools.context_index" in commands[2][0]
     assert "--cov=tools.lifecycle" in commands[2][0]
+    assert "--cov=tools.service_release" in commands[2][0]
     assert "--coverage-clover=/reports/sqlite.xml" in commands[4][0]
     assert any("--cov=interfaces/python/shop3i/shop3i" in args for args, _ in commands)
     assert any("--cov=extensions/runtime" in args for args, _ in commands)

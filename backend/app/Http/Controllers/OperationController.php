@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Domain\AccessPolicy;
+use App\Domain\SolutionCommerce;
 use App\Models\Operation;
 use App\Models\Shop;
 use App\Models\User;
 use App\Modules\Events\Interface\Events;
+use App\Modules\Platform\MembershipActions;
 use App\Modules\Platform\OrganizationActions;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,7 +24,7 @@ class OperationController extends Controller
     {
         abort_if(strlen($request->getContent()) > 65536, 413);
         $action = $request->route()->getName();
-        $public = in_array($action, ['catalog', 'product', 'auth.login', 'auth.register', 'assistant'], true);
+        $public = in_array($action, ['catalog', 'product', 'solutions.offerings', 'solutions.offering', 'auth.login', 'auth.register', 'assistant'], true);
         $user = $request->user('sanctum');
         abort_unless($public || $user, 401);
         if ($user) {
@@ -38,6 +40,9 @@ class OperationController extends Controller
         $receipt = $request->header('X-Operation-Token');
         $this->validate(Request::create('/', 'POST', ['key' => $key, 'receipt' => $receipt]), ['key' => 'required|uuid', 'receipt' => 'required|string|size:64|regex:/^[a-f0-9]+$/']);
         $payload = ['input' => $request->all(), 'id' => $request->route('id')];
+        if ($request->route('membership_id') !== null) {
+            $payload['membership_id'] = $request->route('membership_id');
+        }
         $hash = hash_hmac('sha256', json_encode([$action, $this->canonical($payload)], JSON_THROW_ON_ERROR), config('app.key'));
         $scope = $shop->id.':'.($user?->id ?? 'guest').':'.$action;
         $operation = DB::transaction(function () use ($scope, $key, $hash, $receipt, $shop, $user, $action, $payload) {
@@ -81,7 +86,9 @@ class OperationController extends Controller
             abort_unless($viewer, 404);
             app(AccessPolicy::class)->enforce($effectiveAction, $viewer);
             if ($op->status === Operation::Succeeded) {
-                app(OrganizationActions::class)->authorizeResult($viewer, $effectiveAction, $op->payload, $effectiveResult ?? []);
+                $guard = str_starts_with($effectiveAction, 'platform.solution.') ? app(SolutionCommerce::class)
+                    : (str_starts_with($effectiveAction, 'platform.membership') ? app(MembershipActions::class) : app(OrganizationActions::class));
+                $guard->authorizeResult($viewer, $effectiveAction, $op->payload, $effectiveResult ?? []);
             }
         }
 

@@ -1,0 +1,1 @@
+This screen delegates its data adapter to the typed shop solution client exported by `@portfolio/storefront`. The logic hooks call that public client through `useStore`; no screen-local transport or persisted state is required.

@@ -1,0 +1,75 @@
+{
+  "get": {
+    "operationId": "standaloneLearningAuthorLesson",
+    "description": "Standalone Learning command. Current platform identity, membership, installation, entitlement and role are checked before the isolated effect. Paid learner access requires a service-local verified settlement grant. Lesson delivery is not proof of study.",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Durable command accepted; poll its private result receipt"
+      },
+      "401": {
+        "description": "Token unavailable or revoked"
+      },
+      "403": {
+        "description": "Current membership, role or entitlement denied"
+      },
+      "404": {
+        "description": "Course or record unavailable in this organization and visibility scope"
+      },
+      "409": {
+        "description": "Version, publication, or attempt-limit conflict"
+      },
+      "422": {
+        "description": "Strict validation_error field map"
+      },
+      "504": {
+        "description": "Remote Learning command deadline exceeded"
+      }
+    },
+    "x-completed-result": {
+      "description": "Scoped business result, or bounded data/meta page for lists."
+    }
+  }
+}

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Domain\OperationProcessor;
+use App\Models\ApplicationEntitlementGrant;
 use App\Models\Operation;
 use App\Models\Organization;
 use App\Models\OrganizationApplication;
@@ -65,6 +66,7 @@ class OrganizationWorkspaceTest extends TestCase
             'role' => OrganizationMembership::Owner, 'status' => OrganizationMembership::Active]);
         OrganizationApplication::factory()->create(['organization_id' => $organization->id,
             'application_key' => 'framework', 'state' => OrganizationApplication::Installed]);
+        ApplicationEntitlementGrant::factory()->create(['organization_id' => $organization->id]);
 
         return $organization;
     }

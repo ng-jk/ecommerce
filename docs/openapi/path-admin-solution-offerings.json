@@ -1,0 +1,105 @@
+{
+  "post": {
+    "operationId": "publishSolutionOffering",
+    "parameters": [
+      {
+        "name": "shop",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "maxLength": 80
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Durably accepted; poll the private operation receipt.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Accepted"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current shop or organization authority denied"
+      },
+      "404": {
+        "description": "Resource unavailable"
+      },
+      "409": {
+        "description": "Idempotency or state conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      }
+    },
+    "description": "Durable worker command; payment authority is verified by the payment worker.",
+    "security": [
+      {
+        "cookieAuth": []
+      },
+      {
+        "bearerAuth": []
+      }
+    ],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "product_id": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "application_key": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "deliverables": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 20,
+                "items": {
+                  "type": "string",
+                  "maxLength": 160
+                }
+              }
+            },
+            "required": [
+              "product_id",
+              "application_key",
+              "deliverables"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  }
+}

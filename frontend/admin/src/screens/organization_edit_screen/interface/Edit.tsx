@@ -9,7 +9,22 @@ export function Edit() {
   const { user, detail, failed, retry } = useOrganizationEdit(params.id);
   return (
     <AdminPage title="Edit organization">
-      {!user ? <Copy>Sign in to edit this organization.</Copy> : !detail ? failed ? <><Copy>Could not load organization.</Copy><Button title="Retry" onPress={retry} /></> : <Copy>Loading organization…</Copy> : detail.can_update ? <Form initial={detail.organization} /> : <Copy>Only the organization owner can rename it.</Copy>}
+      {!user ? (
+        <Copy>Sign in to edit this organization.</Copy>
+      ) : !detail ? (
+        failed ? (
+          <>
+            <Copy>Could not load organization.</Copy>
+            <Button title="Retry" onPress={retry} />
+          </>
+        ) : (
+          <Copy>Loading organization…</Copy>
+        )
+      ) : detail.can_update ? (
+        <Form initial={detail.organization} />
+      ) : (
+        <Copy>Only the organization owner can rename it.</Copy>
+      )}
     </AdminPage>
   );
 }

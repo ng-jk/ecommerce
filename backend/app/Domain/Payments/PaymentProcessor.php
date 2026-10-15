@@ -2,6 +2,7 @@
 
 namespace App\Domain\Payments;
 
+use App\Domain\SolutionCommerce;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\PaymentEvent;
@@ -136,6 +137,9 @@ class PaymentProcessor
             $payment->fill(['bill_id' => $id, 'checkout_url' => $payment->status === Payment::Pending ? $url : null,
                 'lease' => null, 'lease_until' => null, 'attempts' => 0,
                 'next_check_at' => $payment->status === Payment::Pending && $payment->provider !== 'custom' ? now()->addMinutes(5) : null])->save();
+            if ($payment->status === Payment::Paid && $previousStatus !== Payment::Paid) {
+                app(SolutionCommerce::class)->settle($payment, $order);
+            }
             if ($event) {
                 $event->update(['processed_at' => now()]);
             }

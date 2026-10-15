@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\ApplicationEntitlementGrant;
 use App\Models\Organization;
 use App\Models\OrganizationApplication;
 use App\Models\OrganizationMembership;
@@ -35,6 +36,7 @@ class OrganizationFoundationTest extends TestCase
             'application_key' => 'framework',
             'state' => OrganizationApplication::Installed,
         ]);
+        ApplicationEntitlementGrant::factory()->create(['organization_id' => $organization->id]);
         config(['platform.applications.framework.available' => true]);
 
         return compact('user', 'organization', 'membership', 'application');
@@ -136,6 +138,8 @@ class OrganizationFoundationTest extends TestCase
         ['user' => $user, 'organization' => $organization, 'membership' => $membership] = $this->fixture();
         $access = app(OrganizationAccess::class);
         OrganizationApplication::create(['organization_id' => $organization->id, 'application_key' => 'commerce', 'state' => OrganizationApplication::Installed]);
+        ApplicationEntitlementGrant::factory()->create(['organization_id' => $organization->id,
+            'application_key' => 'commerce', 'source' => ApplicationEntitlementGrant::Operator]);
         OrganizationApplication::create(['organization_id' => $organization->id, 'application_key' => 'unknown', 'state' => OrganizationApplication::Installed]);
         config(['platform.applications.unknown' => ['available' => true]]);
         $first = $access->grantedApplications($user, $organization->id, 1, 1);

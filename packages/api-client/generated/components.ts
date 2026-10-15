@@ -147,10 +147,14 @@ export interface components {
       name: string;
       price: number;
       quantity: number;
+      /** @description Immutable offering version for a solution line. */
+      solution_offering_id?: number;
     };
     "schema-Order": {
       id: number;
       shop_id: number;
+      /** @description Immutable solution offering selected by the server at checkout, or null for an ordinary order. */
+      solution_offering_id: number | null;
       /** @enum {string} */
       status: "placed" | "processing" | "shipped" | "completed";
       /** @description Configured provider identifier such as stripe, billplz, simulated, or a custom method name. */

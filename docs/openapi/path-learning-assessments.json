@@ -1,0 +1,145 @@
+{
+  "post": {
+    "operationId": "standaloneLearningCreateAssessment",
+    "description": "Standalone Learning command. Current platform identity, membership, installation, entitlement and role are checked before the isolated effect. Paid learner access requires a service-local verified settlement grant. Lesson delivery is not proof of study.",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Durable command accepted; poll its private result receipt"
+      },
+      "401": {
+        "description": "Token unavailable or revoked"
+      },
+      "403": {
+        "description": "Current membership, role or entitlement denied"
+      },
+      "404": {
+        "description": "Course or record unavailable in this organization and visibility scope"
+      },
+      "409": {
+        "description": "Version, publication, or attempt-limit conflict"
+      },
+      "422": {
+        "description": "Strict validation_error field map"
+      },
+      "504": {
+        "description": "Remote Learning command deadline exceeded"
+      }
+    },
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "course_id",
+              "expected_version",
+              "title",
+              "questions",
+              "pass_score",
+              "attempt_limit"
+            ],
+            "properties": {
+              "course_id": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "expected_version": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "questions": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 20,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "prompt",
+                    "options",
+                    "correct_index"
+                  ],
+                  "properties": {
+                    "prompt": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    },
+                    "options": {
+                      "type": "array",
+                      "minItems": 2,
+                      "maxItems": 6,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      }
+                    },
+                    "correct_index": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  }
+                }
+              },
+              "pass_score": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "attempt_limit": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10
+              }
+            }
+          }
+        }
+      }
+    },
+    "x-completed-result": {
+      "description": "Scoped business result, or bounded data/meta page for lists."
+    }
+  }
+}

@@ -88,8 +88,12 @@ class AccessPolicyTest extends TestCase
 
     public function test_every_business_action_has_an_explicit_permission_configuration(): void
     {
-        $names = array_column(array_filter(app(ToolRegistry::class)->all(), fn ($tool) => $tool['callable']), 'action');
+        $tools = array_filter(app(ToolRegistry::class)->all(), fn ($tool) => $tool['callable']);
+        $names = array_column(array_filter($tools, fn ($tool) => str_contains($tool['path'], '/shops/{shop}/')), 'action');
         $this->assertEqualsCanonicalizing($names, array_keys(config('commerce.actions')));
+        $platformNames = array_map(fn ($tool) => str_replace('standalone.', '', $tool['action']),
+            array_filter($tools, fn ($tool) => str_starts_with($tool['path'], '/api/v1/platform/')));
+        $this->assertEqualsCanonicalizing(array_values($platformNames), array_values(array_diff(array_keys(config('platform.actions')), ['platform.assistant'])));
         $this->assertSame(['guest', 'customer', 'admin'], app(AccessPolicy::class)->roles('catalog'));
     }
 }

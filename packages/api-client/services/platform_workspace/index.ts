@@ -1,2 +1,2 @@
 export { createPlatformWorkspace } from "./data/workspace";
-export type { Organization } from "./logic/contracts";
+export type { Organization, Membership } from "./logic/contracts";

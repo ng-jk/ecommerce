@@ -7,6 +7,7 @@ import shlex
 import subprocess
 import sys
 
+from . import service_runtime
 from .backend_coverage import require_complete_coverage
 from .runner import ROOT, npm, run
 
@@ -40,11 +41,12 @@ def build() -> None:
 
 def integration() -> None:
     test_environment()
-    run([*COMPOSE, "up", "-d", "--no-build", "--wait", "db", "backend"], timeout=180)
-    run([*COMPOSE, "exec", "-T", "backend", "php", "artisan", "migrate", "--force"])
-    run([*COMPOSE, "exec", "-T", "backend", "php", "artisan", "db:seed", "--force"])
-    run([*COMPOSE, "exec", "-T", "backend", "php", "artisan", "payments:test-seed"])
-    run([*COMPOSE, "up", "-d", "--no-build", "--wait"], timeout=180)
+    command = service_runtime.compose()
+    service_runtime.start(command)
+    run([*command, "exec", "-T", "backend", "php", "artisan", "migrate", "--force"])
+    run([*command, "exec", "-T", "backend", "php", "artisan", "db:seed", "--force"])
+    run([*command, "exec", "-T", "backend", "php", "artisan", "payments:test-seed"])
+    run([*command, "up", "-d", "--no-build", "--wait"], timeout=180)
     run(
         [
             sys.executable,
@@ -152,6 +154,7 @@ def coverage() -> None:
             "--basetemp=test-results/pytest-release-coverage",
             "--cov=tools.release_probe",
             "--cov=tools.release_guard",
+            "--cov=tools.service_release",
             "--cov-branch",
             "--cov-fail-under=100",
             "--cov-report=json:test-results/manual-release-coverage.json",
@@ -181,6 +184,7 @@ def coverage() -> None:
             "--basetemp=test-results/pytest-pipeline-coverage",
             "--cov=tools.context_index",
             "--cov=tools.lifecycle",
+            "--cov=tools.service_release",
             "--cov-branch",
             "--cov-report=json:test-results/python-coverage.json",
             "--cov-fail-under=100",

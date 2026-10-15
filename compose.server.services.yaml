@@ -1,0 +1,298 @@
+# Server-only overlay. Generate SERVICE_RUNTIME_DIR using tools/service_release.py.
+# Each domain receives one private env file; no foreign database credentials.
+x-service-volumes: &service-volumes
+  - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/ca.crt:/certificates/ca.crt:ro
+  - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+services:
+  backend:
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/platform.env"]
+    networks: [application, supabase, service_transport]
+    volumes: *service-volumes
+  worker:
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/platform.env"]
+    networks: [application, supabase, service_transport]
+    volumes: *service-volumes
+  service-worker:
+    extends:
+      file: compose.server.yaml
+      service: worker
+    command: [php, -d, memory_limit=64M, artisan, services:work]
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/platform.env"]
+    networks: [application, supabase, service_transport]
+    volumes: *service-volumes
+    mem_limit: 96m
+    pids_limit: 24
+    restart: unless-stopped
+  crm:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:?Set verified release}
+    user: www-data
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/crm.env"]
+    command: [php-fpm, -d, memory_limit=64M]
+    networks: [supabase, service_transport]
+    volumes:
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/pool.conf:/usr/local/etc/php-fpm.d/zz-service-pool.conf:ro
+    mem_limit: 128m
+    pids_limit: 24
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+    restart: unless-stopped
+  crm-worker:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:?Set verified release}
+    user: www-data
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/crm.env"]
+    command: [php, -d, memory_limit=64M, artisan, services:work]
+    networks: [supabase, service_transport]
+    volumes:
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+    mem_limit: 96m
+    pids_limit: 24
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+    restart: unless-stopped
+  helpdesk:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:?Set verified release}
+    user: www-data
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/helpdesk.env"]
+    command: [php-fpm, -d, memory_limit=64M]
+    networks: [supabase, service_transport]
+    volumes:
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/pool.conf:/usr/local/etc/php-fpm.d/zz-service-pool.conf:ro
+    mem_limit: 128m
+    pids_limit: 24
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+    restart: unless-stopped
+  helpdesk-worker:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:?Set verified release}
+    user: www-data
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/helpdesk.env"]
+    command: [php, -d, memory_limit=64M, artisan, services:work]
+    networks: [supabase, service_transport]
+    volumes:
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+    mem_limit: 96m
+    pids_limit: 24
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+    restart: unless-stopped
+  learning:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:?Set verified release}
+    user: www-data
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/learning.env"]
+    command: [php-fpm, -d, memory_limit=64M]
+    networks: [supabase, service_transport]
+    volumes:
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/pool.conf:/usr/local/etc/php-fpm.d/zz-service-pool.conf:ro
+    mem_limit: 128m
+    pids_limit: 24
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+    restart: unless-stopped
+  learning-worker:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:?Set verified release}
+    user: www-data
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/learning.env"]
+    command: [php, -d, memory_limit=64M, artisan, services:work]
+    networks: [supabase, service_transport]
+    volumes:
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+    mem_limit: 96m
+    pids_limit: 24
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+    restart: unless-stopped
+  builder:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:?Set verified release}
+    user: www-data
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/builder.env"]
+    command: [php-fpm, -d, memory_limit=64M]
+    networks: [supabase, service_transport]
+    volumes:
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/pool.conf:/usr/local/etc/php-fpm.d/zz-service-pool.conf:ro
+    mem_limit: 128m
+    pids_limit: 24
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+    restart: unless-stopped
+  builder-worker:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:?Set verified release}
+    user: www-data
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/builder.env"]
+    command: [php, -d, memory_limit=64M, artisan, services:work]
+    networks: [supabase, service_transport]
+    volumes:
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+    mem_limit: 96m
+    pids_limit: 24
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+    restart: unless-stopped
+  insights:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:?Set verified release}
+    user: www-data
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/insights.env"]
+    command: [php-fpm, -d, memory_limit=64M]
+    networks: [supabase, service_transport]
+    volumes:
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/pool.conf:/usr/local/etc/php-fpm.d/zz-service-pool.conf:ro
+    mem_limit: 128m
+    pids_limit: 24
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+    restart: unless-stopped
+  insights-worker:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:?Set verified release}
+    user: www-data
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/insights.env"]
+    command: [php, -d, memory_limit=64M, artisan, services:work]
+    networks: [supabase, service_transport]
+    volumes:
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+    mem_limit: 96m
+    pids_limit: 24
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+    restart: unless-stopped
+  erp:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:?Set verified release}
+    user: www-data
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/erp.env"]
+    command: [php-fpm, -d, memory_limit=64M]
+    networks: [supabase, service_transport]
+    volumes:
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/pool.conf:/usr/local/etc/php-fpm.d/zz-service-pool.conf:ro
+    mem_limit: 128m
+    pids_limit: 24
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+    restart: unless-stopped
+  erp-worker:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:?Set verified release}
+    user: www-data
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/erp.env"]
+    command: [php, -d, memory_limit=64M, artisan, services:work]
+    networks: [supabase, service_transport]
+    volumes:
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+    mem_limit: 96m
+    pids_limit: 24
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+    restart: unless-stopped
+  hr:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:?Set verified release}
+    user: www-data
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/hr.env"]
+    command: [php-fpm, -d, memory_limit=64M]
+    networks: [supabase, service_transport]
+    volumes:
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/pool.conf:/usr/local/etc/php-fpm.d/zz-service-pool.conf:ro
+    mem_limit: 128m
+    pids_limit: 24
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+    restart: unless-stopped
+  hr-worker:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:?Set verified release}
+    user: www-data
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/hr.env"]
+    command: [php, -d, memory_limit=64M, artisan, services:work]
+    networks: [supabase, service_transport]
+    volumes:
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+    mem_limit: 96m
+    pids_limit: 24
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+    restart: unless-stopped
+  lending:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:?Set verified release}
+    user: www-data
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/lending.env"]
+    command: [php-fpm, -d, memory_limit=64M]
+    networks: [supabase, service_transport]
+    volumes:
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/pool.conf:/usr/local/etc/php-fpm.d/zz-service-pool.conf:ro
+    mem_limit: 128m
+    pids_limit: 24
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+    restart: unless-stopped
+  lending-worker:
+    image: ${APP_IMAGE_PREFIX:-shop3i}/backend:${RELEASE_ID:?Set verified release}
+    user: www-data
+    env_file: ["${SERVICE_RUNTIME_DIR:?Prepare service runtime}/lending.env"]
+    command: [php, -d, memory_limit=64M, artisan, services:work]
+    networks: [supabase, service_transport]
+    volumes:
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/ca.crt:/certificates/ca.crt:ro
+      - ./docker/services/trust.ini:/usr/local/etc/php/conf.d/zz-service-trust.ini:ro
+    mem_limit: 96m
+    pids_limit: 24
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 40s
+    restart: unless-stopped
+  service-gateway:
+    image: caddy@sha256:de23def33b17fb5d1290b0f6c2add1d70780e52341896c00a4c8a2a2fe9d355e
+    user: ${SERVICE_RUNTIME_UID:?Prepare service runtime}:${SERVICE_RUNTIME_GID:?Prepare service runtime}
+    cap_drop: [ALL]
+    read_only: true
+    sysctls:
+      net.ipv4.ip_unprivileged_port_start: "0"
+    tmpfs:
+      - /config:uid=${SERVICE_RUNTIME_UID},gid=${SERVICE_RUNTIME_GID},mode=0700,size=16m
+      - /data:uid=${SERVICE_RUNTIME_UID},gid=${SERVICE_RUNTIME_GID},mode=0700,size=16m
+    volumes:
+      - ./docker/services/server.Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./backend/public:/var/www/html/public:ro
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/services.crt:/certificates/services.crt:ro
+      - ${SERVICE_RUNTIME_DIR:?Prepare service runtime}/certificates/services.key:/certificates/services.key:ro
+    networks:
+      service_transport:
+        aliases: [platform-internal, crm-internal, helpdesk-internal, learning-internal, builder-internal, insights-internal, erp-internal, hr-internal, lending-internal]
+    mem_limit: 64m
+    pids_limit: 48
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+networks:
+  service_transport:
+    internal: true

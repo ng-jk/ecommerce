@@ -8,7 +8,9 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Shop;
 use App\Models\User;
+use App\Modules\Platform\MembershipActions;
 use App\Modules\Platform\OrganizationActions;
+use App\Modules\Platform\PlatformActionExecutor;
 use App\Plugins\Loyalty\LoyaltyPlugin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +22,9 @@ class ActionExecutor
 {
     public function execute(Operation $op): array
     {
+        if ($op->shop_id === null) {
+            return app(PlatformActionExecutor::class)->execute($op);
+        }
         $shop = Shop::findOrFail($op->shop_id);
         $user = $op->user_id ? User::lockForUpdate()->find($op->user_id) : null;
         if ($op->user_id) {
@@ -65,11 +70,14 @@ class ActionExecutor
             Auth::guard()->setUser($user);
         }
         $store = app(StoreActions::class);
+        $solutions = app(SolutionActions::class);
         $admin = app(AdminActions::class);
         $plugins = app(PluginActions::class);
         $miniApps = app(MiniAppActions::class);
         $loyalty = app(LoyaltyPlugin::class);
         $organizations = app(OrganizationActions::class);
+        $memberships = app(MembershipActions::class);
+        $membershipId = (int) ($op->payload['membership_id'] ?? 0);
         $id = (int) ($op->payload['id'] ?? 0);
         $result = match ($op->action) {
             'auth.login' => app(AuthActions::class)->login($request, $shop),
@@ -83,6 +91,13 @@ class ActionExecutor
             'cart.update' => $store->updateCart($request, $shop),
             'checkout' => $store->checkout($request, $shop),
             'orders' => $store->orders($request, $shop),
+            'solutions.offerings' => $solutions->offerings($request, $shop),
+            'solutions.offering' => $solutions->offering($shop, $id),
+            'admin.solution.publish' => $solutions->publish($request, $shop, $user),
+            'platform.solution.bind' => $solutions->bind($request, $user, $id),
+            'platform.solution.purchases' => $solutions->purchases($request, $user, $id),
+            'platform.solution.purchase' => $solutions->purchase($request, $user, $id),
+            'platform.solution.retry' => $solutions->retry($request, $user, $id),
             'admin.products' => $admin->products($request, $shop),
             'admin.product' => $admin->product($request, $shop, $id),
             'admin.create' => $admin->createProduct($request, $shop),
@@ -107,6 +122,12 @@ class ActionExecutor
             'platform.organization' => $organizations->detail($user, $id),
             'platform.organization.update' => $organizations->update($request, $user, $id),
             'platform.applications' => $organizations->applications($request, $user, $id),
+            'platform.memberships' => $memberships->listing($request, $user, $id),
+            'platform.membership' => $memberships->detail($user, $id, $membershipId),
+            'platform.membership.invite' => $memberships->invite($request, $user, $id),
+            'platform.membership.role' => $memberships->changeRole($request, $user, $id, $membershipId),
+            'platform.membership.revoke' => $memberships->revoke($request, $user, $id, $membershipId),
+            'platform.membership.accept' => $memberships->accept($request, $user, $id, $membershipId),
             default => throw ValidationException::withMessages(['action' => 'Unknown command.']),
         };
         $actor = $op->action === 'auth.logout' ? null : ($result['user'] ?? $user?->fresh());

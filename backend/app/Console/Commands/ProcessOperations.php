@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Domain\OperationProcessor;
 use App\Domain\Payments\PaymentProcessor;
+use App\Domain\SolutionCommerce;
 use App\Modules\Events\Logic\EventBroker;
 use App\Modules\Events\Logic\EventWaiter;
 use App\Modules\Events\Logic\EventWorker;
@@ -20,6 +21,7 @@ class ProcessOperations extends Command
         do {
             $worked = $processor->processNext();
             $worked = $payments->processNext() || $worked;
+            $worked = app(SolutionCommerce::class)->processProvisioning() || $worked;
             $worked = $broker->processNext() || $worked;
             $worked = $events->processNext() || $worked;
             if (! $worked && ! $this->option('once')) {

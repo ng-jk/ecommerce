@@ -35,6 +35,22 @@ Supabase is installed and managed separately on the host using its [official sel
 
 ## Prepare release configuration
 
+The nine-product expansion uses the opt-in `services` profile in both environments
+(see the example configuration). This enables `compose.server.services.yaml` and
+the server-local `tools.service_release` prepare/deploy phases. The eight domain
+services each receive a distinct database and restricted PostgreSQL role; Framework
+remains the central platform. Runtime credentials and private TLS material persist
+in `<environment directory>/service-runtime`, outside versioned release folders.
+They are generated on the server and must never be copied from test fixtures.
+
+The prepare phase requires at least 2,560 MiB of available host memory. Deployment
+stops workers before migrations, backs up domain databases, checks cross-database
+connection denial and signed service readiness, then enables provisioned services.
+These phases fail closed. A unit-test pass is not evidence that the production
+database ACL changes or container limits work: exercise the real PostgreSQL and
+container integration gates before release. Creating future databases or roles
+requires reapplying the documented connection-isolation policy.
+
 Use a local Linux or Windows release workstation with Python and Git, the pinned project dependencies, Docker build support, SSH and SCP clients. Copy `tools/manual-release.example.json` to `.deploy/release.json` (the directory is ignored by Git). Set both environments' host, dedicated remote directory and runtime env-file path, project name, SSH identity and pinned `known_hosts` file, readiness URLs, and worker catalog readiness URL. The checked-in example contains placeholders and must not be passed unchanged. Keep credentials out of the JSON where possible and never commit populated runtime environment files.
 
 On the EC2 host, create a private runtime file at the corresponding configured path. Use the checked-in [production environment example](../docker/server.production.env.example) and [testing environment example](../docker/server.testing.env.example) only as variable templates. Set unique application keys, database names/roles/passwords and session-cookie names. Configure production payment credentials and settings only in production; keep testing sandbox settings in testing. Set the Supabase network name to the actual external Docker network. Confirm Cloudflare Tunnel ingress maps each environment's four hostnames to its loopback gateway port.

@@ -1,0 +1,475 @@
+{
+  "get": {
+    "operationId": "crmDeals",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "page",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        }
+      },
+      {
+        "name": "per_page",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        }
+      },
+      {
+        "name": "pipeline_id",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "stage_id",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "status",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "maxLength": 16
+        }
+      },
+      {
+        "name": "assignee_platform_user_id",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "company_id",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Committed CRM operation; poll its private receipt.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Accepted"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current organization membership or CRM entitlement denied"
+      },
+      "404": {
+        "description": "CRM record unavailable in this organization"
+      },
+      "409": {
+        "description": "Version or workflow conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      },
+      "504": {
+        "description": "Remote CRM command deadline exceeded"
+      }
+    },
+    "description": "Standalone CRM command. Platform identity, membership, installation, entitlement, and any assignee target are checked before the isolated CRM effect.",
+    "x-completed-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "data",
+        "meta"
+      ],
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "pipeline_id",
+              "stage_id",
+              "company_id",
+              "contact_id",
+              "assignee_platform_user_id",
+              "title",
+              "amount_minor",
+              "currency",
+              "status",
+              "version"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "pipeline_id": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "stage_id": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "company_id": {
+                "type": "integer",
+                "minimum": 1,
+                "nullable": true
+              },
+              "contact_id": {
+                "type": "integer",
+                "minimum": 1,
+                "nullable": true
+              },
+              "assignee_platform_user_id": {
+                "type": "integer",
+                "minimum": 1,
+                "nullable": true
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "amount_minor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9000000000000000
+              },
+              "currency": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$",
+                "maxLength": 3
+              },
+              "status": {
+                "type": "string",
+                "maxLength": 16
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "meta": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "current_page",
+            "last_page",
+            "total",
+            "per_page",
+            "options"
+          ],
+          "properties": {
+            "current_page": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "last_page": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "total": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "per_page": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            },
+            "options": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status"
+              ],
+              "properties": {
+                "status": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "post": {
+    "operationId": "crmCreateDeal",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Committed CRM operation; poll its private receipt.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Accepted"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current organization membership or CRM entitlement denied"
+      },
+      "404": {
+        "description": "CRM record unavailable in this organization"
+      },
+      "409": {
+        "description": "Version or workflow conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      },
+      "504": {
+        "description": "Remote CRM command deadline exceeded"
+      }
+    },
+    "description": "Standalone CRM command. Platform identity, membership, installation, entitlement, and any assignee target are checked before the isolated CRM effect.",
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pipeline_id",
+              "stage_id",
+              "title",
+              "company_id",
+              "contact_id",
+              "assignee_platform_user_id",
+              "amount_minor",
+              "currency"
+            ],
+            "properties": {
+              "pipeline_id": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "stage_id": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "company_id": {
+                "type": "integer",
+                "minimum": 1,
+                "nullable": true
+              },
+              "contact_id": {
+                "type": "integer",
+                "minimum": 1,
+                "nullable": true
+              },
+              "assignee_platform_user_id": {
+                "type": "integer",
+                "minimum": 1,
+                "nullable": true
+              },
+              "amount_minor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9000000000000000
+              },
+              "currency": {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$",
+                "maxLength": 3
+              }
+            }
+          }
+        }
+      }
+    },
+    "x-completed-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deal",
+        "options"
+      ],
+      "properties": {
+        "deal": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "pipeline_id",
+            "stage_id",
+            "company_id",
+            "contact_id",
+            "assignee_platform_user_id",
+            "title",
+            "amount_minor",
+            "currency",
+            "status",
+            "version"
+          ],
+          "properties": {
+            "id": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "pipeline_id": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "stage_id": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "company_id": {
+              "type": "integer",
+              "minimum": 1,
+              "nullable": true
+            },
+            "contact_id": {
+              "type": "integer",
+              "minimum": 1,
+              "nullable": true
+            },
+            "assignee_platform_user_id": {
+              "type": "integer",
+              "minimum": 1,
+              "nullable": true
+            },
+            "title": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "amount_minor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9000000000000000
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$",
+              "maxLength": 3
+            },
+            "status": {
+              "type": "string",
+              "maxLength": 16
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "options": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status"
+          ],
+          "properties": {
+            "status": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

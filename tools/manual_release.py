@@ -86,9 +86,11 @@ def configuration(path, environment):
             raise ValueError("Invalid database container")
         profiles = value.get("profiles", [])
         if not isinstance(profiles, list) or any(
-            profile != "assistant" for profile in profiles
+            profile not in {"assistant", "services"} for profile in profiles
         ):
-            raise ValueError("Only the assistant Compose profile is supported")
+            raise ValueError(
+                "Only assistant and services release profiles are supported"
+            )
         if type(value.get("sudo_docker", False)) is not bool:
             raise ValueError("sudo_docker must be a boolean")
         if not isinstance(value.get("image_prefix", "shop3i"), str) or not re.fullmatch(
@@ -196,7 +198,9 @@ def archive(commit, target, runner=run):
                 raise ValueError("Unsafe archive path")
 
 
-def remote_script(config, commit, *, image_mode="build", bundle_sha256=None):
+def remote_script(
+    config, commit, *, image_mode="build", bundle_sha256=None, environment=None
+):
     if image_mode not in {"build", "save", "load"}:
         raise ValueError("Invalid image mode")
     if image_mode == "load" and not re.fullmatch(r"[a-f0-9]{64}", bundle_sha256 or ""):
@@ -220,6 +224,50 @@ def remote_script(config, commit, *, image_mode="build", bundle_sha256=None):
         + " -f compose.server.yaml"
         + profile_flags
     )
+    base_compose = compose
+    service_prepare = service_deploy = ""
+    stop_workers = "worker"
+    if "services" in config.get("profiles", []):
+        if environment not in BRANCHES:
+            raise ValueError(
+                "Isolated services require an explicit release environment"
+            )
+        runtime = directory + "/service-runtime"
+        service_command = (
+            "python3 -m tools.service_release {action} --environment "
+            + q(environment)
+            + " --project "
+            + q(config["project"])
+            + " --env-file "
+            + q(config["env_file"])
+            + " --runtime "
+            + q(runtime)
+            + " --database-container "
+            + q(config.get("database_container", "supabase-db"))
+            + " --release "
+            + q(commit)
+            + (" --sudo-docker" if config.get("sudo_docker", False) else "")
+        )
+        service_prepare = service_command.format(action="prepare") + "\n"
+        service_deploy = service_command.format(action="deploy") + " &&\n"
+        compose += (
+            " --env-file "
+            + q(runtime + "/compose.env")
+            + " -f compose.server.services.yaml"
+        )
+        stop_workers += " service-worker " + " ".join(
+            service + "-worker"
+            for service in (
+                "crm",
+                "helpdesk",
+                "learning",
+                "builder",
+                "insights",
+                "erp",
+                "hr",
+                "lending",
+            )
+        )
     probes = " &&\n".join(
         'test "$(curl --fail --silent --show-error --max-time 20 --retry 5 --retry-delay 3 --retry-all-errors --proto =https --tlsv1.2 --output /dev/null --write-out "%{http_code}" '
         + q(url)
@@ -247,7 +295,7 @@ def remote_script(config, commit, *, image_mode="build", bundle_sha256=None):
             + q(bundle)
         )
     else:
-        image_step = compose + " build"
+        image_step = base_compose + " build"
         if image_mode == "save":
             image_step += (
                 "\n"
@@ -283,19 +331,20 @@ cd {q(release)}
 export RELEASE_ID={q(commit)}
 export APP_IMAGE_PREFIX={q(image_prefix)}
 export COMPOSE_PARALLEL_LIMIT=1
-{compose} config --quiet
-{compose} config --format json | python3 tools/release_guard.py {q(config["database"])} {q(config["database_user"])} {q(config["worker_readiness_url"])} {" ".join(q(url) for url in config["readiness_urls"])}
+{base_compose} config --quiet
+{base_compose} config --format json | python3 tools/release_guard.py {q(config["database"])} {q(config["database_user"])} {q(config["worker_readiness_url"])} {" ".join(q(url) for url in config["readiness_urls"])}
 {image_step}
+{service_prepare}{compose} config --quiet
 {compose} run --rm --no-deps -T --interactive=false backend php artisan --version </dev/null
 mkdir -p {q(backup_directory)}
 backup={q(backup_directory + "/" + commit)}-$(date +%Y%m%dT%H%M%S).dump
 {docker} exec {q(config.get("database_container", "supabase-db"))} pg_dump -U supabase_admin -d {q(config["database"])} -Fc > "$backup"
 test -s "$backup"
 {docker} exec -i {q(config.get("database_container", "supabase-db"))} pg_restore --list < "$backup" > /dev/null
-if ! ( {compose} stop -t 40 worker &&
+if ! ( {compose} stop -t 40 {stop_workers} &&
 {compose} run --rm --no-deps -T --interactive=false backend php artisan migrate --force </dev/null &&
 {compose} run --rm --no-deps -T --interactive=false backend php artisan db:seed --class=ShopSeeder --force </dev/null &&
-{compose} up -d --no-build --wait &&
+{service_deploy}{compose} up -d --no-build --wait &&
 {probes} &&
 python3 tools/release_probe.py {q(config["worker_readiness_url"])}
 ); then
@@ -433,7 +482,11 @@ def _deploy_commit(
         result = runner(
             [*connection, "sh -s"],
             input=remote_script(
-                config, commit, image_mode=image_mode, bundle_sha256=bundle_hash
+                config,
+                commit,
+                image_mode=image_mode,
+                bundle_sha256=bundle_hash,
+                environment=environment,
             ),
         )
         if result.splitlines()[-1:] != [commit]:

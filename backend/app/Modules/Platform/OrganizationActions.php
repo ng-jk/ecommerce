@@ -2,9 +2,11 @@
 
 namespace App\Modules\Platform;
 
+use App\Models\ApplicationEntitlementGrant;
 use App\Models\Organization;
 use App\Models\OrganizationApplication;
 use App\Models\OrganizationMembership;
+use App\Models\PlatformUser;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\QueryException;
@@ -16,9 +18,10 @@ use Illuminate\Validation\ValidationException;
 
 class OrganizationActions
 {
-    public function listing(Request $request, User $user): array
+    public function listing(Request $request, User|PlatformUser $user): array
     {
         abort_unless($this->frameworkAvailable(), 403, 'Framework access is unavailable.');
+        $this->enforceCurrentPrincipal($user);
         $input = $this->validated($request->all(), [
             'page' => 'sometimes|integer:strict|min:1|max:1000000',
             'per_page' => 'sometimes|integer:strict|min:1|max:50',
@@ -27,13 +30,23 @@ class OrganizationActions
         $query = Organization::query()
             ->join('organization_memberships as memberships', 'memberships.organization_id', '=', 'organizations.id')
             ->join('organization_applications as framework', 'framework.organization_id', '=', 'organizations.id')
-            ->where('memberships.user_id', $user->id)
+            ->where('memberships.'.$this->principalColumn($user), $user->id)
+            ->whereNull('memberships.'.$this->otherPrincipalColumn($user))
             ->where('memberships.status', OrganizationMembership::Active)
             ->whereIn('memberships.role', [OrganizationMembership::Member, OrganizationMembership::Admin, OrganizationMembership::Owner])
             ->whereNull('memberships.deleted_at')
             ->where('framework.application_key', 'framework')
             ->where('framework.state', OrganizationApplication::Installed)
             ->whereNull('framework.deleted_at')
+            ->whereExists(function ($query): void {
+                $query->selectRaw('1')->from('application_entitlement_grants as grants')
+                    ->whereColumn('grants.organization_id', 'organizations.id')
+                    ->where('grants.application_key', 'framework')
+                    ->where('grants.starts_at', '<=', now())
+                    ->where(fn ($query) => $query->whereNull('grants.expires_at')->orWhere('grants.expires_at', '>', now()))
+                    ->whereNotExists(fn ($query) => $query->selectRaw('1')->from('application_entitlement_revocations as revocations')
+                        ->whereColumn('revocations.grant_id', 'grants.id'));
+            })
             ->where('organizations.status', Organization::Active);
         if (isset($input['status'])) {
             $query->where('organizations.status', $input['status']);
@@ -46,9 +59,10 @@ class OrganizationActions
             'meta' => [...$this->meta($paginator), 'options' => ['status' => Organization::options()]]];
     }
 
-    public function create(Request $request, User $user): array
+    public function create(Request $request, User|PlatformUser $user): array
     {
         abort_unless($this->frameworkAvailable(), 403, 'Framework access is unavailable.');
+        $this->enforceCurrentPrincipal($user);
         $input = $this->validated($request->all(), [
             'code' => ['required', 'string', 'min:3', 'max:80', 'regex:/^[a-z][a-z0-9-]*$/', Rule::unique('organizations', 'code')],
             'name' => 'required|string|min:1|max:200',
@@ -56,10 +70,13 @@ class OrganizationActions
         try {
             $organization = DB::transaction(function () use ($input, $user): Organization {
                 $organization = Organization::create(['code' => $input['code'], 'name' => trim($input['name'])]);
-                OrganizationMembership::create(['organization_id' => $organization->id, 'user_id' => $user->id,
+                OrganizationMembership::create(['organization_id' => $organization->id, $this->principalColumn($user) => $user->id,
                     'role' => OrganizationMembership::Owner, 'status' => OrganizationMembership::Active]);
                 OrganizationApplication::create(['organization_id' => $organization->id, 'application_key' => 'framework',
                     'state' => OrganizationApplication::Installed]);
+                ApplicationEntitlementGrant::create(['organization_id' => $organization->id, 'application_key' => 'framework',
+                    'source' => ApplicationEntitlementGrant::Free, 'evidence_ref' => 'framework-create:'.$organization->id,
+                    'starts_at' => now(), 'evidence' => ['kind' => 'organization_creation']]);
 
                 return $organization;
             });
@@ -74,7 +91,7 @@ class OrganizationActions
         return ['organization' => $this->publicOrganization($organization), 'options' => ['status' => Organization::options()], 'can_update' => true];
     }
 
-    public function detail(User $user, int $id): array
+    public function detail(User|PlatformUser $user, int $id): array
     {
         [$organization, $membership] = $this->authorized($user, $id);
 
@@ -82,7 +99,7 @@ class OrganizationActions
             'can_update' => $membership->role === OrganizationMembership::Owner];
     }
 
-    public function update(Request $request, User $user, int $id): array
+    public function update(Request $request, User|PlatformUser $user, int $id): array
     {
         $input = $this->validated($request->all(), [
             'name' => 'required|string|min:1|max:200',
@@ -96,7 +113,7 @@ class OrganizationActions
         return ['organization' => $this->publicOrganization($organization), 'options' => ['status' => Organization::options()], 'can_update' => true];
     }
 
-    public function applications(Request $request, User $user, int $id): array
+    public function applications(Request $request, User|PlatformUser $user, int $id): array
     {
         $input = $this->validated($request->all(), [
             'page' => 'sometimes|integer:strict|min:1|max:1000000',
@@ -104,7 +121,7 @@ class OrganizationActions
         ]);
         $this->authorized($user, $id);
         $configured = config('platform.applications', []);
-        $keys = $this->frameworkAvailable() ? ['framework'] : [];
+        $keys = $this->frameworkAvailable() && ApplicationEntitlementGrant::activeFor($id, 'framework')->exists() ? ['framework'] : [];
         $paginator = OrganizationApplication::query()->where('organization_id', $id)
             ->where('state', OrganizationApplication::Installed)->whereIn('application_key', $keys)
             ->orderBy('id')->paginate((int) ($input['per_page'] ?? 20), ['id', 'application_key', 'state'], 'page', (int) ($input['page'] ?? 1));
@@ -119,11 +136,14 @@ class OrganizationActions
             'options' => ['state' => OrganizationApplication::options()]]];
     }
 
-    private function authorized(User $user, int $id): array
+    private function authorized(User|PlatformUser $user, int $id): array
     {
         abort_unless($this->frameworkAvailable(), 403, 'Framework access is unavailable.');
+        $this->enforceCurrentPrincipal($user);
         $organization = Organization::query()->whereKey($id)->lockForUpdate()->firstOrFail();
-        $membership = OrganizationMembership::query()->where('organization_id', $id)->where('user_id', $user->id)
+        $membership = OrganizationMembership::query()->where('organization_id', $id)
+            ->where($this->principalColumn($user), $user->id)
+            ->whereNull($this->otherPrincipalColumn($user))
             ->lockForUpdate()->first();
         abort_unless($membership?->status === OrganizationMembership::Active, 404);
         abort_unless($organization->status === Organization::Active, 403, 'Organization access is unavailable.');
@@ -131,13 +151,14 @@ class OrganizationActions
         $framework = OrganizationApplication::query()->where('organization_id', $id)->where('application_key', 'framework')
             ->lockForUpdate()->first();
         abort_unless($framework?->state === OrganizationApplication::Installed, 403, 'Framework access is unavailable.');
+        abort_unless(ApplicationEntitlementGrant::activeFor($id, 'framework')->exists(), 403, 'Framework entitlement is unavailable.');
 
         return [$organization, $membership];
     }
 
-    public function authorizeResult(User $user, string $action, array $payload, array $result): void
+    public function authorizeResult(User|PlatformUser $user, string $action, array $payload, array $result): void
     {
-        abort_unless(User::query()->whereKey($user->id)->where('account_status', 'active')->exists(), 403);
+        $this->enforceCurrentPrincipal($user);
         if ($action === 'platform.organizations') {
             foreach ($result['data'] ?? [] as $organization) {
                 $this->authorized($user, (int) $organization['id']);
@@ -150,6 +171,22 @@ class OrganizationActions
         if ($action === 'platform.organization.update') {
             abort_unless($membership->role === OrganizationMembership::Owner, 403);
         }
+    }
+
+    private function principalColumn(User|PlatformUser $user): string
+    {
+        return $user instanceof PlatformUser ? 'platform_user_id' : 'user_id';
+    }
+
+    private function otherPrincipalColumn(User|PlatformUser $user): string
+    {
+        return $user instanceof PlatformUser ? 'user_id' : 'platform_user_id';
+    }
+
+    private function enforceCurrentPrincipal(User|PlatformUser $user): void
+    {
+        abort_unless($user->getKey() !== null && $user::query()->whereKey($user->getKey())
+            ->where('account_status', 'active')->exists(), 403);
     }
 
     private function validated(array $input, array $rules): array

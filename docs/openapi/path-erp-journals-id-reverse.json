@@ -1,0 +1,227 @@
+{
+  "post": {
+    "operationId": "erpReverseJournal",
+    "description": "Owner: post one opposite-side reversal without editing the original.",
+    "parameters": [
+      {
+        "name": "organization_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      {
+        "name": "X-Operation-Token",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "responses": {
+      "202": {
+        "description": "Committed ERP operation; poll its private receipt.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../openapi.json#/components/schemas/Accepted"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Authentication required"
+      },
+      "403": {
+        "description": "Current membership or ERP entitlement denied"
+      },
+      "404": {
+        "description": "ERP record unavailable in this organization"
+      },
+      "409": {
+        "description": "Version or journal workflow conflict"
+      },
+      "422": {
+        "description": "validation_error field map"
+      },
+      "504": {
+        "description": "Remote ERP command deadline exceeded"
+      }
+    },
+    "x-completed-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "journal": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "effective_date": {
+              "type": "string",
+              "format": "date",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+            },
+            "description": {
+              "type": "string"
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "status": {
+              "enum": [
+                "draft",
+                "posted"
+              ]
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "total_minor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9000000000000000
+            },
+            "posted_at": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "reverses_journal_id": {
+              "type": "integer",
+              "minimum": 1,
+              "nullable": true
+            },
+            "lines": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "position": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "account_id": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "debit_minor": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9000000000000000
+                  },
+                  "credit_minor": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9000000000000000
+                  }
+                },
+                "required": [
+                  "id",
+                  "position",
+                  "account_id",
+                  "debit_minor",
+                  "credit_minor"
+                ]
+              }
+            }
+          },
+          "required": [
+            "id",
+            "effective_date",
+            "description",
+            "currency",
+            "status",
+            "version",
+            "total_minor",
+            "posted_at",
+            "reverses_journal_id",
+            "lines"
+          ]
+        },
+        "options": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "status"
+          ]
+        }
+      },
+      "required": [
+        "journal",
+        "options"
+      ]
+    },
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "expected_version": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "effective_date": {
+                "type": "string",
+                "format": "date",
+                "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+              }
+            },
+            "required": [
+              "expected_version",
+              "effective_date"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
