@@ -141,6 +141,10 @@ scanner exit alone is insufficient evidence when any package was skipped.
 The inference image uses the official PyTorch 2.13.0 CPU build. Model loading
 requires safetensors and disables remote model/tokenizer code; unavailable safe
 weights cause startup to fail instead of falling back to pickle checkpoints.
+`FUNCTIONGEMMA_DTYPE` defaults to `float32`; `bfloat16` and `float16` are
+explicit opt-ins. Unknown values fail before loading. Compare inference results,
+memory and latency on the deployment CPU before changing precision; the option
+alone does not establish capacity or model-quality equivalence.
 
 No Inertia runtime is installed: the applications use Expo and JSON APIs. The
 [CRUD rules](crud-rules.md) explicitly retain the Inertia adapter requirement for

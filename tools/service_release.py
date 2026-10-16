@@ -32,7 +32,9 @@ EXCHANGE_MIGRATION = (
 MIN_AVAILABLE_MIB = 2560
 
 
-def run(command, *, input=None, env=None, stdin_path=None, stdout_path=None):
+def run(
+    command, *, input=None, env=None, stdin_path=None, stdout_path=None, timeout=600
+):
     with ExitStack() as files:
         source = (
             files.enter_context(Path(stdin_path).open("rb")) if stdin_path else None
@@ -50,7 +52,7 @@ def run(command, *, input=None, env=None, stdin_path=None, stdout_path=None):
             stderr=subprocess.PIPE,
             check=False,
             env=env,
-            timeout=600,
+            timeout=timeout,
         )
     if result.returncode:
         # psql errors and Compose diagnostics can contain credentials. Keep them private.
@@ -650,17 +652,7 @@ def backup_domains(root, state, docker, container, release, runner=run):
 
 
 def probe(compose, runner=run):
-    # Transport probe verifies TLS, endpoint receipt, nonce and bounded deny response.
-    script = """require 'vendor/autoload.php'; $app=require 'bootstrap/app.php';
-$app->make(Illuminate\\Contracts\\Console\\Kernel::class)->bootstrap();
-foreach (config('platform.service_names') as $service) {
- $peer=config('service_exchange.peers.'.$service);
- $transport=new App\\Modules\\Platform\\Services\\ServiceTransport($peer['url'],$peer['key'],'platform',$service);
- $scope=['platform_user_id'=>1,'organization_id'=>1,'application'=>$service,'action'=>$service.'.probe','auth_version'=>0,'token_id'=>1];
- if ($transport->authorizeResult(['command_id'=>(string) Illuminate\\Support\\Str::uuid(),
- 'operation_id'=>(string) Illuminate\\Support\\Str::uuid(),'scope'=>$scope,'result_digest'=>str_repeat('0',64)]) !== false) { exit(1); }
-} """
-    runner([*compose, "run", "--rm", "--no-deps", "-T", "backend", "php", "-r", script])
+    # Container state is a useful early failure, but durable worker completion is authoritative.
     output = runner([*compose, "ps", "--format", "json"]).decode().strip()
     running = (
         json.loads(output)
@@ -681,6 +673,49 @@ foreach (config('platform.service_names') as $service) {
     }
     if not required <= healthy:
         raise RuntimeError("A domain API, worker or service relay is not running")
+
+    # A signed request is committed to each domain inbox; the domain worker
+    # commits a matching outbox reply, and the platform worker consumes it.
+    # Both the reply and nonce are checked from the platform's durable inbox.
+    script = """require 'vendor/autoload.php'; $app=require 'bootstrap/app.php';
+$app->make(Illuminate\\Contracts\\Console\\Kernel::class)->bootstrap();
+$services=SERVICE_NAMES;
+if (array_values(config('platform.service_names')) !== $services) { throw new RuntimeException('Unexpected service topology'); }
+$pending=[];
+foreach ($services as $service) {
+ $peer=config('service_exchange.peers.'.$service);
+ $transport=new App\\Modules\\Platform\\Services\\ServiceTransport($peer['url'],$peer['key'],'platform',$service);
+ $id=(string) Illuminate\\Support\\Str::uuid(); $nonce=(string) Illuminate\\Support\\Str::uuid();
+ $message=['id'=>$id,'source'=>'platform','destination'=>$service,'topic'=>'transport.health',
+  'version'=>1,'payload'=>['nonce'=>$nonce]];
+ $encoded=json_encode($message,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES,32);
+ $transport->deliver($message,hash('sha256',$encoded));
+ $pending[$service]=[$id,$nonce];
+}
+$deadline=microtime(true)+45;
+do {
+ foreach ($pending as $service=>[$id,$nonce]) {
+  $row=Illuminate\\Support\\Facades\\DB::table('service_inboxes')->where('source',$service)
+   ->where('destination','platform')->where('message_id',$id)->first();
+  if (!$row) { continue; }
+  if ($row->status==='failed') { throw new RuntimeException('Health response failed: '.$service); }
+  if ($row->status!=='succeeded') { continue; }
+  $reply=json_decode($row->envelope,true,32,JSON_THROW_ON_ERROR);
+  if ($reply !== ['id'=>$id,'source'=>$service,'destination'=>'platform','topic'=>'transport.health',
+    'version'=>1,'payload'=>['nonce'=>$nonce]]) { throw new RuntimeException('Health response mismatch: '.$service); }
+  unset($pending[$service]);
+ }
+ if (!$pending) { exit(0); }
+ usleep(250000);
+} while (microtime(true)<$deadline);
+throw new RuntimeException('Workers did not complete durable health roundtrip: '.implode(',',array_keys($pending)));"""
+    script = script.replace(
+        "SERVICE_NAMES", "json_decode('" + json.dumps(list(SERVICES)) + "',true)"
+    )
+    runner(
+        [*compose, "run", "--rm", "--no-deps", "-T", "backend", "php", "-r", script],
+        timeout=180,
+    )
 
 
 def deploy(root, state, core, compose, docker, container, release, runner=run):
@@ -717,6 +752,8 @@ def deploy(root, state, core, compose, docker, container, release, runner=run):
             "-d",
             "--no-build",
             "--wait",
+            "--force-recreate",
+            "backend",
             *SERVICES,
             *workers,
             "service-gateway",
@@ -725,6 +762,19 @@ def deploy(root, state, core, compose, docker, container, release, runner=run):
     probe(compose, runner)
     # Only successful migration + isolation + HTTPS/worker checks activate discovery.
     write_environments(root, state, core, enabled=True)
+    runner(
+        [
+            *compose,
+            "up",
+            "-d",
+            "--no-build",
+            "--wait",
+            "--force-recreate",
+            "backend",
+            "worker",
+            "service-worker",
+        ]
+    )
     private_write(
         Path(root) / "ready.json",
         json.dumps({"release": release, "services": list(SERVICES), "ready": True}),

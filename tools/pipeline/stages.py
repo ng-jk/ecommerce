@@ -6,6 +6,8 @@ import secrets
 import shlex
 import subprocess
 import sys
+import tempfile
+from pathlib import Path
 
 from . import service_runtime
 from .backend_coverage import require_complete_coverage
@@ -78,7 +80,8 @@ def integration() -> None:
             "tests/api",
             "-q",
             "--basetemp=test-results/pytest-api",
-        ]
+        ],
+        timeout=1200,
     )
 
 
@@ -105,7 +108,8 @@ def backend_test(*arguments: str) -> None:
             "test",
             "--compact",
             *arguments,
-        ]
+        ],
+        timeout=1200,
     )
 
 
@@ -121,7 +125,7 @@ def test() -> None:
             "tests/interfaces",
             "tests/extensions/test_runtime.py",
             "-q",
-            "--basetemp=test-results/pytest-pipeline-unit",
+            f"--basetemp={Path(tempfile.gettempdir()) / 'shop3i-tests' / 'pipeline-unit'}",
         ]
     )
     run(npm("exec", "--", "vitest", "run"))
@@ -236,7 +240,7 @@ def coverage() -> None:
             "pytest",
             "tests/interfaces",
             "-q",
-            "--basetemp=test-results/pytest-interfaces-coverage",
+            f"--basetemp={Path(tempfile.gettempdir()) / 'shop3i-tests' / 'interfaces-coverage'}",
             "--cov=interfaces/python/shop3i/shop3i",
             "--cov-branch",
             "--cov-fail-under=100",

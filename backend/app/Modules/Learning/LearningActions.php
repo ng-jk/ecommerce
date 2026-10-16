@@ -20,6 +20,64 @@ use LogicException;
 
 final class LearningActions
 {
+    /** Central action permission and the stored command/result binding are checked by ServiceResultAuthority. */
+    public function authorizeResult(AuthorizedLearningScope $scope, array $command, array $result): bool
+    {
+        if (DB::transactionLevel() < 1) {
+            throw new LogicException('Learning result authorization requires a local transaction.');
+        }
+        $kind = explode('.', $scope->action)[1];
+        [$class, $field] = match ($kind) {
+            'courses' => [Course::class, 'course'],
+            'lessons' => [Lesson::class, 'lesson'],
+            'assessments' => [Assessment::class, 'assessment'],
+            'enrollments' => [Enrollment::class, 'enrollment'],
+            'attempts' => [Attempt::class, 'attempt'],
+        };
+        $list = str_ends_with($scope->action, '.list');
+        $records = $list ? ($result['data'] ?? null) : (isset($result[$field]) ? [$result[$field]] : null);
+        if (! is_array($records) || ! array_is_list($records) || count($records) > 50) {
+            return false;
+        }
+        $seen = [];
+        foreach ($records as $record) {
+            if (! is_array($record) || ! is_int($record['id'] ?? null) || $record['id'] < 1 || isset($seen[$record['id']])) {
+                return false;
+            }
+            $seen[$record['id']] = true;
+            // Parent references and enrollment ownership are immutable; lock the course before learner access.
+            $row = $class::whereKey($record['id'])->firstOrFail();
+            $subject = $kind === 'attempts' ? $row->assessment_id : $row->id;
+            if (! $list && isset($command['id']) && $subject !== $command['id']) {
+                return false;
+            }
+            $enrollment = $kind === 'attempts'
+                ? Enrollment::whereKey($row->enrollment_id)->firstOrFail() : null;
+            if ($kind === 'enrollments') {
+                $enrollment = $row;
+            }
+            if ($enrollment !== null && $enrollment->platform_user_id !== $scope->platformUserId) {
+                return false;
+            }
+            $course = $this->course($scope, $kind === 'courses' ? $row->id : ($enrollment?->course_id ?? $row->course_id));
+            if (isset($command['input']['course_id']) && $course->id !== $command['input']['course_id']) {
+                return false;
+            }
+            if ($scope->action === 'learning.courses.list') {
+                abort_unless($course->status === Course::Published, 404);
+            } elseif (in_array($scope->action, ['learning.courses.detail', 'learning.lessons.read',
+                'learning.assessments.detail', 'learning.enrollments.create', 'learning.enrollments.list',
+                'learning.enrollments.detail', 'learning.attempts.submit', 'learning.attempts.list'], true)) {
+                $current = $this->access($scope, $course);
+                if (isset($result['enrollment']['id']) && $current->id !== $result['enrollment']['id']) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     public function execute(AuthorizedLearningScope $scope, array $input, ?int $id = null): array
     {
         if (DB::transactionLevel() < 1) {

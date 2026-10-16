@@ -2201,7 +2201,8 @@
         "formal/Commerce/Erp.lean"
       ],
       "evidence": [
-        "test-results/lifecycle/platform-expansion-20261015.html"
+        "test-results/lifecycle/platform-expansion-20261015.html",
+        "test-results/lifecycle/platform-expansion-20261017.html"
       ],
       "reviews": [
         "requirement",
@@ -2236,7 +2237,8 @@
         "formal/Commerce/Hr.lean"
       ],
       "evidence": [
-        "test-results/lifecycle/platform-expansion-20261015.html"
+        "test-results/lifecycle/platform-expansion-20261015.html",
+        "test-results/lifecycle/platform-expansion-20261017.html"
       ],
       "reviews": [
         "requirement",
@@ -2270,7 +2272,8 @@
         "formal/Commerce/Learning.lean"
       ],
       "evidence": [
-        "test-results/lifecycle/platform-expansion-20261015.html"
+        "test-results/lifecycle/platform-expansion-20261015.html",
+        "test-results/lifecycle/platform-expansion-20261017.html"
       ],
       "reviews": [
         "requirement",
@@ -2304,7 +2307,8 @@
         "formal/Commerce/Insights.lean"
       ],
       "evidence": [
-        "test-results/lifecycle/platform-expansion-20261015.html"
+        "test-results/lifecycle/platform-expansion-20261015.html",
+        "test-results/lifecycle/platform-expansion-20261017.html"
       ],
       "reviews": [
         "requirement",
@@ -2342,7 +2346,8 @@
       ],
       "proofs": [],
       "evidence": [
-        "test-results/lifecycle/platform-expansion-20261015.html"
+        "test-results/lifecycle/platform-expansion-20261015.html",
+        "test-results/lifecycle/platform-expansion-20261017.html"
       ],
       "reviews": [
         "requirement",
@@ -2375,7 +2380,8 @@
       ],
       "proofs": [],
       "evidence": [
-        "test-results/lifecycle/platform-expansion-20261015.html"
+        "test-results/lifecycle/platform-expansion-20261015.html",
+        "test-results/lifecycle/platform-expansion-20261017.html"
       ],
       "reviews": [
         "requirement",
@@ -2410,7 +2416,8 @@
         "formal/Commerce/Lending.lean"
       ],
       "evidence": [
-        "test-results/lifecycle/platform-expansion-20261015.html"
+        "test-results/lifecycle/platform-expansion-20261015.html",
+        "test-results/lifecycle/platform-expansion-20261017.html"
       ],
       "reviews": [
         "requirement",
@@ -2454,7 +2461,9 @@
         "test-results/api/coverage.json",
         "test-results/api/exchanges.json",
         "test-results/workspace-proof-build.log",
-        "test-results/lifecycle/platform-expansion-20261015.html"
+        "test-results/lifecycle/platform-expansion-20261015.html",
+        "test-results/lifecycle/platform-expansion-20261017.html",
+        "test-results/runtime-final-20261017.log"
       ],
       "reviews": [
         "requirement",
@@ -2487,7 +2496,8 @@
       ],
       "proofs": [],
       "evidence": [
-        "test-results/lifecycle/platform-expansion-20261015.html"
+        "test-results/lifecycle/platform-expansion-20261015.html",
+        "test-results/lifecycle/platform-expansion-20261017.html"
       ],
       "reviews": [
         "requirement",
@@ -2518,7 +2528,8 @@
       ],
       "proofs": [],
       "evidence": [
-        "test-results/lifecycle/platform-expansion-20261015.html"
+        "test-results/lifecycle/platform-expansion-20261015.html",
+        "test-results/lifecycle/platform-expansion-20261017.html"
       ],
       "reviews": [
         "requirement",

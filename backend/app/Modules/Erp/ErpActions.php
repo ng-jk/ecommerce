@@ -199,10 +199,11 @@ final class ErpActions
             $reversal = Journal::create(['organization_id' => $scope->organizationId,
                 'created_by_platform_user_id' => $scope->platformUserId, 'updated_by_platform_user_id' => $scope->platformUserId,
                 'effective_date' => $data['effective_date'], 'description' => 'Reversal of journal '.$original->id,
-                'currency' => $original->currency, 'status' => Journal::Posted, 'version' => 1,
-                'total_minor' => $original->total_minor, 'posted_at' => now(),
+                'currency' => $original->currency, 'status' => Journal::Draft, 'version' => 0,
+                'total_minor' => $original->total_minor,
                 'reverses_journal_id' => $original->id]);
             $this->insertLines($scope, $reversal, $lines);
+            $reversal->update(['status' => Journal::Posted, 'posted_at' => now(), 'version' => 1]);
 
             return $reversal;
         });

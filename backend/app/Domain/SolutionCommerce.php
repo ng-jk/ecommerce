@@ -264,7 +264,7 @@ class SolutionCommerce
         if (in_array($action, ['solutions.offerings', 'solutions.offering', 'admin.solution.publish'], true)) {
             return;
         }
-        $organizationId = (int) ($payload['id'] ?? $result['meta']['organization_id'] ?? 0);
+        $organizationId = (int) ($payload['id'] ?? $result['organization_id'] ?? $result['meta']['organization_id'] ?? 0);
         abort_unless($organizationId > 0, 403);
         $this->requireMembership($actor, $organizationId,
             in_array($action, ['platform.solution.bind', 'platform.solution.retry'], true));

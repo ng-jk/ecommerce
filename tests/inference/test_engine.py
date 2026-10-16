@@ -8,6 +8,7 @@ from engine import Engine
 
 @pytest.fixture
 def inference(monkeypatch):
+    monkeypatch.delenv("FUNCTIONGEMMA_DTYPE", raising=False)
     torch = MagicMock()
     tokenizer = MagicMock()
     model = MagicMock()
@@ -48,6 +49,32 @@ def test_model_loading_requires_safe_weights_and_rejects_remote_code(
         trust_remote_code=False,
         weights_only=True,
     )
+
+
+@pytest.mark.parametrize("dtype_name", ["float32", "bfloat16", "float16"])
+def test_model_loading_uses_configured_dtype(inference, monkeypatch, dtype_name):
+    monkeypatch.setenv("FUNCTIONGEMMA_DTYPE", dtype_name)
+    model_loader = sys.modules["transformers"].AutoModelForCausalLM.from_pretrained
+    model_loader.reset_mock()
+
+    engine = Engine()
+
+    assert model_loader.call_args.kwargs["dtype"] is getattr(engine.torch, dtype_name)
+
+
+def test_model_loading_rejects_unknown_dtype_before_loading(inference, monkeypatch):
+    monkeypatch.setenv("FUNCTIONGEMMA_DTYPE", "int8")
+    transformers = sys.modules["transformers"]
+    tokenizer_loader = transformers.AutoTokenizer.from_pretrained
+    model_loader = transformers.AutoModelForCausalLM.from_pretrained
+    tokenizer_loader.reset_mock()
+    model_loader.reset_mock()
+
+    with pytest.raises(ValueError, match="^Unsupported FUNCTIONGEMMA_DTYPE$"):
+        Engine()
+
+    tokenizer_loader.assert_not_called()
+    model_loader.assert_not_called()
 
 
 @pytest.mark.parametrize(

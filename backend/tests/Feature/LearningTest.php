@@ -236,6 +236,81 @@ class LearningTest extends TestCase
         Course::flushEventListeners();
     }
 
+    private function resultAllowed(string $action, array $result, array $input = [], ?int $id = null, int $user = 7, int $org = 11): bool
+    {
+        $message = $this->message($action, $input, $id, $user, $org);
+        $scope = AuthorizedLearningScope::fromVerifiedExchange($message, fn (): bool => true);
+
+        return DB::transaction(fn () => app(LearningActions::class)->authorizeResult($scope,
+            $message['payload']['command'], json_decode(json_encode($result), true)));
+    }
+
+    public function test_stored_author_results_allow_drafts_without_granting_learner_visibility(): void
+    {
+        $course = $this->draft();
+        [$lesson, $assessment] = $this->content($course);
+        $result = ['course' => $course->refresh()->toArray()];
+        $this->assertTrue($this->resultAllowed('courses.create', $result));
+        $this->assertTrue($this->resultAllowed('courses.update', $result, [], $course->id));
+        $this->assertTrue($this->resultAllowed('courses.author.list', ['data' => [$result['course']]]));
+        $this->assertTrue($this->resultAllowed('lessons.create', ['lesson' => Lesson::findOrFail($lesson)->toArray()], ['course_id' => $course->id]));
+        $this->assertTrue($this->resultAllowed('assessments.author.detail', ['assessment' => Assessment::findOrFail($assessment)->toArray()], [], $assessment));
+        $this->denied(fn () => $this->resultAllowed('courses.detail', $result, [], $course->id), 404);
+        $this->denied(fn () => $this->resultAllowed('courses.list', ['data' => [$result['course']]]), 404);
+        $this->assertFalse($this->resultAllowed('courses.update', $result, [], $course->id + 1));
+        $this->assertFalse($this->resultAllowed('lessons.create', ['lesson' => Lesson::findOrFail($lesson)->toArray()], ['course_id' => $course->id + 1]));
+        try {
+            $this->resultAllowed('courses.create', $result, [], null, 7, 12);
+            $this->fail('Foreign course result was exposed.');
+        } catch (ModelNotFoundException) {
+            $this->assertTrue(true);
+        }
+        foreach ([[], ['data' => null], ['data' => ['id' => 1]], ['data' => array_fill(0, 51, ['id' => 1])],
+            ['data' => [null]], ['data' => [['id' => '1']]], ['data' => [['id' => 0]]],
+            ['data' => [$result['course'], $result['course']]]] as $malformed) {
+            $this->assertFalse($this->resultAllowed('courses.author.list', $malformed));
+        }
+        $this->assertTrue($this->resultAllowed('courses.author.list', ['data' => []]));
+    }
+
+    public function test_stored_learner_results_recheck_ownership_publication_and_paid_access(): void
+    {
+        $course = $this->draft();
+        [$lesson, $assessment] = $this->content($course);
+        $this->publish($course);
+        $enrolled = $this->runAction('enrollments.create', ['course_id' => $course->id]);
+        $this->assertTrue($this->resultAllowed('enrollments.create', $enrolled, ['course_id' => $course->id]));
+        $this->assertTrue($this->resultAllowed('enrollments.list', ['data' => [$enrolled['enrollment']]]));
+        $this->assertFalse($this->resultAllowed('enrollments.detail', $enrolled, [], $enrolled['enrollment']['id'], 8));
+        $attempt = $this->runAction('attempts.submit', ['answers' => [0]], $assessment);
+        $this->assertTrue($this->resultAllowed('attempts.submit', $attempt, [], $assessment));
+        $this->assertTrue($this->resultAllowed('attempts.list', ['data' => [$attempt['attempt']]]));
+        $this->assertFalse($this->resultAllowed('attempts.submit', $attempt, [], $assessment + 100));
+        $this->assertFalse($this->resultAllowed('attempts.list', ['data' => [$attempt['attempt']]], [], null, 8));
+        $read = $this->runAction('lessons.read', [], $lesson);
+        $this->assertTrue($this->resultAllowed('lessons.read', $read, [], $lesson));
+        $read['enrollment']['id']++;
+        $this->assertFalse($this->resultAllowed('lessons.read', $read, [], $lesson));
+        $course->update(['access_mode' => Course::Paid]);
+        $this->denied(fn () => $this->resultAllowed('attempts.submit', $attempt, [], $assessment), 403);
+        $grant = AccessGrant::factory()->create(['course_id' => $course->id, 'platform_user_id' => 7,
+            'source' => AccessGrant::VerifiedSettlement, 'revoked_at' => null, 'expires_at' => null]);
+        $this->assertTrue($this->resultAllowed('attempts.submit', $attempt, [], $assessment));
+        $grant->update(['revoked_at' => now()]);
+        $this->denied(fn () => $this->resultAllowed('attempts.submit', $attempt, [], $assessment), 403);
+        $this->assertTrue($this->resultAllowed('courses.list', ['data' => [$course->toArray()]]));
+        $course->update(['status' => Course::Archived]);
+        $this->denied(fn () => $this->resultAllowed('enrollments.detail', $enrolled, [], $enrolled['enrollment']['id']), 404);
+        $this->assertTrue($this->resultAllowed('courses.archive', ['course' => $course->toArray()], [], $course->id));
+    }
+
+    public function test_result_authorization_requires_its_local_transaction(): void
+    {
+        $scope = AuthorizedLearningScope::fromVerifiedExchange($this->message('courses.create'), fn (): bool => true);
+        $this->expectException(\LogicException::class);
+        app(LearningActions::class)->authorizeResult($scope, [], []);
+    }
+
     public function test_model_options_and_factories_match_persistent_states(): void
     {
         foreach ([Course::class, Lesson::class, Assessment::class, Enrollment::class, Attempt::class, LessonView::class, AccessGrant::class] as $class) {

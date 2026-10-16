@@ -14,11 +14,15 @@ class Engine:
 
         self.torch = torch
         torch.set_num_threads(4)
+        dtype_name = os.environ.get("FUNCTIONGEMMA_DTYPE", "float32")
+        if dtype_name not in {"float32", "bfloat16", "float16"}:
+            raise ValueError("Unsupported FUNCTIONGEMMA_DTYPE")
+        dtype = getattr(torch, dtype_name)
         model = os.environ.get("FUNCTIONGEMMA_MODEL", "google/functiongemma-270m-it")
         self.tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=False)
         self.model = AutoModelForCausalLM.from_pretrained(
             model,
-            dtype=torch.float32,
+            dtype=dtype,
             use_safetensors=True,
             trust_remote_code=False,
             weights_only=True,

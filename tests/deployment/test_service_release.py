@@ -307,7 +307,7 @@ def processes():
 
 
 @pytest.mark.parametrize("ndjson", [True, False])
-def test_probe_requires_signed_transport_and_all_workers(ndjson):
+def test_probe_requires_durable_roundtrip_and_all_workers(ndjson):
     calls = []
     output = (
         "\n".join(json.dumps(row) for row in processes())
@@ -316,15 +316,25 @@ def test_probe_requires_signed_transport_and_all_workers(ndjson):
     )
 
     def runner(command, **kwargs):
-        calls.append(command)
+        calls.append((command, kwargs))
         return output.encode() if "ps" in command else b""
 
     release.probe(["docker", "compose"], runner)
-    assert "authorizeResult" in calls[0][-1]
-    assert "services:work" not in calls[0][-1]
+    assert "ps" in calls[0][0]
+    assert calls[1][1]["timeout"] == 180
+    script = calls[1][0][-1]
+    assert "transport.health" in script
+    assert "->deliver(" in script
+    assert "service_inboxes" in script
+    assert "status==='succeeded'" not in script
+    assert "status!=='succeeded'" in script
+    assert "microtime(true)+45" in script
+    assert all(f'"{service}"' in script for service in release.SERVICES)
+
     with pytest.raises(RuntimeError):
         release.probe(
-            ["docker", "compose"], lambda command: b"[]" if "ps" in command else b""
+            ["docker", "compose"],
+            lambda command, **kwargs: b"[]" if "ps" in command else b"",
         )
 
 
@@ -343,10 +353,13 @@ def test_deploy_activates_only_after_isolation_backups_migrations_and_readiness(
     )
 
     def runner(command, **kwargs):
-        assert (
-            release.read_environment(root / "platform.env")["CRM_SERVICE_PROVISIONED"]
-            == "false"
-        )
+        enabled = release.read_environment(root / "platform.env")[
+            "CRM_SERVICE_PROVISIONED"
+        ]
+        if "up" in command and "worker" in command:
+            assert enabled == "true"
+        else:
+            assert enabled == "false"
         steps.append(command)
         return b""
 
@@ -356,7 +369,13 @@ def test_deploy_activates_only_after_isolation_backups_migrations_and_readiness(
         len([step for step in steps if isinstance(step, list) and "migrate" in step])
         == 16
     )
-    assert steps[-1] == "probe"
+    first_up, final_up = [
+        step for step in steps if isinstance(step, list) and "up" in step
+    ]
+    assert "backend" in first_up and "--force-recreate" in first_up
+    assert {"backend", "worker", "service-worker"} <= set(final_up)
+    assert "--force-recreate" in final_up
+    assert steps[-2] == "probe" and steps[-1] == final_up
     assert json.loads((root / "ready.json").read_text())["release"] == SHA
     assert (
         release.read_environment(root / "platform.env")["CRM_SERVICE_PROVISIONED"]

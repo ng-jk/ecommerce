@@ -47,6 +47,8 @@ def test_all_business_functions_through_assistant(shop):
     assert {t["name"] for t in discovered["available_actions"]} == {
         "catalog",
         "product",
+        "solutionOfferings",
+        "solutionOffering",
         "login",
         "register",
     }
@@ -73,7 +75,11 @@ def test_all_business_functions_through_assistant(shop):
     customer = Assistant(shop, account["token"])
     customer_tools = customer.turn({"discover": True})
     assert customer_tools["role"] == "customer"
-    assert len(customer_tools["available_actions"]) == 24
+    assert len(customer_tools["available_actions"]) == 30
+    assert {"solutionOfferings", "solutionOffering", "solutionPurchases",
+            "bindSolutionPurchase", "solutionPurchase", "retrySolutionPurchase"} <= {
+                tool["name"] for tool in customer_tools["available_actions"]
+            }
     assert customer.invoke("me")["user"]["email"] == email
     assert customer.invoke("cart")["items"] == []
     assert customer.invoke("logout")["logged_out"]
@@ -90,7 +96,10 @@ def test_all_business_functions_through_assistant(shop):
     )
     admin = Assistant(shop, admin_login["token"])
     tools = admin.turn({"discover": True})["available_actions"]
-    assert len(tools) == 38
+    assert len(tools) == 45
+    assert {"solutionOfferings", "solutionOffering", "publishSolutionOffering",
+            "solutionPurchases", "bindSolutionPurchase", "solutionPurchase",
+            "retrySolutionPurchase"} <= {tool["name"] for tool in tools}
     organization = customer.invoke("createOrganization", {
         "code": "matrix-" + uuid.uuid4().hex, "name": "Matrix workspace",
     })["organization"]
@@ -206,7 +215,14 @@ def test_all_business_functions_through_assistant(shop):
         "installMiniapp",
         "updateMiniapp",
     }
-    expected = {t["name"] for t in tools} - miniapp_tools
+    # Solution tools require a verified provider settlement and are exercised
+    # through the assistant in test_solution_assistant.py.
+    solution_tools = {
+        "solutionOfferings", "solutionOffering", "publishSolutionOffering",
+        "solutionPurchases", "bindSolutionPurchase", "solutionPurchase",
+        "retrySolutionPurchase",
+    }
+    expected = {t["name"] for t in tools} - miniapp_tools - solution_tools
     assert executed == expected
     output = Path("test-results/assistant")
     output.mkdir(parents=True, exist_ok=True)

@@ -1,6 +1,6 @@
 # Service platform product inventory
 
-Review date: 2026-10-15. Owner: platform architecture, with domain owners below.
+Review date: 2026-10-17. Owner: platform architecture, with domain owners below.
 Authority: [October 13 scope decision](decisions/2026-10-13-service-platform.md),
 [engineering specification](engineering-spec.md), [implementation plan](implementation-plan.md)
 and [CRUD C01–C10](crud-rules.md). This is an indexed acceptance backlog, not a
@@ -128,50 +128,80 @@ boundaries, seven-control screens and main/temp Back safety remain mandatory.
 Five review gates and the manual Python release pipeline must pass before any
 feature is presented as released; 100% owned-logic coverage is not waived here.
 
-## Dated implementation and acceptance status (2026-10-15)
+## Dated implementation and acceptance status (2026-10-17)
 
-The status labels above describe only a bounded development slice where noted.
-Presence of a module, route, screen, generated client, or focused test does not
-complete its success criteria. No P1/P2 product feature below has full parity or
-release acceptance evidence recorded as of this review. The focused test files
-listed below are evidence locations, not a claim that they were run or passed on
-this date. The October 13 reports remain historical. Current October 15 public
-evidence is limited to `test-results/dns-recovery-20261015.html` (eight HTTPS
-routes returned 200 and 12 API/AI smoke checks passed); it explicitly is not a
-full business regression. Additional scoped checks on October 15 pass 21 route
-adapter cases for Builder and CRM growth, plus the three frontend workspace
-TypeScript checks. These establish route-to-screen wiring and compilation only;
-they do not satisfy the product success criteria or release gates.
+The status labels above describe only bounded development slices. Presence of a
+module, route, screen, generated client, or focused test does not complete its
+success criteria or establish release acceptance. All nine reference product
+families remain partial. The current lifecycle report is
+[`test-results/lifecycle/platform-expansion-20261017.html`](../test-results/lifecycle/platform-expansion-20261017.html),
+for the 17 October continuation (the final commit is recorded in the HTML report). The workspace review,
+Docker 29.7.2 runtime check, and fresh backend plus fashion/electronics/admin web
+image builds passed. The combined npm, Python, and locked Composer security
+audits passed; Composer reported no advisories or abandoned packages. Two plugin
+functional tests passed against disposable PostgreSQL and a digest-pinned Python
+sandbox. Frontend passed 561 tests across 73 files, with all four coverage
+metrics at 100%. Python unit suites passed 419 tests plus 17 subtests; the
+pipeline/deployment suites passed 325 tests with 100% statement and branch
+coverage. Review and registered Lean gates passed for their bounded scopes.
+
+The initial full API failures remain in the HTML history. The corrected final
+run passed all 51 API tests and successfully exercised all 208 documented
+operations, including the seven solution-commerce AI tools. Sanitized requests
+and responses are recorded in `test-results/api/exchanges.json`. Final PHP
+verification passed 343 SQLite tests (two PostgreSQL-only skips) and 349
+PostgreSQL tests, with 5,395/5,395 owned executable lines covered. The cached PHP
+testing runtime mounted hash-verified current source read-only. All eight service
+domains passed real signed-TLS, durable-inbox/domain-worker/outbox/platform-worker
+health roundtrips; see `test-results/solution-runtime-health-20261017.log`.
+
+These results cover existing code, not absent product features. Latest server
+available memory was 2,391 MiB; the unchanged 2,560 MiB capacity guard rejected
+deployment. Local bfloat16 inference passed two bounded prompts with lower memory,
+but the server benchmark failed with a malformed function call. Live float32
+remains unchanged. There is no new production deployment or full product-parity
+claim. Payroll/lending jurisdiction is still required before regulated rules.
 
 | Product / backlog IDs | Existing slice paths | Bounded remaining acceptance work |
 | --- | --- | --- |
-| ERP / ERP-01–05 | `backend/app/Modules/Erp/{ErpActions.php,ErpCommandHandler.php,Models/Account.php,Models/Journal.php,Models/JournalLine.php}`; `packages/api-client/services/erp/`; `frontend/admin/src/screens/platform_erp_screen/`; `tests/api/test_erp_service.py` | ERP-01 still needs receivables/payables, immutable posting and reversal, currency/rounding rules, settlement deduplication and reconciliation. ERP-02 supplier/PO/receipt/invoice matching is absent. ERP-03 needs a single ERP/commerce stock ledger and reserve/confirm/release concurrency path. ERP-04 BOM, production and subcontracting are absent. ERP-05 asset depreciation/disposal and project costing are absent. No P2 ERP parity claim. |
+| ERP / ERP-01–05 | `backend/app/Modules/Erp/{ErpActions.php,ErpCommandHandler.php,Models/Account.php,Models/Journal.php,Models/JournalLine.php}`; `packages/api-client/services/erp/`; `frontend/admin/src/screens/platform_erp_screen/`; `tests/api/test_erp_service.py` | ERP-01 posted-journal database guards now pass raw-SQL, replay and PostgreSQL regression checks; release acceptance remains blocked. Receivables/payables, reversal, currency/rounding rules, settlement deduplication and reconciliation remain open. ERP-02 supplier/PO/receipt/invoice matching is absent. ERP-03 needs a single ERP/commerce stock ledger and reserve/confirm/release concurrency path. ERP-04 BOM, production and subcontracting are absent. ERP-05 asset depreciation/disposal and project costing are absent. No P2 ERP parity claim. |
 | HR / HR-01–03 | `backend/app/Modules/Hr/{HrActions.php,HrCommandHandler.php,Models/}`; `packages/api-client/services/hr/`; `frontend/admin/src/screens/platform_hr_screen/`; `tests/api/test_hr_service.py` | HR-01 slice does not evidence recruiting/onboarding, field-level sensitive-data policy, explicit candidate conversion or termination access revocation. HR-02 needs overlap/timezone/holiday rules, concurrent leave-approval limits and correction audit acceptance. HR-03 payroll, expenses, performance, jurisdiction/version rules, locked runs and deduplicated ERP postings remain absent. |
 | Learning / LMS-01–03 | `backend/app/Modules/Learning/{LearningActions.php,LearningCommandHandler.php,Models/}`; `packages/api-client/services/learning/`; `frontend/admin/src/screens/platform_learning_screen/`; `tests/api/test_learning_service.py` | LMS-01 needs complete authoring and learner flows plus private/draft URL and search denial evidence. LMS-02 needs attempt limits, server-owned scoring, duplicate completion and anti-forgery acceptance. LMS-03 cohorts, live sessions, scheduled participation and auditable certificate revocation remain absent. |
 | Insights / INS-01–03 | `backend/app/Modules/Insights/{InsightsActions.php,InsightsCommandHandler.php,Models/}`; `packages/api-client/services/insights/`; `frontend/admin/src/screens/platform_insights_screen/`; `tests/api/test_insights_service.py` | INS-01 needs scoped read-only connector credentials, row/column filtered exports, and revocation/cache purge evidence. INS-02 needs bounded async query execution, freshness, parameter validation and dataset policy for sharing/downloads. INS-03 refresh scheduling, deduplication, schema-change errors and source-version lineage remain absent. |
 | CRM / CRM-01–03 | `backend/app/Modules/Crm/{CrmActions.php,CrmDealActions.php,CrmCommandHandler.php,Models/}`; `packages/api-client/services/crm/`; `frontend/admin/src/screens/platform_crm_screen/` and `platform_crm_growth_screen/`; `tests/api/test_crm_service.py`, `tests/api/test_crm_growth.py`, `tests/unit/platformCrmGrowthRoutes.test.ts` | CRM growth route adapters are wired to their intended public screens (16 focused cases pass on 2026-10-15). CRM-01 still needs acceptance evidence for indexed pagination, scoped deduplication, standalone create/edit and conversion that cannot grant login authority. CRM-02 needs API-level concurrent stage/assignment version conflict and scoped activity acceptance. CRM-03 communications, consent-aware automation and reconciled authorized reports are absent. Route coverage does not establish release regression. |
 | Helpdesk / HD-01–03 | `backend/app/Modules/Helpdesk/{HelpdeskActions.php,HelpdeskCommandHandler.php,Models/}`; `packages/api-client/services/helpdesk/`; `frontend/admin/src/screens/platform_helpdesk_screen/`; `tests/api/test_helpdesk_service.py` | HD-01 needs explicit requester/agent visibility and retry-safe ticket assignment/status acceptance. HD-02 calendar/timezone SLA fixtures, duplicate escalation suppression and closed-ticket guards remain absent. HD-03 knowledge publishing permissions, deduplicated email/telephony intake and attachment/sender validation remain absent. |
 | Lending / LND-01–03 | `backend/app/Modules/Lending/{LendingActions.php,LendingCommandHandler.php,LendingSchedule.php,Models/}`; `packages/api-client/services/lending/`; `frontend/admin/src/screens/platform_lending_screen/`; `tests/api/test_lending_service.py` | LND-01 still needs named jurisdiction/product rules, applicant/approver separation and immutable approved terms. LND-02 needs precision/accrual fixtures, disbursement/repayment reconciliation and duplicate settlement protection. LND-03 collateral, delinquency/as-of calculations, restructuring and write-off/reversal reconciliation are absent. |
-| Framework / FW-01–05 | `backend/app/Modules/Platform/`; `packages/api-client/services/platform_workspace/`; `frontend/admin/src/screens/{platform_workspace_screen,organization_*,membership_*}/`; `tests/api/test_platform_workspace.py` | FW-01/02/03 remain bounded slices: shop-free identity exists, but shop ownership migration, worker authorization recheck/integration regression and membership/invitation lifecycle release gates remain open. FW-04 typed versioned capability schemas/workflows/extensions are not complete. FW-05 has local isolation groundwork; production cross-service credentials, transport/replay/recovery and independently deployed services remain unverified. Workspace is not full Framework parity. |
+| Framework / FW-01–05 | `backend/app/Modules/Platform/`; `packages/api-client/services/platform_workspace/`; `frontend/admin/src/screens/{platform_workspace_screen,organization_*,membership_*}/`; `tests/api/test_platform_workspace.py` | FW-01/02/03 remain bounded slices: shop-free identity exists, but shop ownership migration, worker authorization recheck/integration regression and membership/invitation lifecycle release gates remain open. A bounded FW-02 legacy-shop association design is recorded below, but is planned and unimplemented. FW-04 typed versioned capability schemas/workflows/extensions are not complete. FW-05 has local isolation groundwork and a passing eight-domain health roundtrip; the corrected 51-case API regression passed. Workspace is not full Framework parity. |
 | Builder / BLD-01–03 | `backend/app/Modules/Builder/{BuilderActions.php,BuilderCommandHandler.php,BuilderBlockSchema.php,Models/Page.php}`; `packages/api-client/services/builder/`; `frontend/admin/src/screens/platform_builder_screen/`; `tests/api/test_builder_service.py`, `tests/unit/platformBuilderRoutes.test.ts` | Builder's five route adapters are wired to their intended public screens (five focused cases pass on 2026-10-15). BLD-01 needs full editor/preview round-trip plus unsafe markup/URL and private asset acceptance. BLD-02 needs expected-version conflict, expiring preview tokens, atomic publish and immutable rollback evidence. BLD-03 data binding, constrained templates and verified custom-domain routing remain absent. |
-| Commerce / COM-01–03 | `backend/app/Domain/SolutionCommerce.php`, checkout-pinned immutable offerings, verified-payment hooks, durable provisioning models/migrations, solution SDK/UI and ten documented HTTP operations. Native commerce/payment regressions pass; `tests/api/test_solution_commerce.py` collects but has not run against the full isolated service stack. | COM-01/02 are partial: offering publication, exact checkout quote, verified settlement, one-time entitlements, observable provisioning and owner retry exist. Refund reconciliation and platform-only purchase identity remain open. The repaired PostgreSQL trigger passes the complete isolated server regression suite. COM-03 subscriptions and ERP billing reconciliation remain absent. |
+| Commerce / COM-01–03 | `backend/app/Domain/SolutionCommerce.php`, checkout-pinned immutable offerings, verified-payment hooks, durable provisioning models/migrations, solution SDK/UI and ten documented HTTP operations. The final full API suite passed 51/51, including all ten solution commands and seven solution AI tools; initial failures remain in the report history. | COM-01/02 are partial: offering publication, exact checkout quote, verified settlement, one-time entitlements, observable provisioning and owner retry exist. Refund reconciliation and platform-only purchase identity remain open. The repaired PostgreSQL trigger passed the earlier isolated server regression suite. COM-03 subscriptions and ERP billing reconciliation remain absent. |
 
-### Manual release readiness constraints
+### Current implementation and release boundary
 
-The manual release CLI remains environment-specific and requires a clean checkout
-on `testing` or `deployment` plus `test-results/verified.json` matching the exact
-commit and configured gate set. At this review, that file names `17f7b555`, while
-the checkout is `9d114bb6`; it therefore does not authorize a release of the
-current revision. The checkout also has uncommitted work. No release gate was
-rerun for this review. The current
-`.deploy/release.json` still names SSH host `13.211.144.220`; the October 13 restart
-report observed `13.210.131.45`, while the October 15 DNS report verifies public
-HTTPS recovery but does not verify the configured SSH host or current pinned host
-key. Reconcile that host and `.deploy/known_hosts` before any manual deployment.
-The configured `worker_readiness_url` is a products API route; inventory evidence
-does not establish a direct worker-process readiness signal. The manual CLI's
-testing and production smoke gates also cover the deployed commerce surfaces, not
-the nine new services. No release command was invoked for this review.
+Posted-journal database immutability and the durable worker readiness probe have
+bounded implementation and regression work in the current continuation; the
+corrected SQLite suite and eight-domain signed-TLS health roundtrip pass, while
+the PostgreSQL suite remains in progress. The corrected 51-case API regression
+has not passed. Production capacity preflight remains blocked at 2,274 MiB free
+against a 2,560 MiB guard. The service release helper and smoke changes have not
+been deployed. No release or production behavior is asserted here. Final release
+evidence must match the eventual verified commit after the API and PostgreSQL
+gates pass and capacity is resolved.
+
+### FW-02 shop association — planned design
+
+The next bounded FW-02 P0 implementation, after current release gates, is an
+explicit association between a legacy shop and a standalone platform
+organization. This is a design backlog, not implemented behavior. It has six
+commands: legacy-shop challenge creation, cancellation, and administrator read;
+platform-owner proof redemption, association listing, and revocation. Both the
+current legacy shop administrator and current platform organization owner must
+authorize association actions. A short-lived (10-minute), one-use proof is stored
+as a hash and validated at the sensitive boundary before any queue acceptance,
+model call, or confirmation preview. Association does not transfer or inherit
+identity, roles, or permissions. The proposed persistence contract requires shop
+row locking, a partial unique constraint for active associations, expected
+versions, expiry, and audit history. Implementation and concurrency/revocation
+acceptance remain open; no existing shop access may widen through the mapping.
 
 ## FW-01 contract and security review checklist
 
@@ -294,7 +324,7 @@ current continuation includes native SQLite feature tests. PostgreSQL locking,
 separate-database integration and container runtime tests still require their
 own successful execution; SQLite is not evidence for those properties.
 
-## Verification continuation — 15 October 2026
+## Historical verification checkpoint — 15 October 2026
 
 The HTML stage report is `test-results/lifecycle/platform-expansion-20261015.html`.
 The current frontend run passes 561 tests and all four coverage metrics at 100%.
@@ -309,19 +339,7 @@ Both engines stayed within 115 MiB of PHP memory. Final executable-line coverage
 is recorded by the unchanged combined Clover gate in the HTML report; this is
 not a claim of complete PHP branch coverage or upstream feature parity.
 
-The existing server was checked over pinned SSH: its 26 containers remain up,
-with about 2,422 MiB available memory and no swap. This is below the new service
-release helper's 2,560 MiB preflight requirement. No deployment or GitHub push
-has been performed for this continuation. The local Docker Linux engine remains
-unavailable. Product completion additionally needs the remaining inventory and
-the operator's payroll/lending jurisdiction decisions; neither tests nor release
-automation should silently choose financial rules.
-
-The final acceptance boundary remains open: fresh container image builds, the
-50-test full service HTTP request/response suite and sandbox runtime integration
-have not run while the local Docker Linux engine is unavailable. The cached
-server testing image ran the current hash-verified source and dependencies; it
-is not evidence that a fresh production image builds. The Composer dependency
-audit is also blocked by outside-sandbox approval review timeouts and sandbox
-DNS restrictions; npm and Python audits passed. Product feature gaps above and
-financial-jurisdiction decisions remain required before a complete-product claim.
+The 15 October checkpoint recorded its own server and environment observations;
+those observations are historical and are superseded for current build, Docker,
+Composer, and integration status by the 17 October lifecycle report above. The
+product feature gaps and unresolved financial-jurisdiction decisions remain open.

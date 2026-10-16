@@ -62,14 +62,20 @@ final class ServiceExchange
     }
 
     /** @param array<string, mixed> $message */
-    private function claim(string $table, string $destination, ?string $source = null): ?object
+    private function claim(string $table, string $destination, ?string $source = null, ?string $topic = null): ?object
     {
-        return DB::transaction(function () use ($table, $destination, $source): ?object {
+        return DB::transaction(function () use ($table, $destination, $source, $topic): ?object {
             DB::table($table)->whereNull('deleted_at')->where('status', 'processing')
                 ->where('attempts', '>=', 5)->where('lease_until', '<=', now())
                 ->update(['status' => 'failed', 'lease' => null, 'lease_until' => null, 'updated_at' => now()]);
             $row = DB::table($table)->whereNull('deleted_at')->where('destination', $destination)
                 ->when($source !== null, fn ($query) => $query->where('source', $source))
+                ->when($table === 'service_inboxes', function ($query) use ($topic): void {
+                    $field = DB::getDriverName() === 'pgsql'
+                        ? "(envelope::jsonb->>'topic')" : "json_extract(envelope, '$.topic')";
+                    $query->whereRaw($field.($topic === null ? ' <> ?' : ' = ?'),
+                        [$topic ?? 'transport.health']);
+                })
                 ->where('attempts', '<', 5)->where(function ($query): void {
                     $query->where(fn ($q) => $q->where('status', 'queued')->where('available_at', '<=', now()))
                         ->orWhere(fn ($q) => $q->where('status', 'processing')->where('lease_until', '<=', now()));
@@ -91,12 +97,12 @@ final class ServiceExchange
     /** Trusted handlers own schema/action guards. Remote authorization is a fresh snapshot,
      * not an atomic distributed revocation lock. Effects use only this local transaction.
      */
-    public function consume(string $destination, callable $authorize, callable $effect, ?string $source = null): bool
+    public function consume(string $destination, callable $authorize, callable $effect, ?string $source = null, ?string $topic = null): bool
     {
         if (DB::transactionLevel() !== 0) {
             throw new \LogicException('Inbox worker must start outside a transaction.');
         }
-        $row = $this->claim('service_inboxes', $destination, $source);
+        $row = $this->claim('service_inboxes', $destination, $source, $topic);
         if (! $row) {
             return false;
         }

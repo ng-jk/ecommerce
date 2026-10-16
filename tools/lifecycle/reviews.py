@@ -62,6 +62,33 @@ def security(root: Path, git, command, npm: str) -> None:
         timeout=900,
     )
     python_dependency_security.run(root)
+    command(
+        [
+            "docker",
+            "run",
+            "--rm",
+            "--read-only",
+            "--tmpfs",
+            "/tmp:rw,noexec,nosuid,nodev,size=128m",
+            "--mount",
+            f"type=bind,source={root / 'backend/composer.json'},target=/audit/composer.json,readonly",
+            "--mount",
+            f"type=bind,source={root / 'backend/composer.lock'},target=/audit/composer.lock,readonly",
+            "--workdir",
+            "/audit",
+            "-e",
+            "COMPOSER_HOME=/tmp/composer",
+            "composer:2",
+            "composer",
+            "--no-plugins",
+            "--no-scripts",
+            "audit",
+            "--locked",
+            "--no-interaction",
+            "--format=json",
+        ],
+        timeout=900,
+    )
 
 
 def compatibility(command, git, npm: str) -> None:

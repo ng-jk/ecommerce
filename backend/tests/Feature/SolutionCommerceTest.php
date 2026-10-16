@@ -36,6 +36,34 @@ class SolutionCommerceTest extends TestCase
 
     protected bool $settleOperations = false;
 
+    public function test_assistant_receipts_use_the_server_result_organization_and_recheck_membership(): void
+    {
+        [$buyer, $organizationId, $offeringId, $order] = $this->fixture();
+        $service = app(SolutionCommerce::class);
+        $purchase = $service->bind($buyer, $organizationId, $offeringId, $order->id);
+        $result = ['organization_id' => $organizationId, ...$purchase];
+        $service->authorizeResult($buyer, 'platform.solution.bind', [], $result);
+        $this->assertSame($organizationId, $result['organization_id']);
+
+        $foreign = app(OrganizationActions::class)->create(Request::create('/', 'POST',
+            ['code' => 'other-buyer-org', 'name' => 'Other Org']), $buyer)['organization'];
+        try {
+            $service->authorizeResult($buyer, 'platform.solution.bind', [],
+                [...$result, 'organization_id' => $foreign['id']]);
+            $this->fail('A purchase receipt was moved to another organization.');
+        } catch (HttpException $error) {
+            $this->assertSame(403, $error->getStatusCode());
+        }
+
+        OrganizationMembership::where('organization_id', $organizationId)->update(['status' => OrganizationMembership::Revoked]);
+        try {
+            $service->authorizeResult($buyer, 'platform.solution.bind', [], $result);
+            $this->fail('A revoked member read an assistant receipt.');
+        } catch (HttpException $error) {
+            $this->assertSame(404, $error->getStatusCode());
+        }
+    }
+
     private function fixture(): array
     {
         config(['platform.applications.crm.available' => true,

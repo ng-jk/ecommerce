@@ -7,6 +7,7 @@ use App\Models\ServiceInbox;
 use App\Modules\Platform\Services\ServiceAuthentication;
 use App\Modules\Platform\Services\ServiceExchange;
 use App\Modules\Platform\Services\ServiceTransport;
+use App\Modules\Platform\Services\ServiceWorker;
 use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Http\Client\Factory;
 use Illuminate\Http\Client\Request;
@@ -326,5 +327,49 @@ class ServiceExchangeTest extends TestCase
         $this->assertSame(['helpdesk'], $seen);
         $this->assertSame(2, ServiceInbox::where('source', 'crm')->where('status', 'queued')->count());
         $this->assertFalse($exchange->consume('platform', fn (): bool => true, fn () => null, 'helpdesk'));
+    }
+
+    public function test_health_roundtrip_is_consumed_by_workers_without_business_authority(): void
+    {
+        $key = str_repeat('a', 32);
+        config(['platform.service_names' => ['crm'], 'service_exchange.enabled' => true,
+            'service_exchange.name' => 'crm', 'service_exchange.peers.platform' => [
+                'url' => 'https://crm.test/v1/services', 'key' => $key]]);
+        $id = fake()->uuid();
+        $nonce = fake()->uuid();
+        $request = ['id' => $id, 'source' => 'platform', 'destination' => 'crm',
+            'topic' => 'transport.health', 'version' => 1, 'payload' => ['nonce' => $nonce]];
+        $exchange = new ServiceExchange;
+        $exchange->accept($request, 'platform', 'crm');
+        Http::preventStrayRequests();
+        Http::fake(['https://crm.test/v1/services/inbox' => fn ($httpRequest) => $this->signedResponse($httpRequest,
+            ['id' => $id, 'digest' => hash('sha256', json_encode([
+                'id' => $id, 'source' => 'crm', 'destination' => 'platform',
+                'topic' => 'transport.health', 'version' => 1, 'payload' => ['nonce' => $nonce]],
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)), 'status' => 'accepted'], 202)]);
+        $this->assertTrue((new ServiceWorker)->processNext());
+        $this->assertDatabaseHas('service_inboxes', ['message_id' => $id, 'source' => 'platform', 'status' => 'succeeded']);
+        $this->assertDatabaseHas('service_deliveries', ['message_id' => $id, 'source' => 'crm', 'status' => 'succeeded']);
+        $exchange->accept(['id' => $id, 'source' => 'crm', 'destination' => 'platform',
+            'topic' => 'transport.health', 'version' => 1, 'payload' => ['nonce' => $nonce]], 'crm', 'platform');
+        config(['service_exchange.name' => 'platform', 'service_exchange.peers.crm' => [
+            'url' => 'https://crm.test/v1/services', 'key' => $key]]);
+        $this->assertTrue((new ServiceWorker)->processNext());
+        $this->assertDatabaseHas('service_inboxes', ['message_id' => $id, 'source' => 'crm', 'status' => 'succeeded']);
+    }
+
+    public function test_health_topic_does_not_enter_business_consumer_and_rejects_bad_payload(): void
+    {
+        $exchange = new ServiceExchange;
+        $health = ['id' => fake()->uuid(), 'source' => 'platform', 'destination' => 'crm',
+            'topic' => 'transport.health', 'version' => 1, 'payload' => ['nonce' => 'invalid']];
+        $exchange->accept($health, 'platform', 'crm');
+        $this->assertFalse($exchange->consume('crm', fn () => true, fn () => $this->fail('Health ran as business work.')));
+        config(['platform.service_names' => ['crm'], 'service_exchange.enabled' => true,
+            'service_exchange.name' => 'crm', 'service_exchange.peers.platform' => [
+                'url' => 'https://crm.test/v1/services', 'key' => str_repeat('a', 32)]]);
+        $this->assertTrue((new ServiceWorker)->processNext());
+        $this->assertDatabaseHas('service_inboxes', ['message_id' => $health['id'], 'status' => 'failed']);
+        $this->assertDatabaseCount('service_deliveries', 0);
     }
 }

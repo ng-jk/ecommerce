@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Domain\AccessPolicy;
 use App\Domain\SolutionCommerce;
+use App\Http\QueryInput;
 use App\Models\Operation;
 use App\Models\Shop;
 use App\Models\User;
@@ -39,7 +40,7 @@ class OperationController extends Controller
         $key = $request->header('Idempotency-Key');
         $receipt = $request->header('X-Operation-Token');
         $this->validate(Request::create('/', 'POST', ['key' => $key, 'receipt' => $receipt]), ['key' => 'required|uuid', 'receipt' => 'required|string|size:64|regex:/^[a-f0-9]+$/']);
-        $payload = ['input' => $request->all(), 'id' => $request->route('id')];
+        $payload = ['input' => QueryInput::read($request, $action), 'id' => $request->route('id')];
         if ($request->route('membership_id') !== null) {
             $payload['membership_id'] = $request->route('membership_id');
         }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Domain\SolutionCommerce;
+use App\Http\QueryInput;
 use App\Models\Operation;
 use App\Models\PlatformUser;
 use App\Modules\Events\Interface\Events;
@@ -41,7 +42,7 @@ class PlatformOperationController extends Controller
         $this->validate(Request::create('/', 'POST', ['key' => $key, 'receipt' => $receipt]), [
             'key' => 'required|uuid', 'receipt' => 'required|string|size:64|regex:/^[a-f0-9]+$/',
         ]);
-        $payload = ['input' => $request->all(), 'id' => $request->route('id'), 'membership_id' => $request->route('membership_id'),
+        $payload = ['input' => QueryInput::read($request, $action), 'id' => $request->route('id'), 'membership_id' => $request->route('membership_id'),
             'organization_id' => $request->route('organization_id'), 'application_key' => $request->route('applicationKey')];
         $scope = 'platform:'.($viewer?->id ?? 'guest').':'.$action;
         $hash = hash_hmac('sha256', json_encode([$action, $this->canonical($payload)], JSON_THROW_ON_ERROR), config('app.key'));

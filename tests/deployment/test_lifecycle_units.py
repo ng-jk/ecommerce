@@ -303,4 +303,10 @@ def test_security_review_skips_binary_and_large_files(tmp_path, monkeypatch):
         lambda args, **k: calls.append(args),
         "npm",
     )
-    assert len(calls) == 3
+    assert len(calls) == 4
+    audit = calls[-1]
+    assert audit[:4] == ["docker", "run", "--rm", "--read-only"]
+    assert "--no-plugins" in audit and "--no-scripts" in audit
+    assert audit[-4:] == ["audit", "--locked", "--no-interaction", "--format=json"]
+    assert sum("type=bind" in item for item in audit) == 2
+    assert all(".env" not in item for item in audit)

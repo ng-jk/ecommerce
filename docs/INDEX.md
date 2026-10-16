@@ -6,25 +6,25 @@ The canonical engineering and CRUD requirements remain in [engineering-spec.md](
 
 ## Product and architecture
 
-- [Product overview](product/overview.md) — Shop3i scope, clients and delivery target.
-- [Target architecture](architecture/target.md) — shared interfaces, runtime boundaries, authoritative services and persistence.
-- [Extension and quality standards](standards/extensions-and-quality.md) — plugins, Mini Apps, contracts, review and test gates.
-- [Decisions and amendments](decisions/2026-10-09-shop3i-amendment.md) — current decisions and superseded statements.
-- [Service platform expansion](decisions/2026-10-13-service-platform.md) — nine Frappe reference products, solution commerce, service ownership and delivery gates.
-- [Current nine-product backlog and verification](service-platform-product-inventory.md) — pinned references, feature ownership, acceptance gaps, logical proof scope and the 15 October verification checkpoint.
-- [Requirement status](status/requirements.md) — evidence-aware implementation status and open work.
-- [Previous implementation checkpoint (9 October)](status/2026-10-09-implementation.md) — earlier delivered changes, verification limits and release blockers; use the nine-product inventory for the current expansion.
-- [Company deployment profiles](company-deployment-profiles.md) — shared frontend branding and single Mini App composition.
-- [Event contract](../backend/app/Modules/Events/README.md) — durable delivery, database-effect fencing and handler obligations.
-- [Isolated plugin runtime](../extensions/runtime/README.md) — ZIP approval, SDK persistence and sandbox deployment.
-- [Python SDK, CLI and MCP](../interfaces/python/shop3i/README.md) — shared backend capability adapters.
+- [Product overview](product/overview.md) â€” Shop3i scope, clients and delivery target.
+- [Target architecture](architecture/target.md) â€” shared interfaces, runtime boundaries, authoritative services and persistence.
+- [Extension and quality standards](standards/extensions-and-quality.md) â€” plugins, Mini Apps, contracts, review and test gates.
+- [Decisions and amendments](decisions/2026-10-09-shop3i-amendment.md) â€” current decisions and superseded statements.
+- [Service platform expansion](decisions/2026-10-13-service-platform.md) â€” nine Frappe reference products, solution commerce, service ownership and delivery gates.
+- [Current nine-product backlog and verification](service-platform-product-inventory.md) â€” pinned references, feature ownership, acceptance gaps, planned FW-02 shop association, and bounded pass/failure evidence from the 17 October verification checkpoint and capacity-blocked release.
+- [Requirement status](status/requirements.md) â€” evidence-aware implementation status and open work.
+- [Previous implementation checkpoint (9 October)](status/2026-10-09-implementation.md) â€” earlier delivered changes, verification limits and release blockers; use the nine-product inventory for the current expansion.
+- [Company deployment profiles](company-deployment-profiles.md) â€” shared frontend branding and single Mini App composition.
+- [Event contract](../backend/app/Modules/Events/README.md) â€” durable delivery, database-effect fencing and handler obligations.
+- [Isolated plugin runtime](../extensions/runtime/README.md) â€” ZIP approval, SDK persistence and sandbox deployment.
+- [Python SDK, CLI and MCP](../interfaces/python/shop3i/README.md) â€” shared backend capability adapters.
 
 ## Canonical requirements and plans
 
 | Document | Purpose |
 | --- | --- |
-| [Engineering specification](engineering-spec.md) | R01–R15 architecture, implementation and review requirements |
-| [CRUD rules](crud-rules.md) | C01–C10 mandatory backend/frontend CRUD rules |
+| [Engineering specification](engineering-spec.md) | R01â€“R15 architecture, implementation and review requirements |
+| [CRUD rules](crud-rules.md) | C01â€“C10 mandatory backend/frontend CRUD rules |
 | [Testing acceptance](testing-acceptance.md) | Required unit/API categories, coverage and evidence limits |
 | [Implementation plan](implementation-plan.md) | Migration phases and acceptance gates |
 | [Deployment](deployment.md) | Operator-triggered Python release and host procedures |

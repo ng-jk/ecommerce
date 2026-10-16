@@ -1,6 +1,7 @@
 """Exercise orchestration without Docker, network, or deployment side effects."""
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -51,6 +52,7 @@ def test_build_and_api_stages_are_ordered_and_isolated(commands, monkeypatch):
     assert commands[2][0][-2:] == ["db:seed", "--force"]
     assert commands[-3][0][2:4] == ["pip", "install"]
     assert "tests/extensions/test_runtime_functional.py" in commands[-2][0]
+    assert commands[-1][1]["timeout"] == 1200
     assert commands[-1][0][-3:] == [
         "tests/api",
         "-q",
@@ -62,8 +64,13 @@ def test_build_and_api_stages_are_ordered_and_isolated(commands, monkeypatch):
 def test_unit_coverage_and_optional_browser_commands(commands, monkeypatch, exists):
     stages.test()
     assert "tests/interfaces" in commands[0][0]
+    unit_temp = next(
+        arg.split("=", 1)[1] for arg in commands[0][0] if arg.startswith("--basetemp=")
+    )
+    assert Path(unit_temp).is_absolute()
     assert "tests/extensions/test_runtime.py" in commands[0][0]
     assert any("--network" in args and "none" in args for args, _ in commands)
+    assert commands[-1][1]["timeout"] == 1200
     commands.clear()
     monkeypatch.setattr(stages, "require_complete_coverage", lambda *args: None)
 

@@ -1,5 +1,43 @@
 # Requirement status
 
+## Nine-product expansion verification — 2026-10-17 (in progress)
+
+The current lifecycle report is
+[`platform-expansion-20261017.html`](../../test-results/lifecycle/platform-expansion-20261017.html),
+for the 17 October continuation (the final commit is recorded in the HTML report). The workspace review,
+Docker runtime check (29.7.2), fresh backend and three web image builds, and
+combined npm/Python/locked Composer security audits passed. Composer reported no
+advisories or abandoned packages. Two plugin functional tests passed against
+disposable PostgreSQL and a digest-pinned Python sandbox. Frontend passed 561 tests
+across 73 files with all four coverage metrics at 100%; Python unit suites passed
+419 tests plus 17 subtests; pipeline/deployment suites passed 325 tests with 100%
+statement and branch coverage. Review and registered Lean gates passed for their
+bounded scopes.
+
+The initial API failures and their fixes remain in the HTML stage history. The
+final full run passed all 51 API tests, recording successful requests for all
+208 documented operations, including the seven solution-commerce AI tools.
+Final PHP verification passed 343 SQLite tests (two PostgreSQL-only skips) and
+349 PostgreSQL tests; combined owned executable-line coverage is 5,395/5,395.
+The PHP runtime mounted hash-verified current source read-only. Real signed-TLS,
+durable-inbox/domain-worker/outbox/platform-worker health roundtrips passed for
+all eight domains. Sanitized API responses are in `test-results/api/exchanges.json`.
+
+The server's existing containers are running. Its latest available memory was
+2,391 MiB against the unchanged 2,560 MiB deployment guard; the actual preflight
+rejected deployment. Local bfloat16 inference used less memory in two prompts,
+but the server benchmark failed with a malformed function call. Live float32
+configuration is unchanged. Capacity approval and payroll/lending jurisdiction
+remain unresolved. All nine product families remain partial; no new production
+deployment is established. FW-02 shop association remains a planned design.
+
+All nine reference product families remain `partial`; these bounded test, review,
+proof, build, and runtime results do not establish product acceptance or parity.
+See the current
+[feature inventory](../service-platform-product-inventory.md) for per-product
+gaps. The 15 October report below is historical evidence for its named tests and
+must not be read as the current lifecycle result.
+
 ## Service platform expansion — 2026-10-13
 
 The [current scope amendment](../decisions/2026-10-13-service-platform.md) adds

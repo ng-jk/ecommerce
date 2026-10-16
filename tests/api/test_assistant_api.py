@@ -15,7 +15,9 @@ def test_assistant_discovery_dispatch_and_validation_over_http():
     available = turn({"discover": True})
     assert available["status"] == "succeeded", available
     names = {item["name"] for item in available["result"]["available_actions"]}
-    assert names == {"catalog", "product", "login", "register"}
+    assert names == {
+        "catalog", "product", "solutionOfferings", "solutionOffering", "login", "register",
+    }
     result = turn({"action": "catalog", "data": {"page": 1}})
     assert result["status"] == "succeeded", result
     assert result["result"]["status"] == "completed"

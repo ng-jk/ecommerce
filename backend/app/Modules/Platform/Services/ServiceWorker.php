@@ -18,6 +18,7 @@ use App\Modules\Learning\LearningActions;
 use App\Modules\Learning\LearningCommandHandler;
 use App\Modules\Lending\LendingActions;
 use App\Modules\Lending\LendingCommandHandler;
+use Illuminate\Support\Str;
 
 class ServiceWorker
 {
@@ -35,6 +36,24 @@ class ServiceWorker
                 continue;
             }
             $transport = new ServiceTransport($settings['url'] ?? '', $settings['key'] ?? '', $source, $destination);
+            $health = $exchange->consume($source, function (array $message) use ($source, $destination): bool {
+                $keys = array_keys($message);
+                sort($keys);
+                if ($keys !== ['destination', 'id', 'payload', 'source', 'topic', 'version']
+                    || $message['source'] !== $destination || $message['destination'] !== $source
+                    || $message['topic'] !== 'transport.health' || $message['version'] !== 1
+                    || ! is_array($message['payload']) || array_keys($message['payload']) !== ['nonce']
+                    || ! is_string($message['payload']['nonce']) || ! Str::isUuid($message['payload']['nonce'])) {
+                    return false;
+                }
+
+                return true;
+            }, function (array $message) use ($exchange, $source): void {
+                if ($source !== 'platform') {
+                    $exchange->enqueue(['id' => $message['id'], 'source' => $source, 'destination' => 'platform',
+                        'topic' => 'transport.health', 'version' => 1, 'payload' => $message['payload']]);
+                }
+            }, $destination, 'transport.health');
             $consumed = match ($source) {
                 'platform' => app(RemoteCommandCoordinator::class)->consumeResult($destination),
                 'crm' => (new CrmCommandHandler($exchange, $transport, app(CrmActions::class)))->consumeOne(),
@@ -47,7 +66,7 @@ class ServiceWorker
                 'hr' => (new HrCommandHandler($exchange, $transport, app(HrActions::class)))->consumeOne(),
             };
             $relayed = $exchange->relay($transport, $destination);
-            $worked = $consumed || $relayed || $worked;
+            $worked = $health || $consumed || $relayed || $worked;
         }
 
         return $worked;
