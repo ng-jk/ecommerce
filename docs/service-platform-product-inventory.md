@@ -1,6 +1,6 @@
 # Service platform product inventory
 
-Review date: 2026-10-17. Owner: platform architecture, with domain owners below.
+Review date: 2026-10-18. Owner: platform architecture, with domain owners below.
 Authority: [October 13 scope decision](decisions/2026-10-13-service-platform.md),
 [engineering specification](engineering-spec.md), [implementation plan](implementation-plan.md)
 and [CRUD C01–C10](crud-rules.md). This is an indexed acceptance backlog, not a
@@ -160,7 +160,9 @@ available memory was 2,391 MiB; the unchanged 2,560 MiB capacity guard rejected
 deployment. Local bfloat16 inference passed two bounded prompts with lower memory,
 but the server benchmark failed with a malformed function call. Live float32
 remains unchanged. There is no new production deployment or full product-parity
-claim. Payroll/lending jurisdiction is still required before regulated rules.
+claim. Malaysia was selected by the user on 17 October for payroll and lending.
+Payroll tax year and conventional versus Islamic lending product rules remain
+unspecified; no regulated-rule completeness is claimed.
 
 | Product / backlog IDs | Existing slice paths | Bounded remaining acceptance work |
 | --- | --- | --- |
@@ -177,15 +179,17 @@ claim. Payroll/lending jurisdiction is still required before regulated rules.
 
 ### Current implementation and release boundary
 
-Posted-journal database immutability and the durable worker readiness probe have
-bounded implementation and regression work in the current continuation; the
-corrected SQLite suite and eight-domain signed-TLS health roundtrip pass, while
-the PostgreSQL suite remains in progress. The corrected 51-case API regression
-has not passed. Production capacity preflight remains blocked at 2,274 MiB free
-against a 2,560 MiB guard. The service release helper and smoke changes have not
-been deployed. No release or production behavior is asserted here. Final release
-evidence must match the eventual verified commit after the API and PostgreSQL
-gates pass and capacity is resolved.
+The current testing commit is
+`f05a0f9571eb49d62f370aa676d8baa7bd3bc732`. The final API run passed 51/51 tests
+with 208/208 documented operations covered. PHP verification passed 343 SQLite
+tests (two PostgreSQL-specific skips) and 349 PostgreSQL tests; owned executable
+line coverage is 5,395/5,395. All nine product families remain partial; these
+results do not establish product acceptance.
+On 18 October, the root NVMe was expanded to 1,000 GB and its XFS partition grew
+successfully from 100 GB, leaving 954 GB available. RAM remains 7,841 MiB total
+with 2,189 MiB available, below the unchanged 2,560 MiB deployment guard. No live
+containers were stopped. No master receipt, deployment, or main promotion is
+recorded; these test results do not claim a production release.
 
 ### FW-02 shop association — planned design
 
@@ -343,3 +347,36 @@ The 15 October checkpoint recorded its own server and environment observations;
 those observations are historical and are superseded for current build, Docker,
 Composer, and integration status by the 17 October lifecycle report above. The
 product feature gaps and unresolved financial-jurisdiction decisions remain open.
+
+## User clarification — 17 October 2026
+
+Payroll and lending target Malaysia. The payroll tax year and lending product
+type (conventional or Islamic) remain unspecified. Implement versioned rules only
+against verified Malaysian primary sources and explicit product scope; the country
+selection alone does not establish payroll or lending compliance.
+
+
+## Shared inference cutover — 18 October 2026
+
+Production and testing now use one pinned, offline, float32 FunctionGemma model in
+`shop3i-inference`, reached through two private fixed-upstream Caddy proxies.
+Application databases, identities, permissions and tool execution remain separate.
+Both live natural-language catalog requests completed through confirmation; reading
+each operation from the other environment returned 404. Unsupported proxy paths and
+methods returned 404; oversized inference bodies returned 413. Concurrent generation
+returned bounded 200/503 results. The model has no published ports, database network,
+DB credentials or application mounts; its sole cache volume is read-only.
+
+The first cutover failed because Caddy's executable required NET_BIND_SERVICE;
+automatic rollback restored old models. The corrected proxies allow only that
+capability and now have real health checks. Both old model containers are stopped
+and disconnected, with volumes preserved. Current private release profiles omit
+`assistant` to prevent recreating duplicate models. The shared service is independent
+of application releases; never run old assistant-enabled release commands in this mode.
+
+All 224 deployment tests and the context/boundary review passed. Available RAM after
+cutover was 3,850 MiB, above the 2,560 MiB preflight threshold; this supersedes the
+initial 18 October capacity observation. It does not establish capacity after deploying
+all additional services. No new application release or main promotion occurred; the
+nine-product feature backlog remains partial. Current bounded change evidence is
+`test-results/lifecycle/shared-inference-20261018.html`.

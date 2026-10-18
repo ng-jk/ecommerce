@@ -1,0 +1,24 @@
+{
+    auto_https off
+    admin off
+}
+
+:8000 {
+    @health {
+        method GET
+        path /health
+    }
+    @inference {
+        method POST
+        path /infer /v1/chat/completions
+    }
+    handle @health {
+        reverse_proxy shared-model:8000
+    }
+    handle @inference {
+        reverse_proxy shared-model:8000
+    }
+    handle {
+        respond "Not found" 404
+    }
+}

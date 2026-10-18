@@ -1,8 +1,27 @@
 # Requirement status
 
-## Nine-product expansion verification — 2026-10-17 (in progress)
+## Environment and release checkpoint — 2026-10-18
 
-The current lifecycle report is
+Current testing commit: `f05a0f9571eb49d62f370aa676d8baa7bd3bc732`. The final
+API run passed 51/51 tests with successful coverage of all 208 documented
+operations. PHP verification passed 343 SQLite tests (two PostgreSQL-only skips)
+and 349 PostgreSQL tests; owned executable-line coverage is 5,395/5,395. All
+nine product families remain partial, and the 17 October report below remains
+the dated source for its broader review, build, security, frontend, Python, proof
+and service-runtime evidence.
+
+The root NVMe expanded to 1,000 GB on 18 October; `growpart` and `xfs_growfs`
+successfully grew the XFS partition from 100 GB, leaving 954 GB available. RAM
+remains 7,841 MiB total with 2,189 MiB available, below the 2,560 MiB deployment
+guard. No live containers were stopped. No master receipt, deployment, or main
+promotion is recorded. Malaysia remains selected for payroll and lending; the
+tax year and conventional versus Islamic lending product remain unspecified.
+FW-02 shop association remains planned. The current maintenance report is
+[`storage-expansion-20261018.html`](../../test-results/lifecycle/storage-expansion-20261018.html).
+
+## Nine-product expansion verification — 2026-10-17 (publication blocked)
+
+The 17 October lifecycle report is
 [`platform-expansion-20261017.html`](../../test-results/lifecycle/platform-expansion-20261017.html),
 for the 17 October continuation (the final commit is recorded in the HTML report). The workspace review,
 Docker runtime check (29.7.2), fresh backend and three web image builds, and
@@ -23,12 +42,12 @@ The PHP runtime mounted hash-verified current source read-only. Real signed-TLS,
 durable-inbox/domain-worker/outbox/platform-worker health roundtrips passed for
 all eight domains. Sanitized API responses are in `test-results/api/exchanges.json`.
 
-The server's existing containers are running. Its latest available memory was
-2,391 MiB against the unchanged 2,560 MiB deployment guard; the actual preflight
-rejected deployment. Local bfloat16 inference used less memory in two prompts,
+At that 17 October checkpoint, the server's existing containers were running.
+Latest available memory was 2,391 MiB against the unchanged 2,560 MiB deployment
+guard; the actual preflight rejected deployment. Local bfloat16 inference used less memory in two prompts,
 but the server benchmark failed with a malformed function call. Live float32
-configuration is unchanged. Capacity approval and payroll/lending jurisdiction
-remain unresolved. All nine product families remain partial; no new production
+configuration is unchanged. Capacity approval remains unresolved. Malaysia is selected for payroll/lending;
+payroll tax year and conventional versus Islamic lending rules remain unspecified. All nine product families remain partial; no new production
 deployment is established. FW-02 shop association remains a planned design.
 
 All nine reference product families remain `partial`; these bounded test, review,
@@ -98,3 +117,29 @@ Statuses below summarize documented scope as of 2026-10-09. `partial` means the 
 | Unit/API test and coverage targets | partial | Dated reports exist for named scopes; reports must be regenerated and tied to each current commit and requirement before release. |
 
 The machine-readable record in [registry.json](../registry.json) is the requirement-level source. Empty evidence arrays mean there is no artifact asserted for that entry. Update status only with evidence at the same or narrower scope as the requirement; do not infer completion from planned work, old reports, generated contracts or a successful subset of tests.
+
+
+## Shared inference cutover — 18 October 2026
+
+Production and testing now use one pinned, offline, float32 FunctionGemma model in
+`shop3i-inference`, reached through two private fixed-upstream Caddy proxies.
+Application databases, identities, permissions and tool execution remain separate.
+Both live natural-language catalog requests completed through confirmation; reading
+each operation from the other environment returned 404. Unsupported proxy paths and
+methods returned 404; oversized inference bodies returned 413. Concurrent generation
+returned bounded 200/503 results. The model has no published ports, database network,
+DB credentials or application mounts; its sole cache volume is read-only.
+
+The first cutover failed because Caddy's executable required NET_BIND_SERVICE;
+automatic rollback restored old models. The corrected proxies allow only that
+capability and now have real health checks. Both old model containers are stopped
+and disconnected, with volumes preserved. Current private release profiles omit
+`assistant` to prevent recreating duplicate models. The shared service is independent
+of application releases; never run old assistant-enabled release commands in this mode.
+
+All 224 deployment tests and the context/boundary review passed. Available RAM after
+cutover was 3,850 MiB, above the 2,560 MiB preflight threshold; this supersedes the
+initial 18 October capacity observation. It does not establish capacity after deploying
+all additional services. No new application release or main promotion occurred; the
+nine-product feature backlog remains partial. Current bounded change evidence is
+`test-results/lifecycle/shared-inference-20261018.html`.

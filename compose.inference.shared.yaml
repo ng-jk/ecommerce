@@ -1,0 +1,100 @@
+# Deploy once as a separate Compose project after loading the verified inference image
+# and creating the external model cache and both application networks.
+services:
+  shared-model:
+    image: ${SHARED_INFERENCE_IMAGE:?Set the locally loaded inference image pinned to the verified source SHA}
+    pull_policy: never
+    environment:
+      HF_HOME: /models
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      FUNCTIONGEMMA_MODEL: ${SHARED_INFERENCE_MODEL_PATH:?Set the cached snapshot path under /models}
+      FUNCTIONGEMMA_DTYPE: ${SHARED_INFERENCE_DTYPE:-float32}
+    volumes:
+      - type: volume
+        source: model-cache
+        target: /models
+        read_only: true
+    networks: [inference]
+    mem_limit: 2304m
+    pids_limit: 256
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      start_period: 120s
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  production-proxy:
+    image: caddy@sha256:de23def33b17fb5d1290b0f6c2add1d70780e52341896c00a4c8a2a2fe9d355e
+    pull_policy: never
+    read_only: true
+    tmpfs:
+      - /config:size=16m
+      - /data:size=16m
+    volumes:
+      - ./docker/shared-inference/Caddyfile:/etc/caddy/Caddyfile:ro
+    networks:
+      inference: {}
+      production_application:
+        aliases: [functiongemma]
+    depends_on:
+      shared-model:
+        condition: service_healthy
+    mem_limit: 64m
+    pids_limit: 48
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, http://127.0.0.1:8000/health]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  testing-proxy:
+    image: caddy@sha256:de23def33b17fb5d1290b0f6c2add1d70780e52341896c00a4c8a2a2fe9d355e
+    pull_policy: never
+    read_only: true
+    tmpfs:
+      - /config:size=16m
+      - /data:size=16m
+    volumes:
+      - ./docker/shared-inference/Caddyfile:/etc/caddy/Caddyfile:ro
+    networks:
+      inference: {}
+      testing_application:
+        aliases: [functiongemma]
+    depends_on:
+      shared-model:
+        condition: service_healthy
+    mem_limit: 64m
+    pids_limit: 48
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, http://127.0.0.1:8000/health]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+networks:
+  inference:
+    internal: true
+  production_application:
+    external: true
+    name: ${PRODUCTION_APPLICATION_NETWORK:-shop3i-production_application}
+  testing_application:
+    external: true
+    name: ${TESTING_APPLICATION_NETWORK:-shop3i-testing_application}
+
+volumes:
+  model-cache:
+    external: true
+    name: ${SHARED_INFERENCE_CACHE_VOLUME:?Set the pre-populated model cache volume}

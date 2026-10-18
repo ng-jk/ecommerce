@@ -81,3 +81,36 @@ The local example config's readiness URLs must match the intended environment. C
 Back up each environment's database, uploads volume, and runtime environment file through a secured process. Store encrypted backups outside the EC2 host and test restoration into an isolated recovery project. Keep backups and rollback images compatible with the deployed schema. `docker compose down` retains named volumes; do not remove volumes during routine release or rollback.
 
 Compose publishes the web exports only. Android/iOS builds, signing, distribution, and device testing remain separate release work.
+
+
+## Shared production/testing inference
+
+`compose.inference.shared.yaml` runs one stable FunctionGemma container and two
+fixed-upstream Caddy proxies in an independent `shop3i-inference` project. Each
+proxy joins only its own application network plus the private inference network.
+The model joins only the inference network: it receives no database credentials,
+application volumes or public ports. Conversations, permissions and tool execution
+remain in each application's backend/database. Requests share generation capacity;
+a busy model can return 503, which clients must treat as a retryable outcome.
+
+Operator configuration pins `SHARED_INFERENCE_IMAGE` to an inspected image digest,
+`SHARED_INFERENCE_CACHE_VOLUME` to the retained external model cache, and
+`SHARED_INFERENCE_MODEL_PATH` to its exact cached snapshot. The cache is read-only
+and Hugging Face/Transformers offline flags prevent downloads. The proxies retain
+the application hostname `functiongemma:8000`; backend settings need not change.
+
+When this mode is active, remove `assistant` from both environments' private
+release configuration profiles (keep `services` when deploying domain services).
+Never invoke a historical release with `--profile assistant`: it would recreate a
+separate model. Current manual release/rollback commands use the current operator
+profile list, so ordinary application publication and compatible rollback leave
+shared inference running independently. Update the shared model only in an explicit
+separate maintenance operation after testing its image/model combination.
+
+For migration, preserve both old model containers and volumes. Stop the testing
+model, start the pinned shared model, then stop/disconnect the production model and
+activate each proxy's `functiongemma` DNS alias. Verify real inference and guest
+assistant requests in both environments. If cutover fails, stop the shared proxies,
+restore each old model's original application network/DNS aliases and restart it.
+Do not remove model volumes. The dedicated shared project must be restored before
+application AI readiness checks after a host recovery.
